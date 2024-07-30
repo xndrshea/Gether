@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files from the React app's public folder
-app.use(express.static(path.join(__dirname, '../client/public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // API routes can be added here
 app.get('/api/hello', (req, res) => {
@@ -19,7 +19,7 @@ app.get('/api/hello', (req, res) => {
 // The "catchall" handler: for any request that doesn't
 // match one above, send back the index.html file.
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/public/index.html'));
+    res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 app.listen(PORT, () => {
