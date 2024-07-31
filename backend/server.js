@@ -1,8 +1,8 @@
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const path = require('path'); // Import the path module
 
 const app = express();
 
@@ -25,6 +25,11 @@ mongoose.connect(MONGODB_URI, {
 }).catch((error) => {
     console.error('Error connecting to MongoDB:', error.message);
     process.exit(1);
+});
+
+// Serve the manifest file
+app.get('/tonconnect-manifest.json', (req, res) => {
+    res.sendFile(path.join(__dirname, 'tonconnect-manifest.json'));
 });
 
 app.get('/', async (req, res) => {
