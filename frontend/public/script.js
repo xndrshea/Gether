@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     browseAllButton.addEventListener('click', function() {
         console.log('Browse All clicked');
-        // Add browse all functionality here
+        window.location.href = 'browseall.html';
     });
 
     // Initially hide the clear button
