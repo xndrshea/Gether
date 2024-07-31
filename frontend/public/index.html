@@ -18,17 +18,20 @@
       <span class="second-line">become <span class="blue-text">Communities</span></span>
     </h1>
     <div class="search-container">
-      <input type="text" id="tokenAddress" placeholder="Enter Token Address...">
+      <input type="text" id="tokenAddress" placeholder="Enter TON Token Address...">
       <button id="clearSearch">&times;</button>
     </div>
     <div class="buttons">
-      <a href="scavenge.html" id="scavenge" class="button">Scavenge</a>
+      <button id="scavenge" class="button">Scavenge</button>
       <span class="separator">/</span>
       <button id="browseAll">Browse All</button>
     </div>
+    <div id="searchResult"></div>
   </div>
+
   <div id="root"></div> <!-- Add this div for React -->
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
+
 </body>
 
 </html>
