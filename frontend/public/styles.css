@@ -29,7 +29,7 @@ body, html {
     font-size: 24px;
     font-weight: bold;
     position: relative;
-    left: calc(-10vw - 5px);
+    left: calc(-7vw - 200px);
     top: 20px;
     transition: left 0.3s ease-in-out;
 }
@@ -42,7 +42,7 @@ h1 {
 
 h1 .first-line {
     display: inline-block;
-    margin-left: -3em;
+    margin-left: -5.5em;
 }
 
 h1 .second-line {
@@ -53,16 +53,24 @@ h1 .second-line {
     color: #0066ff;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
     .logo {
-        left: calc(-10vw - 5px); 
+        left: calc(0vw - 0px); 
+    }
+
+    h1 .first-line {
+        margin-left: 0;
+    }
+    h1 .second-line {
+        margin-left: 0;
     }
 }
-@media (min-width: 1200px) {
+
+/*@media (min-width: 1200px) {
     .logo {
         left: calc(-15vw - -50px); 
     }
-}
+}*/
 
 .search-container {
     position: relative;
