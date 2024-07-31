@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TonConnect } from '@tonconnect/sdk';
+import './TonConnectButton.css';
 
 const TonConnectButton = () => {
     const [wallet, setWallet] = useState(null);
@@ -7,12 +8,14 @@ const TonConnectButton = () => {
 
     useEffect(() => {
         const connect = new TonConnect({
-            manifestUrl: 'http://localhost:5000/tonconnect-manifest.json' // Update with your actual URL
+            manifestUrl: 'https://4775-2001-4bc9-1f98-80af-5de5-768d-a0c2-bf5e.ngrok-free.app/tonconnect-manifest.json' // Ensure this URL is correct
         });
+
         setTonConnect(connect);
 
-        connect.onStatusChange((wallet) => {
-            setWallet(wallet);
+        connect.onStatusChange((walletInfo) => {
+            setWallet(walletInfo);
+            console.log('Wallet status changed:', walletInfo);
         });
 
     }, []);
@@ -20,7 +23,12 @@ const TonConnectButton = () => {
     const handleConnect = async () => {
         if (tonConnect) {
             try {
-                await tonConnect.connectWallet();
+                console.log('Attempting to connect wallet...');
+                await tonConnect.connect({
+                    universalLink: 'https://app.tonkeeper.com/ton-connect',
+                    bridgeUrl: 'https://bridge.tonapi.io/bridge',
+                    jsBridgeKey: 'tonkeeper' // Ensure that Tonkeeper is the target
+                });
             } catch (error) {
                 console.error('Failed to connect wallet:', error);
             }
@@ -30,8 +38,10 @@ const TonConnectButton = () => {
     const handleDisconnect = async () => {
         if (tonConnect) {
             try {
-                await tonConnect.disconnectWallet();
+                console.log('Attempting to disconnect wallet...');
+                await tonConnect.disconnect();
                 setWallet(null);
+                console.log('Wallet disconnected');
             } catch (error) {
                 console.error('Failed to disconnect wallet:', error);
             }
@@ -42,11 +52,12 @@ const TonConnectButton = () => {
         <div>
             {wallet ? (
                 <div>
-                    <p>Connected to: {wallet.name}</p>
-                    <button onClick={handleDisconnect}>Disconnect</button>
+                    <p>Connected to wallet:</p>
+                    <pre>{JSON.stringify(wallet, null, 2)}</pre>
+                    <button onClick={handleDisconnect} className="TonConnectButton">Disconnect</button>
                 </div>
             ) : (
-                <button onClick={handleConnect}>Connect Wallet</button>
+                <button onClick={handleConnect} className="TonConnectButton">Connect Wallet</button>
             )}
         </div>
     );
