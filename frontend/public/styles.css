@@ -237,19 +237,19 @@ button, .button {
 
 /* browse all css starts here */
 
-.browse-all-page {
+.scavenge-page {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
-.browse-all-page header {
+.scavenge-page header {
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
-.browse-all-page main {
+.scavenge-page main {
     flex-grow: 1;
     padding: 20px;
 }
