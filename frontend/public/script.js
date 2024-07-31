@@ -15,12 +15,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     scavengeButton.addEventListener('click', function() {
         console.log('Scavenge clicked');
-        // Add scavenge functionality here
+        window.location.href = 'scavenge.html';
     });
 
     browseAllButton.addEventListener('click', function() {
         console.log('Browse All clicked');
-        // Add browse all functionality here
     });
 
     // Initially hide the clear button
