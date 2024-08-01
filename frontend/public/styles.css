@@ -304,8 +304,9 @@ main {
 }
 
 .token-page .logo {
-    position: static;
+    position: relative;
     margin-bottom: 20px;
+    text-align: left;
 }
 
 .token-page h1 {
@@ -366,10 +367,25 @@ main {
     padding: 15px;
 }
 
-.token-page .post p {
-    font-size: 16px;
-    line-height: 1.5;
+.token-page .post-form textarea {
+    width: 97%;
+    height: 100px; 
+    resize: none; 
+}
+
+.token-page .post {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #3a3a3a;
+    border-radius: 5px;
+}
+
+.token-page .post-content {
     margin-bottom: 10px;
+    background-color: #2a2a2a; /* Light gray background */
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%; /* Ensure it fills the parent container */
 }
 
 .token-page .comments {
@@ -377,11 +393,37 @@ main {
 }
 
 .token-page .comment {
+    margin-left: 20px;
+    margin-top: 5px;
+    padding: 5px;
     background-color: #3a3a3a;
-    border-radius: 4px;
-    padding: 10px;
+    border-radius: 3px;
+}
+
+.token-page .comment-input-container {
+    margin-top: 10px;
+}
+
+.token-page .comment-input-container input[type="text"] {
+    width: calc(100% - 70px);
+    margin-right: 5px;
+}
+
+.token-page .comment-toggle {
+    margin-top: 10px;
+}
+
+.token-page .comment-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.token-page .comment-form input {
     margin-bottom: 5px;
-    font-size: 14px;
+}
+
+.token-page .comment-form button {
+    align-self: flex-start;
 }
 
 .token-page pre {

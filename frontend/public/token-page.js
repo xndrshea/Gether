@@ -10,10 +10,14 @@ document.addEventListener('DOMContentLoaded', function() {
         loadPosts();
     } else {
         document.getElementById('tokenInfo').textContent = 'Invalid token address';
+        canCreatePost = false;
+        updatePostingUI();
     }
 
     document.getElementById('submitPost').addEventListener('click', createPost);
 });
+
+let canCreatePost = true; // Global variable to track if posting is allowed
 
 async function loadTokenInfo(tokenAddress) {
     try {
@@ -27,6 +31,13 @@ async function loadTokenInfo(tokenAddress) {
             }
         });
 
+        if (response.status === 416) {
+            document.getElementById('tokenInfo').textContent = 'Error loading token info';
+            canCreatePost = false; // Disable posting for 416 error
+            updatePostingUI();
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -38,11 +49,32 @@ async function loadTokenInfo(tokenAddress) {
         }
 
         displayTokenInfo(data.result);
+        canCreatePost = true; // Enable posting for successful responses
     } catch (error) {
         console.error('Error loading token info:', error);
         document.getElementById('tokenInfo').textContent = `Error: ${error.message}`;
+        canCreatePost = true; // Keep posting enabled for other types of errors
+    }
+    
+    updatePostingUI();
+}
+
+function updatePostingUI() {
+    const postForm = document.querySelector('.post-form');
+    const postButton = document.getElementById('submitPost');
+    const noCommunityMessage = document.getElementById('noCommunityMessage');
+    
+    if (canCreatePost) {
+        postForm.style.display = 'block';
+        postButton.disabled = false;
+        noCommunityMessage.style.display = 'none';
+    } else {
+        postForm.style.display = 'none';
+        postButton.disabled = true;
+        noCommunityMessage.style.display = 'block';
     }
 }
+
 
 function displayTokenInfo(info) {
     const tokenInfoElement = document.getElementById('tokenInfo');
@@ -89,24 +121,52 @@ function createComment(postId) {
 
 function displayPosts() {
     const postsContainer = document.getElementById('posts');
-    postsContainer.innerHTML = '';
-    
+    postsContainer.innerHTML = ''; // Clear previous posts
+
     posts.forEach(post => {
         const postElement = document.createElement('div');
         postElement.className = 'post';
         postElement.innerHTML = `
-            <p>${post.content}</p>
+            <div class="post-content">
+                <p>${post.content}</p>
+            </div>
             <div class="comments">
                 ${post.comments.map(comment => `
                     <div class="comment">${comment.content}</div>
                 `).join('')}
             </div>
-            <input type="text" id="commentInput-${post.id}" placeholder="Write a comment...">
-            <button onclick="createComment(${post.id})">Comment</button>
+            <button onclick="toggleCommentInput(${post.id})" class="comment-toggle">Comment</button>
+            <div id="commentInputContainer-${post.id}" class="comment-input-container" style="display: none;">
+                <input type="text" id="commentInput-${post.id}" placeholder="Write a comment...">
+                <button onclick="createComment(${post.id})">Submit</button>
+            </div>
         `;
         postsContainer.appendChild(postElement);
     });
 }
+
+function toggleCommentInput(postId) {
+    const commentInputContainer = document.getElementById(`commentInputContainer-${postId}`);
+    const isHidden = commentInputContainer.style.display === 'none';
+    commentInputContainer.style.display = isHidden ? 'block' : 'none';
+}
+
+function createComment(postId) {
+    const commentInput = document.getElementById(`commentInput-${postId}`);
+    const content = commentInput.value.trim();
+    if (content) {
+        const post = posts.find(p => p.id === postId);
+        if (post) {
+            post.comments.push({
+                id: Date.now(),
+                content: content
+            });
+            commentInput.value = '';
+            displayPosts(); // Refresh the display
+        }
+    }
+}
+
 
 function loadPosts() {
     // In a real application, you would load posts from a backend here
