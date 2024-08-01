@@ -8,7 +8,7 @@ const TonConnectButton = () => {
 
     useEffect(() => {
         const connect = new TonConnect({
-            manifestUrl: 'https://4775-2001-4bc9-1f98-80af-5de5-768d-a0c2-bf5e.ngrok-free.app/tonconnect-manifest.json' // Ensure this URL is correct
+            manifestUrl: 'https://8a66-84-115-238-161.ngrok-free.app/tonconnect-manifest.json' // Ensure this URL is correct
         });
 
         setTonConnect(connect);
