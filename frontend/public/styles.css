@@ -60,71 +60,6 @@ h1 .second-line {
     color: #0066ff;
 }
 
-@media only screen and (max-width: 230px) {
-    .logo {
-        left: calc(0vw - 0px); 
-    }
-
-    h1 .first-line,
-    h1 .second-line {
-        font-size: 24px;
-        margin-left: 0;
-    }
-}
-
-@media only screen and (min-width: 231px) and (max-width: 270px) {
-    .logo {
-        left: calc(0vw - 0px); 
-    }
-
-    h1 .first-line,
-    h1 .second-line {
-        font-size: 28px;
-        margin-left: 0;
-    }
-}
-
-@media only screen and (min-width: 271px) and (max-width: 310px) {
-    .logo {
-        left: calc(0vw - 0px); 
-    }
-
-    h1 .first-line,
-    h1 .second-line {
-        font-size: 34px;
-        margin-left: 0;
-    }
-}
-
-@media only screen and (min-width: 311px) and (max-width: 365px) {
-    .logo {
-        left: calc(0vw - 0px); 
-    }
-
-    h1 .first-line,
-    h1 .second-line {
-        font-size: 40px;
-        margin-left: 0;
-    }
-}
-
-@media only screen and (min-width: 366px) and (max-width: 650px) {
-    .logo {
-        left: calc(0vw - 0px); 
-    }
-
-    h1 .first-line,
-    h1 .second-line {
-        margin-left: 0;
-    }
-}
-
-/*@media (min-width: 1200px) {
-    .logo {
-        left: calc(-15vw - -50px); 
-    }
-}*/
-
 .search-container {
     position: relative;
     margin-bottom: 20px;
@@ -235,7 +170,7 @@ button, .button {
     color: white;
 }
 
-/* browse all css starts here */
+/* ------------------ browse all css starts here ------------------ */
 
 .scavenge-page {
     display: flex;
@@ -351,4 +286,225 @@ main {
     color: #888888;
     cursor: pointer;
     margin-right: 15px;
+}
+
+/* ------------------ token-page css starts here ------------------ */
+
+.token-page {
+    background-color: #1a1a1a;
+    color: white;
+    min-height: 100vh;
+    padding-top: 20px;
+}
+
+.token-page .container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.token-page .logo {
+    position: relative;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.token-page h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.token-page .token-info,
+.token-page .post-form,
+.token-page .posts {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.token-page .token-info h3,
+.token-page .post-form h3 {
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #0066ff;
+}
+
+.token-page textarea,
+.token-page input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #2a2a2a;
+    color: white;
+}
+
+.token-page button {
+    padding: 10px 20px;
+    background-color: #0066ff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.token-page button:hover {
+    background-color: #0052cc;
+}
+
+.token-page .post {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+.token-page .post-form textarea {
+    width: 97%;
+    height: 100px; 
+    resize: none; 
+}
+
+.token-page .post {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #3a3a3a;
+    border-radius: 5px;
+}
+
+.token-page .post-content {
+    margin-bottom: 10px;
+    background-color: #2a2a2a; /* Light gray background */
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%; /* Ensure it fills the parent container */
+}
+
+.token-page .comments {
+    margin-top: 10px;
+}
+
+.token-page .comment {
+    margin-left: 20px;
+    margin-top: 5px;
+    padding: 5px;
+    background-color: #3a3a3a;
+    border-radius: 3px;
+}
+
+.token-page .comment-input-container {
+    margin-top: 10px;
+}
+
+.token-page .comment-input-container input[type="text"] {
+    width: calc(100% - 70px);
+    margin-right: 5px;
+}
+
+.token-page .comment-toggle {
+    margin-top: 10px;
+}
+
+.token-page .comment-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.token-page .comment-form input {
+    margin-bottom: 5px;
+}
+
+.token-page .comment-form button {
+    align-self: flex-start;
+}
+
+.token-page pre {
+    background-color: #3a3a3a;
+    border: 1px solid #4a4a4a;
+    border-radius: 4px;
+    padding: 10px;
+    overflow-x: auto;
+    font-size: 14px;
+    color: #e0e0e0;
+}
+
+/* ------------------ Responsive adjustments ------------------ */
+
+@media only screen and (max-width: 230px) {
+    .logo {
+        left: calc(0vw - 0px); 
+    }
+
+    h1 .first-line,
+    h1 .second-line {
+        font-size: 24px;
+        margin-left: 0;
+    }
+}
+
+@media only screen and (min-width: 231px) and (max-width: 270px) {
+    .logo {
+        left: calc(0vw - 0px); 
+    }
+
+    h1 .first-line,
+    h1 .second-line {
+        font-size: 28px;
+        margin-left: 0;
+    }
+}
+
+@media only screen and (min-width: 271px) and (max-width: 310px) {
+    .logo {
+        left: calc(0vw - 0px); 
+    }
+
+    h1 .first-line,
+    h1 .second-line {
+        font-size: 34px;
+        margin-left: 0;
+    }
+}
+
+@media only screen and (min-width: 311px) and (max-width: 365px) {
+    .logo {
+        left: calc(0vw - 0px); 
+    }
+
+    h1 .first-line,
+    h1 .second-line {
+        font-size: 40px;
+        margin-left: 0;
+    }
+}
+
+@media only screen and (min-width: 366px) and (max-width: 650px) {
+    .logo {
+        left: calc(0vw - 0px); 
+    }
+
+    h1 .first-line,
+    h1 .second-line {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .token-page .container {
+        padding: 0 10px;
+    }
+
+    .token-page .token-info,
+    .token-page .post-form,
+    .token-page .posts {
+        padding: 15px;
+    }
 }
