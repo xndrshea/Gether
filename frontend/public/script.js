@@ -49,53 +49,12 @@ async function searchToken() {
         return;
     }
 
-    try {
-        const { apiUrl, apiKey } = await initApi();
-
-        // TON address validation (simplified)
-        if (!/^[0-9A-Za-z_-]{48}$/.test(tokenAddress)) {
-            searchResult.innerHTML = 'Invalid TON address format. Please enter a valid TON address.';
-            return;
-        }
-
-        try {
-            const fullUrl = `${apiUrl}getAddressInformation?address=${tokenAddress}`;
-            console.log('Full API URL:', fullUrl);
-
-            const response = await fetch(fullUrl, {
-                method: 'GET',
-                headers: {
-                    'X-API-Key': apiKey
-                }
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-            }
-
-            const data = await response.json();
-            console.log('API Response:', data);
-
-            if (data.error) {
-                throw new Error(`API Error: ${data.error}`);
-            }
-
-            // Process and display the token info
-            searchResult.innerHTML = `
-                <h3>Address Information:</h3>
-                <p>Address: ${tokenAddress}</p>
-                <p>Balance: ${data.result.balance / 1e9} TON</p>
-                <p>Status: ${data.result.state}</p>
-                <pre>${JSON.stringify(data.result, null, 2)}</pre>
-            `;
-        } catch (error) {
-            console.error('API Error:', error);
-            searchResult.innerHTML = `Error connecting to API: ${error.message}. Please try again.`;
-        }
-
-    } catch (error) {
-        console.error('Error searching token:', error);
-        searchResult.innerHTML = `Error searching for token: ${error.message}. Please try again.`;
+    // TON address validation (simplified)
+    if (!/^[0-9A-Za-z_-]{48}$/.test(tokenAddress)) {
+        searchResult.innerHTML = 'Invalid TON address format. Please enter a valid TON address.';
+        return;
     }
+
+    // Redirect to the token-specific page
+    window.location.href = `token-page.html?address=${encodeURIComponent(tokenAddress)}`;
 }
