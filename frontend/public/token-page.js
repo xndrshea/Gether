@@ -75,7 +75,6 @@ function updatePostingUI() {
     }
 }
 
-
 function displayTokenInfo(info) {
     const tokenInfoElement = document.getElementById('tokenInfo');
     tokenInfoElement.innerHTML = `
@@ -95,7 +94,7 @@ function createPost() {
         const post = {
             id: Date.now(),
             content: content,
-            comments: []
+            comments: [] // Initialize with an empty array
         };
         posts.unshift(post);
         document.getElementById('postContent').value = '';
@@ -103,70 +102,72 @@ function createPost() {
     }
 }
 
-function createComment(postId) {
-    const commentInput = document.getElementById(`commentInput-${postId}`);
-    const content = commentInput.value.trim();
-    if (content) {
-        const post = posts.find(p => p.id === postId);
-        if (post) {
-            post.comments.push({
-                id: Date.now(),
-                content: content
-            });
-            commentInput.value = '';
-            displayPosts();
-        }
-    }
-}
 
 function displayPosts() {
     const postsContainer = document.getElementById('posts');
     postsContainer.innerHTML = ''; // Clear previous posts
 
+    if (posts.length === 0) {
+        postsContainer.innerHTML = '<p>No posts yet. Be the first to post!</p>';
+        return;
+    }
+
     posts.forEach(post => {
+        // Create post element
         const postElement = document.createElement('div');
         postElement.className = 'post';
         postElement.innerHTML = `
             <div class="post-content">
                 <p>${post.content}</p>
             </div>
-            <div class="comments">
-                ${post.comments.map(comment => `
-                    <div class="comment">${comment.content}</div>
-                `).join('')}
-            </div>
-            <button onclick="toggleCommentInput(${post.id})" class="comment-toggle">Comment</button>
-            <div id="commentInputContainer-${post.id}" class="comment-input-container" style="display: none;">
-                <input type="text" id="commentInput-${post.id}" placeholder="Write a comment...">
-                <button onclick="createComment(${post.id})">Submit</button>
-            </div>
         `;
         postsContainer.appendChild(postElement);
+
+        // Create comments section
+        const commentsSection = document.createElement('div');
+        commentsSection.className = 'comments-section';
+        commentsSection.innerHTML = `
+            <h4>Comments:</h4>
+            ${post.comments && post.comments.length > 0 
+                ? post.comments.map(comment => `<p class="comment">${comment}</p>`).join('')
+                : '<p>No comments yet.</p>'}
+        `;
+        postsContainer.appendChild(commentsSection);
+
+        // Create comment form
+        const commentForm = document.createElement('div');
+        commentForm.className = 'comment-form';
+        commentForm.innerHTML = `
+            <input type="text" id="commentInput-${post.id}" placeholder="Write a comment...">
+            <button onclick="addComment(${post.id})">Comment</button>
+        `;
+        postsContainer.appendChild(commentForm);
     });
 }
 
-function toggleCommentInput(postId) {
-    const commentInputContainer = document.getElementById(`commentInputContainer-${postId}`);
-    const isHidden = commentInputContainer.style.display === 'none';
-    commentInputContainer.style.display = isHidden ? 'block' : 'none';
-}
 
-function createComment(postId) {
+function addComment(postId) {
     const commentInput = document.getElementById(`commentInput-${postId}`);
-    const content = commentInput.value.trim();
-    if (content) {
+    const commentContent = commentInput.value.trim();
+    if (commentContent) {
         const post = posts.find(p => p.id === postId);
         if (post) {
-            post.comments.push({
-                id: Date.now(),
-                content: content
-            });
+            if (!Array.isArray(post.comments)) {
+                post.comments = []; // Initialize if it doesn't exist
+            }
+            post.comments.push(commentContent);
             commentInput.value = '';
-            displayPosts(); // Refresh the display
+            displayPosts(); // Refresh the display to show the new comment
         }
     }
 }
 
+function updateScrollHeight() {
+    document.body.style.height = window.innerHeight + 'px';
+    setTimeout(() => {
+        document.body.style.height = '';
+    }, 0);
+}
 
 function loadPosts() {
     // In a real application, you would load posts from a backend here

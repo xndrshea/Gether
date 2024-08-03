@@ -26,7 +26,22 @@
         <div id="noCommunityMessage" style="display: none;">
             <p>This token does not have a community yet. Posting is not available.</p>
         </div>
-        <div class="posts" id="posts"></div>
+        <div class="posts" id="posts">
+            <div class="post">
+                <div class="post-content">
+                    <p>This is a post.</p>
+                </div>
+            </div>
+            <div class="comments-section">
+                <h4>Comments:</h4>
+                <p class="comment">This is a comment.</p>
+            </div>
+            <div class="comment-form">
+                <input type="text" id="commentInput-123456789" placeholder="Write a comment...">
+                <button onclick="addComment(123456789)">Comment</button>
+            </div>
+        </div>
+               
     </div>
     <script src="token-page.js"></script>
 </body>

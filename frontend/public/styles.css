@@ -410,7 +410,14 @@ main {
 }
 
 .token-page .comment-toggle {
-    margin-top: 10px;
+    background-color: #0066ff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+token-page .comment-toggle:hover {
+    background-color: #0052cc;
 }
 
 .token-page .comment-form {
