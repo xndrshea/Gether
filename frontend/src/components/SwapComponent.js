@@ -1,4 +1,3 @@
-// src/components/SwapComponent.js
 import React, { useState } from 'react';
 import TonWeb from 'tonweb';
 
@@ -7,7 +6,7 @@ const BN = TonWeb.utils.BN;
 
 const SwapComponent = ({ currentTokenAddress, wallet }) => {
     const [amount, setAmount] = useState('');
-    const [swapAddress, setSwapAddress] = useState(currentTokenAddress);
+    const [mode, setMode] = useState('buy'); // 'buy' or 'sell'
 
     const handleSwap = async () => {
         try {
@@ -18,13 +17,25 @@ const SwapComponent = ({ currentTokenAddress, wallet }) => {
 
             const swapAmount = new BN(amount).mul(new BN(10).pow(new BN(9))); // Convert to nanograms
 
-            const tx = await wallet.methods.transfer({
-                to: swapAddress,
-                value: swapAmount,
-                bounce: false,
-                payload: '', // Payload for the swap contract
-                sendMode: 3,
-            }).send();
+            let tx;
+            if (mode === 'buy') {
+                tx = await wallet.methods.transfer({
+                    to: currentTokenAddress,
+                    value: swapAmount,
+                    bounce: false,
+                    payload: '', // Payload for the swap contract
+                    sendMode: 3,
+                }).send();
+            } else {
+                // Implement the sell logic
+                tx = await wallet.methods.transfer({
+                    to: 'YOUR_SWAP_CONTRACT_ADDRESS', // Replace with your swap contract address
+                    value: swapAmount,
+                    bounce: false,
+                    payload: '', // Payload for the swap contract
+                    sendMode: 3,
+                }).send();
+            }
 
             console.log('Swap transaction:', tx);
         } catch (error) {
@@ -32,20 +43,23 @@ const SwapComponent = ({ currentTokenAddress, wallet }) => {
         }
     };
 
+    const toggleMode = () => {
+        setMode((prevMode) => (prevMode === 'buy' ? 'sell' : 'buy'));
+    };
+
     return (
         <div className="swap-component">
-            <h3>Swap</h3>
+            <button className="toggle-button" onClick={toggleMode}>
+                {mode === 'buy' ? 'Switch to Sell' : 'Switch to Buy'}
+            </button>
+            <h3>
+                {mode === 'buy' ? `Swap TON for ${currentTokenAddress}` : `Sell ${currentTokenAddress} for TON`}
+            </h3>
             <input
-                type="text"
+                type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Amount"
-            />
-            <input
-                type="text"
-                value={swapAddress}
-                onChange={(e) => setSwapAddress(e.target.value)}
-                placeholder="To Address"
             />
             <button onClick={handleSwap}>Swap</button>
         </div>

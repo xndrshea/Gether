@@ -546,119 +546,51 @@ details[open] summary {
     }
 }
 
-/* SwapComponent Styles */
+/* Swap Styles */
+
 .swap-component {
-    background-color: #1a1a1a;
-    border: 1px solid #3a3a3a;
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 20px;
-    color: white;
+    position: fixed;
+    top: 100px;
+    /* Adjust this value as needed to prevent overlap */
+    right: 20px;
     width: 300px;
-    /* Adjust the width as needed */
-}
-
-.swap-tabs {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.swap-tab {
-    background-color: #3a3a3a;
+    background-color: #0066ff;
     color: white;
-    border: none;
-    padding: 5px 10px;
-    /* Adjust padding for smaller tabs */
+    padding: 20px;
     border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    /* Adjust font size for smaller tabs */
-    flex: 1;
-    text-align: center;
-    margin-right: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    /* Ensure it's on top of other elements */
 }
 
-.swap-tab:last-child {
-    margin-right: 0;
+.swap-component h3 {
+    margin-top: 0;
 }
 
-.swap-tab.active {
-    background-color: #0066ff;
-}
-
-.swap-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.swap-field {
-    display: flex;
-    flex-direction: column;
+.swap-component input {
     width: 100%;
-    margin: 10px 0;
-}
-
-.swap-field label {
-    font-size: 12px;
-    margin-bottom: 5px;
-}
-
-.swap-field input {
-    background-color: #2a2a2a;
-    border: 1px solid #3a3a3a;
-    border-radius: 8px;
-    padding: 8px;
-    /* Adjust padding for smaller input */
-    font-size: 14px;
-    /* Adjust font size for smaller input */
-    color: white;
-    margin-bottom: 5px;
-}
-
-.token-select {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #2a2a2a;
-    border: 1px solid #3a3a3a;
-    border-radius: 8px;
-    padding: 5px 10px;
-}
-
-.token-select span {
-    font-size: 14px;
-    /* Adjust font size */
-}
-
-.token-select select {
-    background-color: #2a2a2a;
+    padding: 10px;
+    margin-bottom: 10px;
     border: none;
-    color: white;
-    font-size: 14px;
-    /* Adjust font size */
-    margin-left: 10px;
+    border-radius: 5px;
 }
 
-.swap-arrow {
-    font-size: 20px;
-    margin: 10px 0;
-}
-
-.swap-submit {
-    background-color: #0066ff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 14px;
-    /* Adjust font size */
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-.swap-submit:hover {
+.swap-component button {
+    width: 100%;
+    padding: 10px;
     background-color: #0052cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.swap-component button:hover {
+    background-color: #0041a3;
+}
+
+.swap-component .toggle-button {
+    background-color: #0041a3;
+    margin-top: 10px;
 }
