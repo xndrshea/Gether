@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import PostForm from './PostForm';
 import CommentForm from './CommentForm';
+import SwapComponent from './SwapComponent';
 import '../styles.css';
+import TonConnectButton from './TonConnectButton';
 
 const TokenPage = () => {
     const { address } = useParams();
@@ -10,6 +12,7 @@ const TokenPage = () => {
     const [tokenInfo, setTokenInfo] = useState(null);
     const [posts, setPosts] = useState([]);
     const [canCreatePost, setCanCreatePost] = useState(true);
+    const [wallet, setWallet] = useState(null);
 
     useEffect(() => {
         const tokenAddress = address || new URLSearchParams(window.location.search).get('address');
@@ -297,6 +300,10 @@ const TokenPage = () => {
         }
     };
 
+    const handleWalletConnected = (wallet) => {
+        setWallet(wallet);
+    };
+
     return (
         <div className="TokenPage" ref={scrollContainerRef}>
             <div className="container">
@@ -304,10 +311,13 @@ const TokenPage = () => {
                     <span>gether</span>
                 </div>
                 <h1 id="tokenTitle">Token Community: {currentTokenAddress}</h1>
+                <TonConnectButton onWalletConnected={handleWalletConnected} /> {/* Add the TonConnectButton */}
                 <div id="tokenInfo">{tokenInfo && displayTokenInfo(tokenInfo)}</div>
                 {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
                 <div id="posts">{displayPosts(posts)}</div>
+                {<SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />} {/* Add the SwapComponent */}
                 <div id="noCommunityMessage" style={{ display: 'none' }}>Cannot post in this community.</div>
+
             </div>
         </div>
     );
