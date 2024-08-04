@@ -15,6 +15,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     document.getElementById('submitPost').addEventListener('click', createPost);
+     // Add this section here
+    window.addEventListener('resize', function() {
+        document.body.style.height = window.innerHeight + 'px';
+    });
+
+    // Call this once on load
+    document.body.style.height = window.innerHeight + 'px';
 });
 
 let canCreatePost = true; // Global variable to track if posting is allowed
@@ -75,6 +82,10 @@ function updatePostingUI() {
     }
 }
 
+function scrollToBottom() {
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
 function displayTokenInfo(info) {
     const tokenInfoElement = document.getElementById('tokenInfo');
     tokenInfoElement.innerHTML = `
@@ -99,8 +110,10 @@ function createPost() {
         posts.unshift(post);
         document.getElementById('postContent').value = '';
         displayPosts();
+        scrollToBottom();
     }
 }
+
 
 
 function displayPosts() {
@@ -145,7 +158,6 @@ function displayPosts() {
     });
 }
 
-
 function addComment(postId) {
     const commentInput = document.getElementById(`commentInput-${postId}`);
     const commentContent = commentInput.value.trim();
@@ -158,6 +170,7 @@ function addComment(postId) {
             post.comments.push(commentContent);
             commentInput.value = '';
             displayPosts(); // Refresh the display to show the new comment
+            scrollToBottom();
         }
     }
 }

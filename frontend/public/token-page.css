@@ -1,0 +1,173 @@
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+.token-page {
+    display: flex;
+    background-color: #1a1a1a;
+    color: white;
+    min-height: 100vh;
+    padding-top: 20px;
+    flex-direction: column;
+}
+
+.token-page .container {
+    max-width: 800px;
+    min-height: 100vh;
+    margin: 0 auto;
+    text-align: left;
+    flex: 1;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.token-page .logo {
+    position: relative;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.token-page h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.token-page .token-info,
+.token-page .post-form,
+.token-page .posts {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.token-page .token-info h3,
+.token-page .post-form h3 {
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #0066ff;
+}
+
+.token-page textarea,
+.token-page input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #2a2a2a;
+    color: white;
+}
+
+.token-page button {
+    padding: 10px 20px;
+    background-color: #0066ff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.token-page button:hover {
+    background-color: #0052cc;
+}
+
+.token-page .post {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+.token-page .posts {
+    margin-bottom: 20px; /* Add some bottom margin to allow scrolling past the last post */
+}
+
+.token-page .post-form textarea {
+    width: 97%;
+    height: 100px; 
+    resize: none; 
+}
+
+.token-page .post-content {
+    margin-bottom: 10px;
+    background-color: #2a2a2a; /* Light gray background */
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%; /* Ensure it fills the parent container */
+}
+
+.token-page .comments {
+    margin-top: 10px;
+}
+
+.token-page .comment {
+    margin-left: 20px;
+    margin-top: 5px;
+    padding: 5px;
+    background-color: #3a3a3a;
+    border-radius: 3px;
+}
+
+.token-page .comment-input-container {
+    margin-top: 10px;
+}
+
+.token-page .comment-input-container input[type="text"] {
+    width: calc(100% - 70px);
+    margin-right: 5px;
+}
+
+.token-page .comment-toggle {
+    background-color: #0066ff;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.token-page .comment-toggle:hover {
+    background-color: #0052cc;
+}
+
+.token-page .comment-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.token-page .comment-form input {
+    margin-bottom: 5px;
+}
+
+.token-page .comment-form button {
+    align-self: flex-start;
+}
+
+.token-page pre {
+    background-color: #3a3a3a;
+    border: 1px solid #4a4a4a;
+    border-radius: 4px;
+    padding: 10px;
+    overflow-x: auto;
+    font-size: 14px;
+    color: #e0e0e0;
+}
