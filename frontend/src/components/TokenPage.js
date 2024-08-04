@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import PostForm from './PostForm';
 import CommentForm from './CommentForm';
@@ -43,8 +43,18 @@ const TokenPage = () => {
         };
     }, [address]);
 
+    const scrollContainerRef = useRef(null);
+
     const updateBodyHeight = () => {
-        document.body.style.height = `${window.innerHeight}px`;
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.style.height = `${window.innerHeight}px`;
+        }
+    };
+
+    const scrollToBottom = () => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+        }
     };
 
     const loadTokenInfo = async (tokenAddress) => {
@@ -288,7 +298,7 @@ const TokenPage = () => {
     };
 
     return (
-        <div className="TokenPage">
+        <div className="TokenPage" ref={scrollContainerRef}>
             <div className="container">
                 <div className="logo">
                     <span>gether</span>
