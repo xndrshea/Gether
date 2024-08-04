@@ -1,31 +1,6 @@
-require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
 const mongoose = require('mongoose');
-const path = require('path');
-
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-const PORT = process.env.PORT || 5001;
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-    console.error("MongoDB URI is not defined in the environment variables.");
-    process.exit(1);
-}
-
-mongoose.connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log('Connected to MongoDB');
-}).catch((error) => {
-    console.error('Error connecting to MongoDB:', error.message);
-    process.exit(1);
-});
+const router = express.Router();
 
 // Define Schemas
 const userSchema = new mongoose.Schema({
@@ -39,7 +14,6 @@ const postSchema = new mongoose.Schema({
     user_id: mongoose.Schema.Types.ObjectId,
     token_address: String,
     content: String,
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     created_at: { type: Date, default: Date.now }
 });
 
@@ -55,36 +29,21 @@ const User = mongoose.model('User', userSchema);
 const Post = mongoose.model('Post', postSchema);
 const Comment = mongoose.model('Comment', commentSchema);
 
-// Middleware to log requests
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
-    next();
-});
-
-// Serve the manifest file
-app.get('/tonconnect-manifest.json', (req, res) => {
-    res.sendFile(path.join(__dirname, 'tonconnect-manifest.json'));
-});
-
-// Basic route
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-
 // Get posts for a token address
-app.get('/posts/:tokenAddress', async (req, res) => {
-    console.log(`Fetching posts for token address: ${req.params.tokenAddress}`);
+// Ensure this route is correctly defined
+router.get('/api/:tokenAddress/posts', async (req, res) => {
     try {
-        const posts = await Post.find({ token_address: req.params.tokenAddress }).populate('comments');
+        const posts = await Post.find({ token_address: req.params.tokenAddress });
         res.json(posts);
     } catch (err) {
         console.error('Error fetching posts:', err);
-        res.status(500).send(err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
+
 // Create a post
-app.post('/posts', async (req, res) => {
+router.post('/posts', async (req, res) => {
     console.log('Creating a new post:', req.body);
     try {
         const { user_id, token_address, content } = req.body;
@@ -92,41 +51,35 @@ app.post('/posts', async (req, res) => {
         await post.save();
         res.json(post);
     } catch (err) {
-        console.error('Error creating post:', err);
+        console.error(err);
         res.status(500).send(err);
     }
 });
 
 // Create a comment
-app.post('/comments', async (req, res) => {
+router.post('/comments', async (req, res) => {
     console.log('Creating a new comment:', req.body);
     try {
         const { post_id, user_id, content } = req.body;
         const comment = new Comment({ post_id, user_id, content });
         await comment.save();
-
-        // Add the comment to the corresponding post
-        await Post.findByIdAndUpdate(post_id, { $push: { comments: comment._id } });
-
         res.json(comment);
     } catch (err) {
-        console.error('Error creating comment:', err);
+        console.error(err);
         res.status(500).send(err);
     }
 });
 
 // Get comments for a post
-app.get('/comments/:postId', async (req, res) => {
+router.get('/comments/:postId', async (req, res) => {
     console.log(`Fetching comments for post ID: ${req.params.postId}`);
     try {
         const comments = await Comment.find({ post_id: req.params.postId });
         res.json(comments);
     } catch (err) {
-        console.error('Error fetching comments:', err);
+        console.error(err);
         res.status(500).send(err);
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+module.exports = router;

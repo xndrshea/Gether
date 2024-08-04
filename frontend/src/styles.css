@@ -5,7 +5,8 @@
     min-height: 100vh;
 }
 
-body, html {
+body,
+html {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -54,8 +55,9 @@ h1 .first-line {
 
 h1 .second-line {
     display: inline-block;
-    margin-left: 2em; 
+    margin-left: 2em;
 }
+
 .blue-text {
     color: #0066ff;
 }
@@ -95,7 +97,8 @@ input[type="text"] {
     gap: 10px;
 }
 
-button, .button {
+button,
+.button {
     display: inline-block;
     padding: 10px 20px;
     border-radius: 20px;
@@ -103,16 +106,19 @@ button, .button {
     font-size: 16px;
     font-weight: 550;
     cursor: pointer;
-    text-decoration: none; 
+    text-decoration: none;
     text-align: center;
 }
 
 @media only screen and (max-width: 233px) {
-    button, .button {
-        padding: 7px 14px; 
-        font-size: 9px;  
-        border-radius: 15px; 
+
+    button,
+    .button {
+        padding: 7px 14px;
+        font-size: 9px;
+        border-radius: 15px;
     }
+
     input[type="text"] {
         padding: 9px 0px 9px 0px;
         font-size: 10px;
@@ -120,11 +126,14 @@ button, .button {
 }
 
 @media only screen and (min-width: 234px) and (max-width: 244px) {
-    button, .button {
-        padding: 7px 14px; 
-        font-size: 11px;  
-        border-radius: 15px; 
+
+    button,
+    .button {
+        padding: 7px 14px;
+        font-size: 11px;
+        border-radius: 15px;
     }
+
     input[type="text"] {
         padding: 9px 0px 9px 0px;
         font-size: 11px;
@@ -132,11 +141,14 @@ button, .button {
 }
 
 @media only screen and (min-width: 245px) and (max-width: 270px) {
-    button, .button {
-        padding: 7px 14px; 
-        font-size: 12px;  
-        border-radius: 15px; 
+
+    button,
+    .button {
+        padding: 7px 14px;
+        font-size: 12px;
+        border-radius: 15px;
     }
+
     input[type="text"] {
         padding: 10px 0px 10px 0px;
         font-size: 12px;
@@ -144,11 +156,14 @@ button, .button {
 }
 
 @media only screen and (min-width: 271px) and (max-width: 310px) {
-    button, .button {
-        padding: 8px 16px; 
-        font-size: 14px;  
-        border-radius: 15px; 
+
+    button,
+    .button {
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 15px;
     }
+
     input[type="text"] {
         padding: 12px 0px 12px 0px;
         font-size: 14px;
@@ -288,35 +303,36 @@ main {
     margin-right: 15px;
 }
 
-/* ------------------ token-page css starts here ------------------ */
+/* ------------------ TokenPage css starts here ------------------ */
 
-.token-page {
+/* TokenPage Specific Styles */
+.TokenPage {
     background-color: #1a1a1a;
     color: white;
     min-height: 100vh;
     padding-top: 20px;
 }
 
-.token-page .container {
+.TokenPage .container {
     max-width: 800px;
     margin: 0 auto;
     text-align: left;
 }
 
-.token-page .logo {
+.TokenPage .logo {
     position: relative;
     margin-bottom: 20px;
     text-align: left;
 }
 
-.token-page h1 {
+.TokenPage h1 {
     font-size: 32px;
     margin-bottom: 20px;
 }
 
-.token-page .token-info,
-.token-page .post-form,
-.token-page .posts {
+.TokenPage .token-info,
+.TokenPage .post-form,
+.TokenPage .posts {
     background-color: #2a2a2a;
     border: 1px solid #3a3a3a;
     border-radius: 8px;
@@ -324,16 +340,16 @@ main {
     padding: 20px;
 }
 
-.token-page .token-info h3,
-.token-page .post-form h3 {
+.TokenPage .token-info h3,
+.TokenPage .post-form h3 {
     font-size: 24px;
     margin-top: 0;
     margin-bottom: 15px;
     color: #0066ff;
 }
 
-.token-page textarea,
-.token-page input[type="text"] {
+.TokenPage textarea,
+.TokenPage input[type="text"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
@@ -344,7 +360,7 @@ main {
     color: white;
 }
 
-.token-page button {
+.TokenPage button {
     padding: 10px 20px;
     background-color: #0066ff;
     color: white;
@@ -355,11 +371,11 @@ main {
     font-weight: bold;
 }
 
-.token-page button:hover {
+.TokenPage button:hover {
     background-color: #0052cc;
 }
 
-.token-page .post {
+.TokenPage .post {
     background-color: #2a2a2a;
     border: 1px solid #3a3a3a;
     border-radius: 8px;
@@ -367,32 +383,32 @@ main {
     padding: 15px;
 }
 
-.token-page .post-form textarea {
+.TokenPage .post-form textarea {
     width: 97%;
-    height: 100px; 
-    resize: none; 
+    height: 100px;
+    resize: none;
 }
 
-.token-page .post {
+.TokenPage .post {
     margin-bottom: 20px;
     padding: 15px;
     border: 1px solid #3a3a3a;
     border-radius: 5px;
 }
 
-.token-page .post-content {
+.TokenPage .post-content {
     margin-bottom: 10px;
-    background-color: #2a2a2a; /* Light gray background */
+    background-color: #2a2a2a;
     padding: 10px;
     border-radius: 5px;
-    width: 100%; /* Ensure it fills the parent container */
+    width: 100%;
 }
 
-.token-page .comments {
+.TokenPage .comments {
     margin-top: 10px;
 }
 
-.token-page .comment {
+.TokenPage .comment {
     margin-left: 20px;
     margin-top: 5px;
     padding: 5px;
@@ -400,33 +416,33 @@ main {
     border-radius: 3px;
 }
 
-.token-page .comment-input-container {
+.TokenPage .comment-input-container {
     margin-top: 10px;
 }
 
-.token-page .comment-input-container input[type="text"] {
+.TokenPage .comment-input-container input[type="text"] {
     width: calc(100% - 70px);
     margin-right: 5px;
 }
 
-.token-page .comment-toggle {
+.TokenPage .comment-toggle {
     margin-top: 10px;
 }
 
-.token-page .comment-form {
+.TokenPage .comment-form {
     display: flex;
     flex-direction: column;
 }
 
-.token-page .comment-form input {
+.TokenPage .comment-form input {
     margin-bottom: 5px;
 }
 
-.token-page .comment-form button {
+.TokenPage .comment-form button {
     align-self: flex-start;
 }
 
-.token-page pre {
+.TokenPage pre {
     background-color: #3a3a3a;
     border: 1px solid #4a4a4a;
     border-radius: 4px;
@@ -436,11 +452,10 @@ main {
     color: #e0e0e0;
 }
 
-/* ------------------ Responsive adjustments ------------------ */
-
+/* Responsive adjustments */
 @media only screen and (max-width: 230px) {
     .logo {
-        left: calc(0vw - 0px); 
+        left: calc(0vw - 0px);
     }
 
     h1 .first-line,
@@ -452,7 +467,7 @@ main {
 
 @media only screen and (min-width: 231px) and (max-width: 270px) {
     .logo {
-        left: calc(0vw - 0px); 
+        left: calc(0vw - 0px);
     }
 
     h1 .first-line,
@@ -464,7 +479,7 @@ main {
 
 @media only screen and (min-width: 271px) and (max-width: 310px) {
     .logo {
-        left: calc(0vw - 0px); 
+        left: calc(0vw - 0px);
     }
 
     h1 .first-line,
@@ -476,7 +491,7 @@ main {
 
 @media only screen and (min-width: 311px) and (max-width: 365px) {
     .logo {
-        left: calc(0vw - 0px); 
+        left: calc(0vw - 0px);
     }
 
     h1 .first-line,
@@ -488,7 +503,7 @@ main {
 
 @media only screen and (min-width: 366px) and (max-width: 650px) {
     .logo {
-        left: calc(0vw - 0px); 
+        left: calc(0vw - 0px);
     }
 
     h1 .first-line,
@@ -498,13 +513,13 @@ main {
 }
 
 @media (max-width: 768px) {
-    .token-page .container {
+    .TokenPage .container {
         padding: 0 10px;
     }
 
-    .token-page .token-info,
-    .token-page .post-form,
-    .token-page .posts {
+    .TokenPage .token-info,
+    .TokenPage .post-form,
+    .TokenPage .posts {
         padding: 15px;
     }
 }
