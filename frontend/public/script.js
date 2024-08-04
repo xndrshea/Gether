@@ -1,25 +1,25 @@
 // script.js
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const tokenInput = document.getElementById('tokenAddress');
     const clearButton = document.getElementById('clearSearch');
     const scavengeButton = document.getElementById('scavenge');
     const browseAllButton = document.getElementById('browseAll');
     const searchResult = document.getElementById('searchResult');
 
-    clearButton.addEventListener('click', function() {
+    clearButton.addEventListener('click', function () {
         tokenInput.value = '';
         tokenInput.focus();
         searchResult.innerHTML = '';
     });
 
-    tokenInput.addEventListener('input', function() {
+    tokenInput.addEventListener('input', function () {
         clearButton.style.display = this.value ? 'block' : 'none';
     });
 
     scavengeButton.addEventListener('click', searchToken);
 
-    browseAllButton.addEventListener('click', function() {
+    browseAllButton.addEventListener('click', function () {
         console.log('Browse All clicked');
         window.location.href = 'browseall.html';
     });
@@ -55,6 +55,8 @@ async function searchToken() {
         return;
     }
 
-    // Redirect to the token-specific page
-    window.location.href = `token-page.html?address=${encodeURIComponent(tokenAddress)}`;
+
+    // Redirect to the token-specific React route
+    window.location.href = `/TokenPage?address=${encodeURIComponent(tokenAddress)}`;
+
 }
