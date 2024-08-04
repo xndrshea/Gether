@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import PostForm from './PostForm';
 import CommentForm from './CommentForm';
-import '../styles.css'; // Ensure this path is correct
+import '../styles.css';
 
 const TokenPage = () => {
     const { address } = useParams();
@@ -12,20 +12,47 @@ const TokenPage = () => {
     const [canCreatePost, setCanCreatePost] = useState(true);
 
     useEffect(() => {
-        if (address) {
-            setCurrentTokenAddress(address);
-            loadTokenInfo(address);
-            loadPosts(address);
+        const tokenAddress = address || new URLSearchParams(window.location.search).get('address');
+        setCurrentTokenAddress(tokenAddress);
+
+        if (tokenAddress) {
+            document.getElementById('tokenTitle').textContent = `Token Community: ${tokenAddress}`;
+            console.log('Loading token info and posts for address:', tokenAddress);
+            loadTokenInfo(tokenAddress);
+            loadPosts(tokenAddress);
         } else {
+            console.error('Invalid token address');
             setTokenInfo('Invalid token address');
             setCanCreatePost(false);
+            updatePostingUI(false);
         }
+
+        const submitPostElement = document.getElementById('submitPost');
+        if (submitPostElement) {
+            submitPostElement.addEventListener('click', createPost);
+        }
+
+        window.addEventListener('resize', updateBodyHeight);
+        updateBodyHeight();
+
+        return () => {
+            if (submitPostElement) {
+                submitPostElement.removeEventListener('click', createPost);
+            }
+            window.removeEventListener('resize', updateBodyHeight);
+        };
     }, [address]);
 
+    const updateBodyHeight = () => {
+        document.body.style.height = `${window.innerHeight}px`;
+    };
+
     const loadTokenInfo = async (tokenAddress) => {
+        console.log('loadTokenInfo called with address:', tokenAddress);
         try {
             const { apiUrl, apiKey } = await initApi();
             const fullUrl = `${apiUrl}getAddressInformation?address=${tokenAddress}`;
+            console.log('Fetching token info from URL:', fullUrl);
 
             const response = await fetch(fullUrl, {
                 method: 'GET',
@@ -35,8 +62,10 @@ const TokenPage = () => {
             });
 
             if (response.status === 416) {
+                console.error('Error 416: Requested Range Not Satisfiable');
                 setTokenInfo('Error loading token info');
                 setCanCreatePost(false);
+                updatePostingUI(false);
                 return;
             }
 
@@ -45,42 +74,187 @@ const TokenPage = () => {
             }
 
             const data = await response.json();
+            console.log('Token info received:', data);
 
             if (data.error) {
                 throw new Error(`API Error: ${data.error}`);
             }
 
-            setTokenInfo(data.result);
+            if (!data.result) {
+                console.error('No result field in response data');
+                throw new Error('No result field in response data');
+            }
+
+            displayTokenInfo(data.result);
             setCanCreatePost(true);
+            updatePostingUI(true);
         } catch (error) {
             console.error('Error loading token info:', error);
             setTokenInfo(`Error: ${error.message}`);
             setCanCreatePost(false);
+            updatePostingUI(false);
         }
     };
 
     const loadPosts = async (tokenAddress) => {
         if (!tokenAddress) return;
+        console.log('loadPosts called with address:', tokenAddress);
         try {
             const response = await fetch(`http://localhost:5001/posts/${tokenAddress}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const posts = await response.json();
+            console.log('Posts received:', posts);
             setPosts(posts);
         } catch (error) {
             console.error('Error loading posts:', error);
         }
     };
 
-    const displayTokenInfo = (info) => (
-        <div id="tokenInfo">
-            <h3>Token Information:</h3>
-            <p>Balance: {info.balance / 1e9} TON</p>
-            <p>Status: {info.state}</p>
-            <pre>{JSON.stringify(info, null, 2)}</pre>
-        </div>
-    );
+    const updatePostingUI = (canPost) => {
+        const postForm = document.querySelector('.post-form');
+        const postButton = document.getElementById('submitPost');
+        const noCommunityMessage = document.getElementById('noCommunityMessage');
+
+        if (postForm && postButton && noCommunityMessage) {
+            if (canPost) {
+                postForm.style.display = 'block';
+                postButton.disabled = false;
+                noCommunityMessage.style.display = 'none';
+            } else {
+                postForm.style.display = 'none';
+                postButton.disabled = true;
+                noCommunityMessage.style.display = 'block';
+            }
+        }
+    };
+
+    const createPost = () => {
+        // Implement the createPost function
+    };
+
+    const displayTokenInfo = (info) => {
+        const tokenInfoElement = document.getElementById('tokenInfo');
+        console.log('Displaying token info:', info);
+
+        if (!info) {
+            tokenInfoElement.innerHTML = 'No token information available';
+            return;
+        }
+
+        // Ensure data field is present before processing it
+        if (!info.data) {
+            console.error('No data field in token info');
+            tokenInfoElement.innerHTML = 'No data available for this token';
+            return;
+        }
+
+        // Format balance using parseInt
+        const balanceInTON = (parseInt(info.balance, 10) / 1e9).toFixed(2);
+        const decodedData = decodeBase64(info.data);
+        const processedData = processDecodedData(decodedData);
+        const imageUrl = extractImageUrl(processedData);
+
+        const formattedInfo = {
+            Balance: `${balanceInTON} TON`,
+            State: info.state,
+            'Last Transaction': info.last_transaction_id ? {
+                Lt: info.last_transaction_id.lt,
+                Hash: truncateString(info.last_transaction_id.hash, 20),
+            } : null,
+            'Block ID': info.block_id ? {
+                Workchain: info.block_id.workchain,
+                Shard: info.block_id.shard,
+                Seqno: info.block_id.seqno,
+                'Root Hash': truncateString(info.block_id.root_hash, 20),
+                'File Hash': truncateString(info.block_id.file_hash, 20),
+            } : null,
+            'Sync Time': new Date(info.sync_utime * 1000).toLocaleString(),
+        };
+
+        let htmlContent = '<h3>Token Information:</h3>';
+
+        if (imageUrl) {
+            htmlContent += `<img src="${imageUrl}" alt="Token Image" style="max-width: 200px; max-height: 200px;"><br>`;
+        }
+
+        for (const [key, value] of Object.entries(formattedInfo)) {
+            if (value && typeof value === 'object') {
+                htmlContent += `<details>
+                                    <summary>${key}</summary>
+                                    <ul>
+                                        ${Object.entries(value).map(
+                    ([subKey, subValue]) => `<li><strong>${subKey}:</strong> ${subValue}</li>`
+                ).join('')}
+                                    </ul>
+                                </details>`;
+            } else if (value) {
+                htmlContent += `<p><strong>${key}:</strong> ${value}</p>`;
+            }
+        }
+
+        htmlContent += `
+            <details>
+                <summary>Data (Processed)</summary>
+                <pre>${processedData}</pre>
+            </details>
+        `;
+
+        htmlContent += `
+            <details>
+                <summary>Raw Data</summary>
+                <pre>${JSON.stringify(info, null, 2)}</pre>
+            </details>
+        `;
+
+        tokenInfoElement.innerHTML = htmlContent;
+    };
+
+    const isValidBase64 = (str) => {
+        try {
+            return btoa(atob(str)) === str;
+        } catch (err) {
+            return false;
+        }
+    };
+
+    const decodeBase64 = (str) => {
+        if (!isValidBase64(str)) {
+            console.error('Invalid Base64 string:', str);
+            return ''; // Return an empty string or handle it as per your requirement
+        }
+        try {
+            return atob(str);
+        } catch (e) {
+            console.error('Failed to decode Base64 string:', e);
+            return ''; // Return an empty string or handle it as per your requirement
+        }
+    };
+
+    const processDecodedData = (decodedString) => {
+        let result = '';
+
+        for (let i = 0; i < decodedString.length; i++) {
+            const charCode = decodedString.charCodeAt(i);
+            if (charCode >= 32 && charCode <= 126) {
+                result += decodedString[i];
+            }
+        }
+
+        return result;
+    };
+
+    const extractImageUrl = (processedData) => {
+        const urlRegex = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif))/i;
+        const match = processedData.match(urlRegex);
+        return match ? match[0] : null;
+    };
+
+    const truncateString = (str, maxLength) => {
+        if (str.length <= maxLength) return str;
+        return str.substr(0, maxLength) + '...';
+    };
 
     const displayPosts = (posts) => (
         posts.map((post) => (
@@ -120,9 +294,10 @@ const TokenPage = () => {
                     <span>gether</span>
                 </div>
                 <h1 id="tokenTitle">Token Community: {currentTokenAddress}</h1>
-                {tokenInfo && displayTokenInfo(tokenInfo)}
+                <div id="tokenInfo">{tokenInfo && displayTokenInfo(tokenInfo)}</div>
                 {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
                 <div id="posts">{displayPosts(posts)}</div>
+                <div id="noCommunityMessage" style={{ display: 'none' }}>Cannot post in this community.</div>
             </div>
         </div>
     );

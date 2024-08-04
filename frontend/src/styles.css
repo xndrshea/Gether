@@ -16,11 +16,13 @@ html {
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 100vh;
 }
 
 .container {
     text-align: center;
     width: 100%;
+    margin: 0 auto;
     max-width: 600px;
     padding: 20px;
 }
@@ -452,7 +454,6 @@ main {
     color: #e0e0e0;
 }
 
-/* Responsive adjustments */
 @media only screen and (max-width: 230px) {
     .logo {
         left: calc(0vw - 0px);
