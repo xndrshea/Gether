@@ -54,11 +54,6 @@ const TokenPage = () => {
         }
     };
 
-    const scrollToBottom = () => {
-        if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-        }
-    };
 
     const loadTokenInfo = async (tokenAddress) => {
         console.log('loadTokenInfo called with address:', tokenAddress);
