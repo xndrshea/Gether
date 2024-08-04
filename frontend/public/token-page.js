@@ -86,15 +86,117 @@ function scrollToBottom() {
     window.scrollTo(0, document.body.scrollHeight);
 }
 
+// Function to extract the image URL from the processed data
+function extractImageUrl(processedData) {
+    const urlRegex = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif))/i;
+    const match = processedData.match(urlRegex);
+    return match ? match[0] : null;
+}
+
+// Function to process decoded data
+function processDecodedData(decodedString) {
+    let result = '';
+    
+    for (let i = 0; i < decodedString.length; i++) {
+        const charCode = decodedString.charCodeAt(i);
+        if (charCode >= 32 && charCode <= 126) {
+            // Printable ASCII character
+            result += decodedString[i];
+        }
+        // Non-printable characters are simply skipped
+    }
+    
+    return result;
+}
+
+// Function to display token information
 function displayTokenInfo(info) {
     const tokenInfoElement = document.getElementById('tokenInfo');
-    tokenInfoElement.innerHTML = `
-        <h3>Token Information:</h3>
-        <p>Balance: ${info.balance / 1e9} TON</p>
-        <p>Status: ${info.state}</p>
-        <pre>${JSON.stringify(info, null, 2)}</pre>
+    
+    // Format balance
+    const balanceInTON = (BigInt(info.balance) / BigInt(1e9)).toString();
+    
+    // Decode data and process it
+    const decodedData = decodeBase64(info.data);
+    const processedData = processDecodedData(decodedData);
+    const imageUrl = extractImageUrl(processedData);
+    
+    // Create a formatted object with the data we want to display
+    const formattedInfo = {
+        Balance: `${balanceInTON} TON`,
+        State: info.state,
+        'Last Transaction': {
+            Lt: info.last_transaction_id.lt,
+            Hash: truncateString(info.last_transaction_id.hash, 20)
+        },
+        'Block ID': {
+            Workchain: info.block_id.workchain,
+            Shard: info.block_id.shard,
+            Seqno: info.block_id.seqno,
+            'Root Hash': truncateString(info.block_id.root_hash, 20),
+            'File Hash': truncateString(info.block_id.file_hash, 20)
+        },
+        'Sync Time': new Date(info.sync_utime * 1000).toLocaleString()
+    };
+
+    // Create HTML content
+    let htmlContent = '<h3>Token Information:</h3>';
+    
+    // Add image if found
+    if (imageUrl) {
+        htmlContent += `<img src="${imageUrl}" alt="Token Image" style="max-width: 200px; max-height: 200px;"><br>`;
+    }
+    
+    for (const [key, value] of Object.entries(formattedInfo)) {
+        if (typeof value === 'object') {
+            htmlContent += `<details>
+                                <summary>${key}</summary>
+                                <ul>
+                                    ${Object.entries(value).map(([subKey, subValue]) => 
+                                        `<li><strong>${subKey}:</strong> ${subValue}</li>`
+                                    ).join('')}
+                                </ul>
+                            </details>`;
+        } else {
+            htmlContent += `<p><strong>${key}:</strong> ${value}</p>`;
+        }
+    }
+
+    htmlContent += `
+        <details>
+            <summary>Data (Processed)</summary>
+            <pre>${processedData}</pre>
+        </details>
     `;
+
+    // Add raw data in a collapsible section
+    htmlContent += `
+        <details>
+            <summary>Raw Data</summary>
+            <pre>${JSON.stringify(info, null, 2)}</pre>
+        </details>
+    `;
+
+    tokenInfoElement.innerHTML = htmlContent;
 }
+
+// Helper function to truncate long strings
+function truncateString(str, maxLength) {
+    if (str.length <= maxLength) return str;
+    return str.substr(0, maxLength) + '...';
+}
+
+// Function to decode Base64
+function decodeBase64(str) {
+    try {
+        // For browsers
+        return atob(str);
+    } catch (e) {
+        // For Node.js
+        return Buffer.from(str, 'base64').toString('utf-8');
+    }
+}
+
 
 // Simulated data storage (replace with actual backend storage in a real application)
 let posts = [];
@@ -113,8 +215,6 @@ function createPost() {
         scrollToBottom();
     }
 }
-
-
 
 function displayPosts() {
     const postsContainer = document.getElementById('posts');
