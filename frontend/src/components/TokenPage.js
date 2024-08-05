@@ -18,7 +18,6 @@ const TokenPage = () => {
         setCurrentTokenAddress(tokenAddress);
 
         if (tokenAddress) {
-            document.getElementById('tokenTitle').textContent = `Token Community: ${tokenAddress}`;
             console.log('Loading token info and posts for address:', tokenAddress);
             loadTokenInfo(tokenAddress);
             loadPosts(tokenAddress);
@@ -66,32 +65,34 @@ const TokenPage = () => {
                     'X-API-Key': apiKey,
                 },
             });
-
-            if (response.status === 416) {
-                console.error('Error 416: Requested Range Not Satisfiable');
-                setTokenInfo('Error loading token info');
-                setCanCreatePost(false);
-                updatePostingUI(false);
-                return;
-            }
-
             if (!response.ok) {
                 throw new Error(`HTTP error status: ${response.status}`);
             }
-
             const data = await response.json();
             console.log('Token info received:', data);
-
             if (data.error) {
                 throw new Error(`API Error: ${data.error}`);
             }
-
             if (!data.result) {
-                console.error('No result field in response data');
                 throw new Error('No result field in response data');
             }
 
-            displayTokenInfo(data.result);
+            let tokenInfo = data.result;
+
+            // Check if there's a URI in the jetton_content
+            if (tokenInfo.jetton_content && tokenInfo.jetton_content.data && tokenInfo.jetton_content.data.uri) {
+                const uriResponse = await fetch(tokenInfo.jetton_content.data.uri);
+                if (uriResponse.ok) {
+                    const uriData = await uriResponse.json();
+                    // Merge the URI data with the existing token info
+                    tokenInfo = { ...tokenInfo, ...uriData };
+                } else {
+                    console.error('Failed to fetch URI data');
+                }
+            }
+
+            setTokenInfo(tokenInfo);
+            displayTokenInfo(tokenInfo);
             setCanCreatePost(true);
             updatePostingUI(true);
         } catch (error) {
@@ -101,8 +102,6 @@ const TokenPage = () => {
             updatePostingUI(false);
         }
     };
-
-
 
     const loadPosts = async (tokenAddress) => {
         if (!tokenAddress) return;
@@ -159,15 +158,14 @@ const TokenPage = () => {
         console.log('Description:', description);
 
         const htmlContent = `
-            <div>
-                ${imageUrl ? `<img src="${imageUrl}" alt="Token Image" style="width: 100px; height: 100px; border-radius: 50%;"><br>` : ''}
-                <p>Name: ${name || 'N/A'}</p>
-                <p>Symbol: ${symbol || 'N/A'}</p>
-                <p>Description: ${description || 'N/A'}</p>
-            </div>`;
+        <div style="display: flex; align-items: center;">
+            ${imageUrl ? `<img src="${imageUrl}" alt="Token Image" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 20px;">` : ''}
+            <h2>${symbol || 'N/A'} - ${name || 'Unknown Token'}</h2>
+        </div>
+        ${description ? `<p>Description: ${description}</p>` : ''}
+    `;
         tokenInfoElement.innerHTML = htmlContent;
     };
-
 
 
     const extractImageUrl = (info) => {
@@ -177,14 +175,13 @@ const TokenPage = () => {
     };
 
     const extractTokenDetails = (info) => {
-        if (!info || !info.jetton_content || !info.jetton_content.data) {
+        if (!info) {
             return { name: null, symbol: null, description: null };
         }
 
-        const { data } = info.jetton_content;
-        const name = data.name || null;
-        const symbol = data.symbol || null;
-        const description = data.description || null;
+        const name = info.name || (info.jetton_content && info.jetton_content.data && info.jetton_content.data.name) || null;
+        const symbol = info.symbol || (info.jetton_content && info.jetton_content.data && info.jetton_content.data.symbol) || null;
+        const description = info.description || (info.jetton_content && info.jetton_content.data && info.jetton_content.data.description) || null;
 
         return { name, symbol, description };
     };
@@ -230,13 +227,11 @@ const TokenPage = () => {
                 <div className="logo">
                     <span>gether</span>
                 </div>
-                <h1 id="tokenTitle">Token Community: {currentTokenAddress}</h1>
                 <div id="tokenInfo">{tokenInfo && displayTokenInfo(tokenInfo)}</div>
                 {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
                 <div id="posts">{displayPosts(posts)}</div>
                 {<SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />} {/* Add the SwapComponent */}
                 <div id="noCommunityMessage" style={{ display: 'none' }}>Cannot post in this community.</div>
-
             </div>
         </div>
     );

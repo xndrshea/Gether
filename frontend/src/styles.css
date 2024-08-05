@@ -24,6 +24,14 @@ body {
     overflow-y: auto;
 }
 
+#root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
 .container {
     text-align: center;
     width: 100%;
@@ -322,13 +330,15 @@ main {
 
 .TokenPage .container {
     max-width: 800px;
+    min-width: 600px;
     margin: 0 auto;
     text-align: left;
 }
 
 .TokenPage .logo {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
+    margin-top: 20px;
     text-align: left;
 }
 
