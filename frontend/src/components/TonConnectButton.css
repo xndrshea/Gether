@@ -6,4 +6,5 @@
     border: none;
     cursor: pointer;
     margin: 10px;
+    left: calc(-7vw - 200px);
 }
