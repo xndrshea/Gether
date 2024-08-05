@@ -4,7 +4,6 @@ import PostForm from './PostForm';
 import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
 import '../styles.css';
-import TonConnectButton from './TonConnectButton';
 
 const TokenPage = () => {
     const { address } = useParams();
@@ -59,9 +58,8 @@ const TokenPage = () => {
         console.log('loadTokenInfo called with address:', tokenAddress);
         try {
             const { apiUrl, apiKey } = await initApi();
-            const fullUrl = `${apiUrl}getAddressInformation?address=${tokenAddress}`;
+            const fullUrl = `${apiUrl}getTokenData?address=${tokenAddress}`;
             console.log('Fetching token info from URL:', fullUrl);
-
             const response = await fetch(fullUrl, {
                 method: 'GET',
                 headers: {
@@ -78,7 +76,7 @@ const TokenPage = () => {
             }
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error status: ${response.status}`);
             }
 
             const data = await response.json();
@@ -103,6 +101,8 @@ const TokenPage = () => {
             updatePostingUI(false);
         }
     };
+
+
 
     const loadPosts = async (tokenAddress) => {
         if (!tokenAddress) return;
@@ -151,117 +151,42 @@ const TokenPage = () => {
             return;
         }
 
-        // Ensure data field is present before processing it
-        if (!info.data) {
-            console.error('No data field in token info');
-            tokenInfoElement.innerHTML = 'No data available for this token';
-            return;
-        }
+        const imageUrl = extractImageUrl(info);
+        const { name, symbol, description } = extractTokenDetails(info);
 
-        // Format balance using parseInt
-        const balanceInTON = (parseInt(info.balance, 10) / 1e9).toFixed(2);
-        const decodedData = decodeBase64(info.data);
-        const processedData = processDecodedData(decodedData);
-        const imageUrl = extractImageUrl(processedData);
+        console.log('Name:', name);
+        console.log('Symbol:', symbol);
+        console.log('Description:', description);
 
-        const formattedInfo = {
-            Balance: `${balanceInTON} TON`,
-            State: info.state,
-            'Last Transaction': info.last_transaction_id ? {
-                Lt: info.last_transaction_id.lt,
-                Hash: truncateString(info.last_transaction_id.hash, 20),
-            } : null,
-            'Block ID': info.block_id ? {
-                Workchain: info.block_id.workchain,
-                Shard: info.block_id.shard,
-                Seqno: info.block_id.seqno,
-                'Root Hash': truncateString(info.block_id.root_hash, 20),
-                'File Hash': truncateString(info.block_id.file_hash, 20),
-            } : null,
-            'Sync Time': new Date(info.sync_utime * 1000).toLocaleString(),
-        };
-
-        let htmlContent = '<h3>Token Information:</h3>';
-
-        if (imageUrl) {
-            htmlContent += `<img src="${imageUrl}" alt="Token Image" style="max-width: 200px; max-height: 200px;"><br>`;
-        }
-
-        for (const [key, value] of Object.entries(formattedInfo)) {
-            if (value && typeof value === 'object') {
-                htmlContent += `<details>
-                                    <summary>${key}</summary>
-                                    <ul>
-                                        ${Object.entries(value).map(
-                    ([subKey, subValue]) => `<li><strong>${subKey}:</strong> ${subValue}</li>`
-                ).join('')}
-                                    </ul>
-                                </details>`;
-            } else if (value) {
-                htmlContent += `<p><strong>${key}:</strong> ${value}</p>`;
-            }
-        }
-
-        htmlContent += `
-            <details>
-                <summary>Data (Processed)</summary>
-                <pre>${processedData}</pre>
-            </details>
-        `;
-
-        htmlContent += `
-            <details>
-                <summary>Raw Data</summary>
-                <pre>${JSON.stringify(info, null, 2)}</pre>
-            </details>
-        `;
-
+        const htmlContent = `
+            <div>
+                ${imageUrl ? `<img src="${imageUrl}" alt="Token Image" style="width: 100px; height: 100px; border-radius: 50%;"><br>` : ''}
+                <p>Name: ${name || 'N/A'}</p>
+                <p>Symbol: ${symbol || 'N/A'}</p>
+                <p>Description: ${description || 'N/A'}</p>
+            </div>`;
         tokenInfoElement.innerHTML = htmlContent;
     };
 
-    const isValidBase64 = (str) => {
-        try {
-            return btoa(atob(str)) === str;
-        } catch (err) {
-            return false;
-        }
-    };
 
-    const decodeBase64 = (str) => {
-        if (!isValidBase64(str)) {
-            console.error('Invalid Base64 string:', str);
-            return ''; // Return an empty string or handle it as per your requirement
-        }
-        try {
-            return atob(str);
-        } catch (e) {
-            console.error('Failed to decode Base64 string:', e);
-            return ''; // Return an empty string or handle it as per your requirement
-        }
-    };
 
-    const processDecodedData = (decodedString) => {
-        let result = '';
-
-        for (let i = 0; i < decodedString.length; i++) {
-            const charCode = decodedString.charCodeAt(i);
-            if (charCode >= 32 && charCode <= 126) {
-                result += decodedString[i];
-            }
-        }
-
-        return result;
-    };
-
-    const extractImageUrl = (processedData) => {
+    const extractImageUrl = (info) => {
         const urlRegex = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif))/i;
-        const match = processedData.match(urlRegex);
+        const match = JSON.stringify(info, null, 2).match(urlRegex);
         return match ? match[0] : null;
     };
 
-    const truncateString = (str, maxLength) => {
-        if (str.length <= maxLength) return str;
-        return str.substr(0, maxLength) + '...';
+    const extractTokenDetails = (info) => {
+        if (!info || !info.jetton_content || !info.jetton_content.data) {
+            return { name: null, symbol: null, description: null };
+        }
+
+        const { data } = info.jetton_content;
+        const name = data.name || null;
+        const symbol = data.symbol || null;
+        const description = data.description || null;
+
+        return { name, symbol, description };
     };
 
     const displayPosts = (posts) => (
@@ -306,7 +231,6 @@ const TokenPage = () => {
                     <span>gether</span>
                 </div>
                 <h1 id="tokenTitle">Token Community: {currentTokenAddress}</h1>
-                <TonConnectButton onWalletConnected={handleWalletConnected} /> {/* Add the TonConnectButton */}
                 <div id="tokenInfo">{tokenInfo && displayTokenInfo(tokenInfo)}</div>
                 {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
                 <div id="posts">{displayPosts(posts)}</div>
