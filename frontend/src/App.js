@@ -13,7 +13,9 @@ function App() {
     <Router>
       <ScrollToTop />
       <header className="App-header">
-        <TonConnectButton />
+        <div className="wallet-connect-container">
+          <TonConnectButton />
+        </div>
       </header>
       <div className="App">
         <div className="App-content">
