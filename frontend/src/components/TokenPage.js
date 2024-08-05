@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import PostForm from './PostForm';
 import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
+import { displayTokenInfo } from './tokenInfo';
 import '../styles.css';
-import { displayTokenInfo } from './tokenUtils';
 
 const TokenPage = () => {
     const { address } = useParams();
@@ -118,6 +118,7 @@ const TokenPage = () => {
         } catch (error) {
             console.error('Error loading posts:', error);
         }
+        
     };
 
     const updatePostingUI = (canPost) => {
