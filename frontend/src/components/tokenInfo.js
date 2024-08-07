@@ -18,10 +18,9 @@ export const displayTokenInfo = (info) => {
 
     const htmlContent = `
         <div style="display: flex; align-items: center; padding-bottom: ${paddingBottom};">
-            ${imageUrl ? `<img src="${imageUrl}" alt="Token Image" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 20px;">` : ''}
+            ${imageUrl ? `<img src="${imageUrl}" alt="Token Image" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 20px; margin-bottom: 20px;">` : ''}
             <h2>${symbol || 'N/A'} - ${name || 'Unknown Token'}</h2>
         </div>
-        ${description ? `<p>Description: ${description}</p>` : ''}
     `;
     tokenInfoElement.innerHTML = htmlContent;
 };

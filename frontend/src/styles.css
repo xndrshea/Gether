@@ -326,10 +326,15 @@ main {
     color: white;
     min-height: 100vh;
     padding-top: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .TokenPage .container {
-    max-width: 800px;
+    max-width: 1000px;
     min-width: 600px;
     margin: 0 auto;
     text-align: left;
@@ -603,4 +608,34 @@ details[open] summary {
 .swap-component .toggle-button {
     background-color: #0041a3;
     margin-top: 10px;
+}
+
+/* TokenDetails.css */
+
+.token-info-component {
+    position: fixed;
+    top: 380px;
+    /* Adjust this value as needed to prevent overlap */
+    right: 20px;
+    width: 300px;
+    background-color: #3a3a3a;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    /* Ensure it's on top of other elements */
+}
+
+.token-info-component h3 {
+    margin-top: 0;
+}
+
+.token-info-component a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.token-info-component a:hover {
+    text-decoration: underline;
 }

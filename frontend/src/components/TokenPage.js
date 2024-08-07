@@ -4,6 +4,7 @@ import PostForm from './PostForm';
 import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
 import { displayTokenInfo } from './tokenInfo';
+import TokenDetails from './TokenDetails';
 import '../styles.css';
 
 const TokenPage = () => {
@@ -52,7 +53,6 @@ const TokenPage = () => {
             scrollContainerRef.current.style.height = `${window.innerHeight}px`;
         }
     };
-
 
     const loadTokenInfo = async (tokenAddress) => {
         console.log('loadTokenInfo called with address:', tokenAddress);
@@ -118,7 +118,6 @@ const TokenPage = () => {
         } catch (error) {
             console.error('Error loading posts:', error);
         }
-        
     };
 
     const updatePostingUI = (canPost) => {
@@ -185,9 +184,11 @@ const TokenPage = () => {
                     <span>gether</span>
                 </div>
                 <div id="tokenInfo">{tokenInfo && displayTokenInfo(tokenInfo)}</div>
-                {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
-                <div id="posts">{displayPosts(posts)}</div>
-                {<SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />} {/* Add the SwapComponent */}
+                    {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
+                    <div id="posts">{displayPosts(posts)}
+                    <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={currentTokenAddress} />
+                    <SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />
+                </div>
                 <div id="noCommunityMessage" style={{ display: 'none' }}>Cannot post in this community.</div>
             </div>
         </div>
