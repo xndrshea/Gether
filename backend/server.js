@@ -130,3 +130,16 @@ app.get('/comments/:postId', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+// Get all posts
+app.get('/posts', async (req, res) => {
+    console.log('GET request received for /posts');
+    try {
+        const posts = await Post.find().populate('comments').sort({ created_at: -1 });
+        console.log(`Found ${posts.length} posts`);
+        res.json(posts);
+    } catch (err) {
+        console.error('Error in /posts endpoint:', err);
+        res.status(500).json({ error: err.message });
+    }
+});

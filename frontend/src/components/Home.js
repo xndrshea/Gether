@@ -1,3 +1,5 @@
+// src/components/Home.js
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,6 +25,10 @@ const Home = () => {
         setHasInput(event.target.value.trim().length > 0);
     };
 
+    const handleBrowseAll = () => {
+        navigate('/browse');
+    };
+
     return (
         <div className="container">
             <div className="logo">
@@ -46,7 +52,7 @@ const Home = () => {
             <div className="buttons">
                 <button id="scavenge" className="button" onClick={handleScavenge}>Scavenge</button>
                 <span className="separator">/</span>
-                <button id="browseAll">Browse All</button>
+                <button id="browseAll" onClick={handleBrowseAll}>Browse All</button>
             </div>
             <div id="searchResult"></div>
         </div>

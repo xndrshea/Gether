@@ -7,6 +7,7 @@ import TokenPage from './components/TokenPage';
 import Home from './components/Home';
 import ScrollToTop from './components/ScrollToTop';
 import ScrollButton from './components/ScrollButton';
+import BrowseAll from './components/BrowseAll';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/tokenpage/:address" element={<TokenPage />} />
+            <Route path="/browse" element={<BrowseAll />} />
           </Routes>
         </div>
         <ScrollButton />

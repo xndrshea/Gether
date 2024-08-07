@@ -615,7 +615,6 @@ details[open] summary {
 .token-info-component {
     position: fixed;
     top: 380px;
-    /* Adjust this value as needed to prevent overlap */
     right: 20px;
     width: 300px;
     background-color: #3a3a3a;
@@ -624,7 +623,6 @@ details[open] summary {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    /* Ensure it's on top of other elements */
 }
 
 .token-info-component h3 {
@@ -638,4 +636,46 @@ details[open] summary {
 
 .token-info-component a:hover {
     text-decoration: underline;
+}
+
+/* BrowseAll.css */
+
+.browse-all {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.browse-all .body {
+    overflow-y: auto;
+}
+
+.browse-all h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.browse-all .post {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 20px;
+    align-items: left;
+    text-align: left;
+}
+
+.browse-all .post h2 {
+    margin-top: 0;
+}
+
+.browse-all .comments {
+    margin-top: 10px;
+}
+
+.browse-all .comment {
+    background-color: #3a3a3a;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 10px;
 }

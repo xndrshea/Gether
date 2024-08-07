@@ -155,7 +155,11 @@ const TokenPage = () => {
                         </div>
                     ))}
                 </div>
-                <CommentForm postId={post._id} loadPosts={loadPosts} currentTokenAddress={currentTokenAddress} />
+                <CommentForm
+                    postId={post._id}
+                    loadPosts={loadPosts}
+                    currentTokenAddress={currentTokenAddress}
+                />
             </div>
         ))
     );
