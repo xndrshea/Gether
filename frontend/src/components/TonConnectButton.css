@@ -8,3 +8,12 @@
     margin: 10px;
     left: calc(-7vw - 200px);
 }
+
+.TonConnectButton:hover {
+    background-color: #f0f0f0;
+}
+
+.TonConnectButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+}

@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import PostForm from './PostForm';
 import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
+import { displayTokenInfo } from './tokenInfo';
+import TokenDetails from './TokenDetails';
 import '../styles.css';
 
 const TokenPage = () => {
@@ -51,7 +53,6 @@ const TokenPage = () => {
             scrollContainerRef.current.style.height = `${window.innerHeight}px`;
         }
     };
-
 
     const loadTokenInfo = async (tokenAddress) => {
         console.log('loadTokenInfo called with address:', tokenAddress);
@@ -141,51 +142,6 @@ const TokenPage = () => {
         // Implement the createPost function
     };
 
-    const displayTokenInfo = (info) => {
-        const tokenInfoElement = document.getElementById('tokenInfo');
-        console.log('Displaying token info:', info);
-
-        if (!info) {
-            tokenInfoElement.innerHTML = 'No token information available';
-            return;
-        }
-
-        const imageUrl = extractImageUrl(info);
-        const { name, symbol, description } = extractTokenDetails(info);
-
-        console.log('Name:', name);
-        console.log('Symbol:', symbol);
-        console.log('Description:', description);
-
-        const htmlContent = `
-        <div style="display: flex; align-items: center;">
-            ${imageUrl ? `<img src="${imageUrl}" alt="Token Image" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 20px;">` : ''}
-            <h2>${symbol || 'N/A'} - ${name || 'Unknown Token'}</h2>
-        </div>
-        ${description ? `<p>Description: ${description}</p>` : ''}
-    `;
-        tokenInfoElement.innerHTML = htmlContent;
-    };
-
-
-    const extractImageUrl = (info) => {
-        const urlRegex = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif))/i;
-        const match = JSON.stringify(info, null, 2).match(urlRegex);
-        return match ? match[0] : null;
-    };
-
-    const extractTokenDetails = (info) => {
-        if (!info) {
-            return { name: null, symbol: null, description: null };
-        }
-
-        const name = info.name || (info.jetton_content && info.jetton_content.data && info.jetton_content.data.name) || null;
-        const symbol = info.symbol || (info.jetton_content && info.jetton_content.data && info.jetton_content.data.symbol) || null;
-        const description = info.description || (info.jetton_content && info.jetton_content.data && info.jetton_content.data.description) || null;
-
-        return { name, symbol, description };
-    };
-
     const displayPosts = (posts) => (
         posts.map((post) => (
             <div key={post._id} className="post">
@@ -199,7 +155,11 @@ const TokenPage = () => {
                         </div>
                     ))}
                 </div>
-                <CommentForm postId={post._id} loadPosts={loadPosts} currentTokenAddress={currentTokenAddress} />
+                <CommentForm
+                    postId={post._id}
+                    loadPosts={loadPosts}
+                    currentTokenAddress={currentTokenAddress}
+                />
             </div>
         ))
     );
@@ -228,9 +188,11 @@ const TokenPage = () => {
                     <span>gether</span>
                 </div>
                 <div id="tokenInfo">{tokenInfo && displayTokenInfo(tokenInfo)}</div>
-                {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
-                <div id="posts">{displayPosts(posts)}</div>
-                {<SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />} {/* Add the SwapComponent */}
+                    {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
+                    <div id="posts">{displayPosts(posts)}
+                    <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={currentTokenAddress} />
+                    <SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />
+                </div>
                 <div id="noCommunityMessage" style={{ display: 'none' }}>Cannot post in this community.</div>
             </div>
         </div>
