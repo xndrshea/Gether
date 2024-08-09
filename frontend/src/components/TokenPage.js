@@ -5,6 +5,7 @@ import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
 import { displayTokenInfo } from './tokenInfo';
 import TokenDetails from './TokenDetails';
+import TonConnectButton from './TonConnectButton';
 import '../styles.css';
 
 const TokenPage = () => {
@@ -182,20 +183,23 @@ const TokenPage = () => {
     };
 
     return (
-        <div className="TokenPage" ref={scrollContainerRef}>
-            <div className="container">
-                <div className="logo">
-                    <span>gether</span>
-                </div>
-                <div id="tokenInfo">{tokenInfo && displayTokenInfo(tokenInfo)}</div>
+        <TonConnectButton onWalletConnect={handleWalletConnected}>
+            <div className="TokenPage" ref={scrollContainerRef}>
+                <div className="container">
+                    <div className="logo">
+                        <span>gether</span>
+                    </div>
+                    <div id="tokenInfo">{tokenInfo && displayTokenInfo(tokenInfo)}</div>
                     {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
-                    <div id="posts">{displayPosts(posts)}
-                    <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={currentTokenAddress} />
-                    <SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />
+                    <div id="posts">
+                        {displayPosts(posts)}
+                        <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={currentTokenAddress} />
+                        <SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />
+                    </div>
+                    <div id="noCommunityMessage" style={{ display: 'none' }}>Cannot post in this community.</div>
                 </div>
-                <div id="noCommunityMessage" style={{ display: 'none' }}>Cannot post in this community.</div>
             </div>
-        </div>
+        </TonConnectButton>
     );
 };
 

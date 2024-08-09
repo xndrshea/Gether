@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import TonWeb from 'tonweb';
+import { useWallet } from './TonConnectButton';
 
 const tonweb = new TonWeb();
 const BN = TonWeb.utils.BN;
 
-const SwapComponent = ({ currentTokenAddress, wallet }) => {
+const SwapComponent = ({ currentTokenAddress }) => {
     const [amount, setAmount] = useState('');
     const [mode, setMode] = useState('buy'); // 'buy' or 'sell'
+    const wallet = useWallet();
 
     const handleSwap = async () => {
         try {
@@ -28,11 +30,14 @@ const SwapComponent = ({ currentTokenAddress, wallet }) => {
                 }).send();
             } else {
                 // Implement the sell logic
+                const swapContractAddress = 'YOUR_SWAP_CONTRACT_ADDRESS'; // Replace with your swap contract address
+                const payload = ''; // Construct the payload as needed for your contract
+
                 tx = await wallet.methods.transfer({
-                    to: 'YOUR_SWAP_CONTRACT_ADDRESS', // Replace with your swap contract address
+                    to: swapContractAddress,
                     value: swapAmount,
                     bounce: false,
-                    payload: '', // Payload for the swap contract
+                    payload,
                     sendMode: 3,
                 }).send();
             }
