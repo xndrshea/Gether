@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import PostForm from './PostForm';
 import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
@@ -155,11 +155,10 @@ const TokenPage = () => {
                         </div>
                     ))}
                 </div>
-                <CommentForm
-                    postId={post._id}
-                    loadPosts={loadPosts}
-                    currentTokenAddress={currentTokenAddress}
-                />
+                <CommentForm postId={post._id} loadPosts={loadPosts} currentTokenAddress={currentTokenAddress} />
+                <Link to={`/post/${post._id}`} className="mt-4 inline-block text-center bg-blue-500 text-white py-2 px-4 rounded">
+                    View Details
+                </Link>
             </div>
         ))
     );
@@ -188,11 +187,10 @@ const TokenPage = () => {
                     <span>gether</span>
                 </div>
                 <div id="tokenInfo">{tokenInfo && displayTokenInfo(tokenInfo)}</div>
-                    {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
-                    <div id="posts">{displayPosts(posts)}
-                    <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={currentTokenAddress} />
-                    <SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />
-                </div>
+                {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
+                <div id="posts">{displayPosts(posts)}</div>
+                <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={currentTokenAddress} />
+                <SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />
                 <div id="noCommunityMessage" style={{ display: 'none' }}>Cannot post in this community.</div>
             </div>
         </div>

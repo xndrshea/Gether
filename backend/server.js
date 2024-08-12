@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
 
+
 const app = express();
 
 app.use(cors());
@@ -141,5 +142,20 @@ app.get('/posts', async (req, res) => {
     } catch (err) {
         console.error('Error in /posts endpoint:', err);
         res.status(500).json({ error: err.message });
+    }
+});
+
+// Get a specific post with its comments
+app.get('/posts/detail/:postId', async (req, res) => {
+    console.log(`Fetching details for post ID: ${req.params.postId}`);
+    try {
+        const post = await Post.findById(req.params.postId).populate('comments');
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.json(post);
+    } catch (err) {
+        console.error('Error fetching post details:', err);
+        res.status(500).send(err);
     }
 });
