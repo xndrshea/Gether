@@ -21,14 +21,16 @@ export const displayTokenInfo = (info) => {
             ${imageUrl ? `<img src="${imageUrl}" alt="Token Image" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 20px; margin-bottom: 20px;">` : ''}
             <h2>${symbol || 'N/A'} - ${name || 'Unknown Token'}</h2>
         </div>
+
     `;
     tokenInfoElement.innerHTML = htmlContent;
 };
 
-export const extractImageUrl = (info) => {
-    const urlRegex = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|gif))/i;
-    const match = JSON.stringify(info, null, 2).match(urlRegex);
-    return match ? match[0] : null;
+export const extractImageUrl = (data) => {
+    if (data.metadata && data.metadata.image) {
+        return data.metadata.image;
+    }
+    return null;
 };
 
 export const extractTokenDetails = (info) => {
@@ -36,9 +38,9 @@ export const extractTokenDetails = (info) => {
         return { name: null, symbol: null, description: null };
     }
 
-    const name = info.name || (info.jetton_content && info.jetton_content.data && info.jetton_content.data.name) || null;
-    const symbol = info.symbol || (info.jetton_content && info.jetton_content.data && info.jetton_content.data.symbol) || null;
-    const description = info.description || (info.jetton_content && info.jetton_content.data && info.jetton_content.data.description) || null;
+    const name = info.metadata && info.metadata.name;
+    const symbol = info.metadata && info.metadata.symbol;
+    const description = info.metadata && info.metadata.description;
 
     return { name, symbol, description };
 };

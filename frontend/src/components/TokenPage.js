@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import PostForm from './PostForm';
 import CommentForm from './CommentForm';
@@ -9,140 +9,82 @@ import '../styles.css';
 
 const TokenPage = () => {
     const { address } = useParams();
-    const [currentTokenAddress, setCurrentTokenAddress] = useState(null);
     const [tokenInfo, setTokenInfo] = useState(null);
     const [posts, setPosts] = useState([]);
     const [canCreatePost, setCanCreatePost] = useState(true);
     const [wallet, setWallet] = useState(null);
+    const scrollContainerRef = useRef(null);
 
     useEffect(() => {
         const tokenAddress = address || new URLSearchParams(window.location.search).get('address');
-        setCurrentTokenAddress(tokenAddress);
 
         if (tokenAddress) {
             console.log('Loading token info and posts for address:', tokenAddress);
-            loadTokenInfo(tokenAddress);
-            loadPosts(tokenAddress);
+            fetchTokenData(tokenAddress);
+            fetchPosts(tokenAddress);
         } else {
             console.error('Invalid token address');
             setTokenInfo('Invalid token address');
             setCanCreatePost(false);
-            updatePostingUI(false);
         }
 
-        const submitPostElement = document.getElementById('submitPost');
-        if (submitPostElement) {
-            submitPostElement.addEventListener('click', createPost);
-        }
+        const updateBodyHeight = () => {
+            if (scrollContainerRef.current) {
+                scrollContainerRef.current.style.height = `${window.innerHeight}px`;
+            }
+        };
 
         window.addEventListener('resize', updateBodyHeight);
         updateBodyHeight();
 
         return () => {
-            if (submitPostElement) {
-                submitPostElement.removeEventListener('click', createPost);
-            }
             window.removeEventListener('resize', updateBodyHeight);
         };
     }, [address]);
 
-    const scrollContainerRef = useRef(null);
-
-    const updateBodyHeight = () => {
-        if (scrollContainerRef.current) {
-            scrollContainerRef.current.style.height = `${window.innerHeight}px`;
+    useEffect(() => {
+        if (tokenInfo) {
+            displayTokenInfo(tokenInfo);
         }
-    };
+    }, [tokenInfo]);
 
-    const loadTokenInfo = async (tokenAddress) => {
-        console.log('loadTokenInfo called with address:', tokenAddress);
+    const fetchTokenData = useCallback(async (tokenAddress) => {
         try {
             const { apiUrl, apiKey } = await initApi();
-            const fullUrl = `${apiUrl}getTokenData?address=${tokenAddress}`;
-            console.log('Fetching token info from URL:', fullUrl);
-            const response = await fetch(fullUrl, {
+            const response = await fetch(`${apiUrl}jettons/${tokenAddress}`, {
                 method: 'GET',
                 headers: {
-                    'X-API-Key': apiKey,
+                    'Authorization': `Bearer ${apiKey}`,
+                    'accept': 'application/json',
                 },
             });
             if (!response.ok) {
-                throw new Error(`HTTP error status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            console.log('Token info received:', data);
-            if (data.error) {
-                throw new Error(`API Error: ${data.error}`);
-            }
-            if (!data.result) {
-                throw new Error('No result field in response data');
-            }
-
-            let tokenInfo = data.result;
-
-            // Check if there's a URI in the jetton_content
-            if (tokenInfo.jetton_content && tokenInfo.jetton_content.data && tokenInfo.jetton_content.data.uri) {
-                const uriResponse = await fetch(tokenInfo.jetton_content.data.uri);
-                if (uriResponse.ok) {
-                    const uriData = await uriResponse.json();
-                    // Merge the URI data with the existing token info
-                    tokenInfo = { ...tokenInfo, ...uriData };
-                } else {
-                    console.error('Failed to fetch URI data');
-                }
-            }
-
-            setTokenInfo(tokenInfo);
-            displayTokenInfo(tokenInfo);
+            setTokenInfo(data.result || data);
             setCanCreatePost(true);
-            updatePostingUI(true);
         } catch (error) {
             console.error('Error loading token info:', error);
             setTokenInfo(`Error: ${error.message}`);
             setCanCreatePost(false);
-            updatePostingUI(false);
         }
-    };
+    }, []);
 
-    const loadPosts = async (tokenAddress) => {
-        if (!tokenAddress) return;
-        console.log('loadPosts called with address:', tokenAddress);
+    const fetchPosts = useCallback(async (tokenAddress) => {
         try {
             const response = await fetch(`http://localhost:5001/posts/${tokenAddress}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const posts = await response.json();
-            console.log('Posts received:', posts);
             setPosts(posts);
         } catch (error) {
             console.error('Error loading posts:', error);
         }
-    };
+    }, []);
 
-    const updatePostingUI = (canPost) => {
-        const postForm = document.querySelector('.post-form');
-        const postButton = document.getElementById('submitPost');
-        const noCommunityMessage = document.getElementById('noCommunityMessage');
-
-        if (postForm && postButton && noCommunityMessage) {
-            if (canPost) {
-                postForm.style.display = 'block';
-                postButton.disabled = false;
-                noCommunityMessage.style.display = 'none';
-            } else {
-                postForm.style.display = 'none';
-                postButton.disabled = true;
-                noCommunityMessage.style.display = 'block';
-            }
-        }
-    };
-
-    const createPost = () => {
-        // Implement the createPost function
-    };
-
-    const displayPosts = (posts) => (
+    const displayPosts = useCallback((posts) => (
         posts.map((post) => (
             <div key={post._id} className="post">
                 <div className="post-content">
@@ -155,20 +97,18 @@ const TokenPage = () => {
                         </div>
                     ))}
                 </div>
-                <CommentForm postId={post._id} loadPosts={loadPosts} currentTokenAddress={currentTokenAddress} />
+                <CommentForm postId={post._id} loadPosts={fetchPosts} currentTokenAddress={address} />
                 <Link to={`/post/${post._id}`} className="mt-4 inline-block text-center bg-blue-500 text-white py-2 px-4 rounded">
                     View Details
                 </Link>
             </div>
         ))
-    );
+    ), [fetchPosts, address]);
 
     const initApi = async () => {
         try {
-            const response = await fetch('/toncenter.config.json');
-            const config = await response.json();
-            const apiKey = config.tonCenter.apiKey;
-            const apiUrl = 'https://toncenter.com/api/v2/';
+            const apiUrl = 'https://tonapi.io/v2/';
+            const apiKey = 'AE7SQYEEE7WRMNIAAAAKKP7NQD563K2HAZFZOCO4IV4DVONWHB5A7P3ESI6XTHVH7WETHWI'; // Replace with your actual API key
             return { apiUrl, apiKey };
         } catch (error) {
             console.error('Error loading configuration:', error);
@@ -186,12 +126,12 @@ const TokenPage = () => {
                 <div className="logo">
                     <span>gether</span>
                 </div>
-                <div id="tokenInfo">{tokenInfo && displayTokenInfo(tokenInfo)}</div>
-                {canCreatePost && <PostForm currentTokenAddress={currentTokenAddress} loadPosts={loadPosts} />}
+                <div id="tokenInfo"></div>
+                {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
                 <div id="posts">{displayPosts(posts)}</div>
-                <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={currentTokenAddress} />
-                <SwapComponent currentTokenAddress={currentTokenAddress} wallet={wallet} />
-                <div id="noCommunityMessage" style={{ display: 'none' }}>Cannot post in this community.</div>
+                <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
+                <SwapComponent currentTokenAddress={address} wallet={wallet} />
+                {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
             </div>
         </div>
     );
