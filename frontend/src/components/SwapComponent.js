@@ -1,14 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TonWeb from 'tonweb';
 import { useWallet } from './TonConnectButton';
+import { Asset, PoolType, JettonRoot, VaultJetton } from '@dedust/sdk';
+import { toNano, Address } from '@ton/core';
 
-const tonweb = new TonWeb();
-const BN = TonWeb.utils.BN;
+const tonweb = new TonWeb(); // Initialize the TonWeb client
+const BN = TonWeb.utils.BN; // Initialize BN for Big Number calculations
 
 const SwapComponent = ({ currentTokenAddress }) => {
     const [amount, setAmount] = useState('');
     const [mode, setMode] = useState('buy'); // 'buy' or 'sell'
+    const [pool, setPool] = useState(null);
     const wallet = useWallet();
+
+    useEffect(() => {
+        // Fetch the pool for the current token and TON when the token address changes
+        const fetchPool = async () => {
+            if (!currentTokenAddress) return;
+
+            const TON = Asset.native();
+            const tokenAddress = Address.parse(currentTokenAddress);
+            const SCALE = Asset.jetton(tokenAddress);
+
+            // Assuming you need to get the pool using the DeDust SDK
+            try {
+                const poolData = await PoolType.VOLATILE.getPool([TON, SCALE]);
+                setPool(poolData);
+            } catch (error) {
+                console.error('Failed to fetch the pool:', error);
+            }
+        };
+
+        fetchPool();
+    }, [currentTokenAddress]);
 
     const handleSwap = async () => {
         try {
@@ -17,32 +41,40 @@ const SwapComponent = ({ currentTokenAddress }) => {
                 return;
             }
 
-            const swapAmount = new BN(amount).mul(new BN(10).pow(new BN(9))); // Convert to nanograms
-
-            let tx;
-            if (mode === 'buy') {
-                tx = await wallet.methods.transfer({
-                    to: currentTokenAddress,
-                    value: swapAmount,
-                    bounce: false,
-                    payload: '', // Payload for the swap contract
-                    sendMode: 3,
-                }).send();
-            } else {
-                // Implement the sell logic
-                const swapContractAddress = 'YOUR_SWAP_CONTRACT_ADDRESS'; // Replace with your swap contract address
-                const payload = ''; // Construct the payload as needed for your contract
-
-                tx = await wallet.methods.transfer({
-                    to: swapContractAddress,
-                    value: swapAmount,
-                    bounce: false,
-                    payload,
-                    sendMode: 3,
-                }).send();
+            if (!pool) {
+                alert('No liquidity pool found for this token');
+                return;
             }
 
-            console.log('Swap transaction:', tx);
+            const swapAmount = new BN(amount).mul(new BN(10).pow(new BN(9))); // Convert to nanograms
+
+            if (mode === 'buy') {
+                // Swapping TON to Token
+                const tonVault = await VaultJetton.getNativeVault();
+
+                await tonVault.sendSwap(wallet, {
+                    poolAddress: pool.address,
+                    amount: swapAmount,
+                    gasAmount: toNano('0.25'),
+                });
+            } else {
+                // Swapping Token to TON
+                const tokenVault = await VaultJetton.getJettonVault(currentTokenAddress);
+                const scaleRoot = tonweb.open(JettonRoot.createFromAddress(currentTokenAddress));
+                const scaleWallet = tonweb.open(await scaleRoot.getWallet(wallet.address));
+
+                await scaleWallet.sendTransfer(wallet, toNano('0.3'), {
+                    amount: swapAmount,
+                    destination: tokenVault.address,
+                    responseAddress: wallet.address,
+                    forwardAmount: toNano('0.25'),
+                    forwardPayload: VaultJetton.createSwapPayload({
+                        poolAddress: pool.address,
+                    }),
+                });
+            }
+
+            console.log('Swap transaction completed.');
         } catch (error) {
             console.error('Error performing swap:', error);
         }
