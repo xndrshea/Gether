@@ -641,14 +641,15 @@ details[open] summary {
 /* BrowseAll.css */
 
 .browse-all {
-    min-height: 100vh;
+    height: 100vh;
+    margin-top: 60px;
     padding: 20px;
     max-width: 800px;
     margin: 0 auto;
 }
 
 .browse-all .body {
-    overflow-y: auto;
+    overflow: auto;
 }
 
 .browse-all h1 {
