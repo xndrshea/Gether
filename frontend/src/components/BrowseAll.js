@@ -34,7 +34,7 @@ const BrowseAll = () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            setPosts(data); // The posts are already sorted on the server
+            setPosts(data);
         } catch (err) {
             console.error('Error fetching posts:', err);
             setError(err.message);
@@ -65,7 +65,6 @@ const BrowseAll = () => {
                         'Unknown Community'
                     )}</p>
                     <p className="mb-2">Posted on: {new Date(post.created_at).toLocaleString()}</p>
-                    {/* Add this button to navigate to the PostDetails page */}
                     <Link to={`/post/${post._id}`} className="mt-4 inline-block text-center bg-blue-500 text-white py-2 px-4 rounded">
                         View Post Details
                     </Link>

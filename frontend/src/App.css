@@ -1,9 +1,9 @@
 /* App.css */
 .App {
-  text-align: center;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  text-align: center;
 }
 
 .App-logo {
@@ -39,7 +39,6 @@
 }
 
 .App-content {
-  flex-grow: 1;
   padding: 20px;
   margin-top: 60px; /* Add margin to avoid content being hidden behind the header */
 }
