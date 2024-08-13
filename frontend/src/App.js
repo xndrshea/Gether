@@ -8,6 +8,7 @@ import Home from './components/Home';
 import ScrollToTop from './components/ScrollToTop';
 import ScrollButton from './components/ScrollButton';
 import BrowseAll from './components/BrowseAll';
+import PostDetails from './components/PostDetails';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/tokenpage/:address" element={<TokenPage />} />
             <Route path="/browse" element={<BrowseAll />} />
+            <Route path="/post/:postId" element={<PostDetails />} />
           </Routes>
         </div>
         <ScrollButton />

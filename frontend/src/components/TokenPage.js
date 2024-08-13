@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import PostForm from './PostForm';
 import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
@@ -156,11 +156,10 @@ const TokenPage = () => {
                         </div>
                     ))}
                 </div>
-                <CommentForm
-                    postId={post._id}
-                    loadPosts={loadPosts}
-                    currentTokenAddress={currentTokenAddress}
-                />
+                <CommentForm postId={post._id} loadPosts={loadPosts} currentTokenAddress={currentTokenAddress} />
+                <Link to={`/post/${post._id}`} className="mt-4 inline-block text-center bg-blue-500 text-white py-2 px-4 rounded">
+                    View Details
+                </Link>
             </div>
         ))
     );
@@ -198,6 +197,7 @@ const TokenPage = () => {
                     </div>
                     <div id="noCommunityMessage" style={{ display: 'none' }}>Cannot post in this community.</div>
                 </div>
+
             </div>
         </TonConnectButton>
     );

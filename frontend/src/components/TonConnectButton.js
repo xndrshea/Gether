@@ -12,7 +12,7 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
 
     useEffect(() => {
         const connect = new TonConnect({
-            manifestUrl: 'https://4a78-2001-4bc9-1f98-80af-9163-c369-abe1-6a2f.ngrok-free.app/tonconnect-manifest.json' // Ensure this URL is correct
+            manifestUrl: 'https://1083-84-115-238-161.ngrok-free.app/tonconnect-manifest.json' // Ensure this URL is correct
         });
 
         setTonConnect(connect);
@@ -69,6 +69,7 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
                 {children}
             </div>
         </WalletContext.Provider>
+
     );
 };
 
