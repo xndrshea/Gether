@@ -108,7 +108,7 @@ const TokenPage = () => {
     const initApi = async () => {
         try {
             const apiUrl = 'https://tonapi.io/v2/';
-            const apiKey = 'AE7SQYEEE7WRMNIAAAAKKP7NQD563K2HAZFZOCO4IV4DVONWHB5A7P3ESI6XTHVH7WETHWI'; // Replace with your actual API key
+            const apiKey = 'AE7SQYEEE7WRMNIAAAAKKP7NQD563K2HAZFZOCO4IV4DVONWHB5A7P3ESI6XTHVH7WETHWI';
             return { apiUrl, apiKey };
         } catch (error) {
             console.error('Error loading configuration:', error);
