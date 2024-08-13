@@ -5,6 +5,7 @@ import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
 import { displayTokenInfo } from './tokenInfo';
 import TokenDetails from './TokenDetails';
+import TonConnectButton from './TonConnectButton';
 import '../styles.css';
 
 const TokenPage = () => {
@@ -121,19 +122,21 @@ const TokenPage = () => {
     };
 
     return (
-        <div className="TokenPage" ref={scrollContainerRef}>
-            <div className="container">
-                <div className="logo">
-                    <span>gether</span>
+        <TonConnectButton onWalletConnect={handleWalletConnected}>
+            <div className="TokenPage" ref={scrollContainerRef}>
+                <div className="container">
+                    <div className="logo">
+                        <span>gether</span>
+                    </div>
+                    <div id="tokenInfo"></div>
+                    {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
+                    <div id="posts">{displayPosts(posts)}</div>
+                    <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
+                    <SwapComponent currentTokenAddress={address} wallet={wallet} />
+                    {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
                 </div>
-                <div id="tokenInfo"></div>
-                {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
-                <div id="posts">{displayPosts(posts)}</div>
-                <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
-                <SwapComponent currentTokenAddress={address} wallet={wallet} />
-                {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
             </div>
-        </div>
+        </TonConnectButton>
     );
 };
 
