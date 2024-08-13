@@ -14,6 +14,7 @@ const postSchema = new mongoose.Schema({
     user_id: mongoose.Schema.Types.ObjectId,
     token_address: String,
     content: String,
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     created_at: { type: Date, default: Date.now }
 });
 
@@ -56,17 +57,21 @@ router.post('/posts', async (req, res) => {
     }
 });
 
-// Create a comment
+/// Create a comment
 router.post('/comments', async (req, res) => {
     console.log('Creating a new comment:', req.body);
     try {
         const { post_id, user_id, content } = req.body;
         const comment = new Comment({ post_id, user_id, content });
         await comment.save();
+
+        // Add the comment to the corresponding post
+        await Post.findByIdAndUpdate(post_id, { $push: { comments: comment._id } });
+
         res.json(comment);
     } catch (err) {
-        console.error(err);
-        res.status(500).send(err);
+        console.error('Error creating comment:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -83,3 +88,18 @@ router.get('/comments/:postId', async (req, res) => {
 });
 
 module.exports = router;
+
+// Get a specific post with its comments
+router.get('/posts/detail/:postId', async (req, res) => {
+    console.log(`Fetching details for post ID: ${req.params.postId}`);
+    try {
+        const post = await Post.findById(req.params.postId).populate('comments');
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.json(post);
+    } catch (err) {
+        console.error('Error fetching post details:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});

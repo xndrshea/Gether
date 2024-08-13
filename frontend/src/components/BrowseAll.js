@@ -56,32 +56,19 @@ const BrowseAll = () => {
         <div className="browse-all" ref={scrollContainerRef}>
             <h1>All Posts</h1>
             {posts.map(post => (
-                <div key={post._id} className="post">
-                    <h2>{post.title}</h2>
-                    <p>{post.content}</p>
-                    <p>Posted in: {post.token_address ? (
-                        <Link to={`/tokenpage/${post.token_address}`}>{post.token_address}</Link>
+                <div key={post._id} className="post bg-gray-800 text-white rounded-lg p-4 mb-4 w-full max-w-2xl">
+                    <h2 className="text-2xl font-semibold">{post.title}</h2>
+                    <p className="mb-2">{post.content}</p>
+                    <p className="mb-2">Posted in: {post.token_address ? (
+                        <Link to={`/tokenpage/${post.token_address}`} className="text-blue-500 underline">{post.token_address}</Link>
                     ) : (
                         'Unknown Community'
                     )}</p>
-                    <p>Posted on: {new Date(post.created_at).toLocaleString()}</p>
-                    <button onClick={() => toggleComments(post._id)}>
-                        {post.showComments ? 'Hide Comments' : 'Show Comments'}
-                    </button>
-                    {post.showComments && (
-                        <div className="comments">
-                            {post.comments && post.comments.length > 0 ? (
-                                post.comments.map(comment => (
-                                    <div key={comment._id} className="comment">
-                                        <p>{comment.content}</p>
-                                        <p>Commented on: {new Date(comment.created_at).toLocaleString()}</p>
-                                    </div>
-                                ))
-                            ) : (
-                                <p>No comments yet.</p>
-                            )}
-                        </div>
-                    )}
+                    <p className="mb-2">Posted on: {new Date(post.created_at).toLocaleString()}</p>
+                    {/* Add this button to navigate to the PostDetails page */}
+                    <Link to={`/post/${post._id}`} className="mt-4 inline-block text-center bg-blue-500 text-white py-2 px-4 rounded">
+                        View Post Details
+                    </Link>
                 </div>
             ))}
         </div>
