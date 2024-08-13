@@ -1,0 +1,38 @@
+// SwapContract.fc
+
+#include "stdlib.fc"
+
+// Operation codes for the swap actions
+int constant OP_SWAP_BUY = 1;
+int constant OP_SWAP_SELL = 2;
+
+// Error codes
+int constant ERR_INSUFFICIENT_FUNDS = 100;
+int constant ERR_UNKNOWN_OPERATION = 101;
+
+() main(slice in_msg_body) {
+    ;; Load operation code from message body
+    var op = in_msg_body~load_uint(32);
+
+    ;; Load amount from message body
+    var amount = in_msg_body~load_coins();
+
+    ;; Verify that the message has enough value
+    if (op == OP_SWAP_BUY) {
+        ;; Logic for buying the token
+        ;; For simplicity, assume a 1:1 swap rate
+        ;; Implement token transfer logic here
+        var token_amount = amount;  // For now, we're assuming 1:1 TON to token rate
+        ;; Send tokens to the user's address (msg_sender)
+        send_raw_message(msg_sender, token_amount, 0);
+    } else if (op == OP_SWAP_SELL) {
+        ;; Logic for selling the token
+        ;; Implement reverse swap logic here
+        var ton_amount = amount;  // For now, we're assuming 1:1 token to TON rate
+        ;; Send TON to the user's address
+        send_raw_message(msg_sender, ton_amount, 0);
+    } else {
+        ;; Unknown operation
+        throw(ERR_UNKNOWN_OPERATION);
+    }
+}
