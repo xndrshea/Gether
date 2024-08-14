@@ -89,6 +89,9 @@ const TokenPage = () => {
         posts.map((post) => (
             <div key={post._id} className="post">
                 <div className="post-content">
+                    {post.image && (
+                        <img src={post.image} alt="Post image" />
+                    )}
                     <p>{post.content}</p>
                 </div>
                 <div className="comments">
