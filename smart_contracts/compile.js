@@ -29,9 +29,9 @@ async function compile() {
         }
 
         // Write the BOC to a file
-        fs.writeFileSync(path.join(buildDir, 'SwapContract.boc'), result.codeBoc, 'base64');
+        fs.writeFileSync(path.join(buildDir, 'SwapContract.cell'), result.codeBoc, 'base64');
 
-        console.log('Compilation successful, BOC saved to build/SwapContract.boc');
+        console.log('Compilation successful, BOC saved to build/SwapContract.cell');
     } catch (error) {
         console.error('Error during compilation:', error);
     }
