@@ -16,6 +16,7 @@ const PostDetails = () => {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
+                
                 setPost(data);
             } catch (err) {
                 console.error('Error fetching post details:', err);
@@ -36,7 +37,8 @@ const PostDetails = () => {
         <div className="post-details">
             <h1>{post.title}</h1>
             <p>{post.content}</p>
-            <p>Posted on: {new Date(post.createdAt).toLocaleString()}</p>
+            {post.image && <img src={post.image} alt="Post" style={{ maxWidth: '100%', height: 'auto' }} />}
+            <p>Posted on: {post.created_at ? new Date(post.created_at).toLocaleString() : 'Date not available'}</p>
             <h2>Comments</h2>
             {post.comments && post.comments.length > 0 ? (
                 <div className="comments">
