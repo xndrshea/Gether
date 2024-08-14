@@ -1,27 +1,36 @@
-// SwapContract.fc
+#include "imports/stdlib.fc"; ;; Ensure this path is correct
 
-#include "stdlib.fc";
-
-// Operation codes
-int constant OP_SWAP = 1;
-
-// Error codes
-int constant ERR_INVALID_POOL = 100;
-int constant ERR_INSUFFICIENT_FUNDS = 101;
-int constant ERR_INVALID_AMOUNT = 102;
-int constant ERR_VAULT_COMMUNICATION_FAILED = 103;
-
-// Minimum amount required to perform a swap (in nanograms)
-int constant MIN_AMOUNT = 1000000;
-
-// Fee percentage (1%)
-int constant FEE_PERCENTAGE = 1;
-
-// The address to receive the transaction fees
-address constant FEE_ADDRESS = 0x123456789abcdef123456789abcdef123456789abcdef123456789abcdef12345; // Replace with your actual fee address
-
-// The main entry point of the contract
 () main(slice in_msg_body) {
+    ;; Operation codes
+    int OP_SWAP = 1;
+
+    ;; Error codes
+    int ERR_INVALID_POOL = 100;
+    int ERR_INSUFFICIENT_FUNDS = 101;
+    int ERR_INVALID_AMOUNT = 102;
+    int ERR_VAULT_COMMUNICATION_FAILED = 103;
+
+    ;; Minimum amount required to perform a swap (in nanograms)
+    int MIN_AMOUNT = 1000000;
+
+    ;; Fee percentage (1%)
+    int FEE_PERCENTAGE = 1;
+
+    ;; Manually encode the address into a slice
+    ;; Example: Randomly generated address for testing purposes
+    slice fee_address = begin_parse(
+        begin_cell()
+        .store_uint(0x9f8b3e0f, 32)  ;; First 4 bytes
+        .store_uint(0x3f1c2a7d, 32)  ;; Next 4 bytes
+        .store_uint(0x3e4f5b6a, 32)  ;; Next 4 bytes
+        .store_uint(0x7c8d9e0f, 32)  ;; Next 4 bytes
+        .store_uint(0x1a2b3c4d, 32)  ;; Next 4 bytes
+        .store_uint(0x5e6f7a8b, 32)  ;; Next 4 bytes
+        .store_uint(0x9c0d1e2f, 32)  ;; Next 4 bytes
+        .store_uint(0x3a4b5c6, 28)   ;; Last 3.5 bytes (28 bits)
+        .end_cell()
+    );
+
     ;; Load the operation code
     var op = in_msg_body~load_uint(32);
 
@@ -32,7 +41,7 @@ address constant FEE_ADDRESS = 0x123456789abcdef123456789abcdef123456789abcdef12
         var amount = in_msg_body~load_coins();
 
         ;; Check if the pool is valid
-        if (!is_valid_pool(vault_a_address, vault_b_address)) {
+        if (is_valid_pool(vault_a_address, vault_b_address) == 0) {
             throw(ERR_INVALID_POOL);
         }
 
@@ -46,10 +55,10 @@ address constant FEE_ADDRESS = 0x123456789abcdef123456789abcdef123456789abcdef12
         var net_amount = amount - fee;
 
         ;; Transfer the fee to the platform's fee address
-        send_fee_to_address(FEE_ADDRESS, fee);
+        send_fee_to_address(fee_address, fee);
 
         ;; Communicate with Vault B to release the tokens
-        if (!send_msg_to_vault_b(vault_b_address, net_amount)) {
+        if (send_msg_to_vault_b(vault_b_address, net_amount) == 0) {
             throw(ERR_VAULT_COMMUNICATION_FAILED);
         }
     } else {
@@ -57,8 +66,8 @@ address constant FEE_ADDRESS = 0x123456789abcdef123456789abcdef123456789abcdef12
     }
 }
 
-;; Function to validate pool by checking known addresses or other logic
-int is_valid_pool(address vault_a, address vault_b) {
+;; Function to validate the pool by checking known addresses or other logic
+int is_valid_pool(slice vault_a, slice vault_b) {
     ;; Example validation logic: this could be replaced with a more sophisticated check,
     ;; such as querying an on-chain registry of valid pools.
 
@@ -67,25 +76,25 @@ int is_valid_pool(address vault_a, address vault_b) {
 }
 
 ;; Function to send a message to Vault B to release tokens
-int send_msg_to_vault_b(address vault_b, int amount) {
+int send_msg_to_vault_b(slice vault_b, int amount) {
     ;; Construct the message payload expected by Vault B
     ;; Here, we assume that Vault B expects a simple payload with the amount of tokens to release.
 
     ;; Example payload construction, assuming Vault B accepts a 32-bit operation code followed by an amount
     var payload = begin_cell()
-                    .store_uint(OP_SWAP, 32) ;; Operation code indicating this is a swap operation
-                    .store_coins(amount)      ;; Amount of tokens to release (after fee deduction)
+                    .store_uint(1, 32) ;; Operation code indicating this is a swap operation
+                    .store_coins(amount) ;; Amount of tokens to release (after fee deduction)
                     .end_cell();
 
     ;; Send the message to Vault B
-    send_raw_message(vault_b, payload, 0);
+    send_raw_message(begin_cell().store_slice(vault_b).store_slice(payload.begin_parse()).end_cell(), 0);
 
     ;; Return 1 to indicate success
     return 1;
 }
 
 ;; Function to send the fee to the specified fee address
-() send_fee_to_address(address fee_address, int fee_amount) {
+() send_fee_to_address(slice fee_address, int fee_amount) {
     ;; Send the fee amount to the fee address
-    send_raw_message(fee_address, fee_amount, 0);
+    send_raw_message(begin_cell().store_slice(fee_address).end_cell(), fee_amount);
 }

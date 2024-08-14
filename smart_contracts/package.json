@@ -5,7 +5,7 @@
         "start": "blueprint run",
         "build": "blueprint build",
         "test": "jest --verbose",
-        "build-func": "npx ton-compiler -o build/SwapContract.fif contracts/SwapContract.fc"
+        "build-func": "node compile.js"
     },
     "devDependencies": {
         "@ton/blueprint": "^0.22.0",
@@ -22,5 +22,8 @@
         "ts-jest": "^29.2.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.5.3"
+    },
+    "dependencies": {
+        "@ton-community/func-js": "^0.7.0"
     }
 }
