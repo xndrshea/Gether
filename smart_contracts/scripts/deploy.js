@@ -1,53 +1,70 @@
 const TonWeb = require('tonweb');
 const fs = require('fs');
-const tonweb = new TonWeb(new TonWeb.HttpProvider('http://localhost:8081')); // Initialize TonWeb with local endpoint
+const path = require('path');
+
+// Load saved keys from the file
+const keys = JSON.parse(fs.readFileSync(path.join(__dirname, 'keys.json')));
+
+// Initialize TonWeb with your local node endpoint
+const tonweb = new TonWeb(new TonWeb.HttpProvider('http://localhost:8081'));
+
+// Correctly import the Cell class from TonWeb.boc
+const Cell = TonWeb.boc.Cell;
 
 async function deploy() {
-    // Generate a new key pair
-    const keyPair = TonWeb.utils.newKeyPair();
-    const publicKey = keyPair.publicKey;
-    const secretKey = keyPair.secretKey;
+    const publicKey = Buffer.from(keys.publicKey, 'hex');
+    const secretKey = Buffer.from(keys.secretKey, 'hex');
 
-    console.log('Generated Public Key:', publicKey.toString('hex'));
-    console.log('Generated Secret Key:', secretKey.toString('hex'));
+    console.log('Using Public Key:', keys.publicKey);
+    console.log('Using Secret Key:', keys.secretKey);
 
-    // Create a wallet using the generated keys
-    const WalletClass = tonweb.wallet.all.v3R2; // Use the correct wallet class
+    const WalletClass = tonweb.wallet.all.v3R2;
     const wallet = new WalletClass(tonweb.provider, {
         publicKey: publicKey,
-        wc: 0 // Workchain ID
+        wc: 0
     });
 
-    // Retrieve the sequence number
+    // Load contract code from .cell file
+    const contractCode = fs.readFileSync('./build/SwapContract.cell');  // Read the .cell file directly
+    const contractCell = Cell.fromBoc(contractCode)[0];  // Decode the contract cell
+
+    // Create an extremely simple contract data cell (minimize data)
+    const contractData = new Cell();
+    contractData.bits.writeUint(0, 32);  // Store a simple integer (e.g., 0)
+
+    // Create StateInit cell
+    const stateInit = new Cell();
+    stateInit.bits.writeUint(0, 32);  // Workchain ID
+    stateInit.refs.push(contractCell);  // Add code cell
+    stateInit.refs.push(contractData);  // Add data cell
+
+    // Generate wallet address
+    const contractAddress = wallet.getAddress();
+
     let seqno;
     try {
         seqno = await wallet.methods.seqno().call();
-        if (seqno === undefined) {
-            seqno = 0; // Default to 0 if there's an error
+        if (typeof seqno !== 'number') {
+            throw new Error('Invalid seqno retrieved');
         }
     } catch (error) {
         console.error('Error retrieving seqno, defaulting to 0:', error);
-        seqno = 0; // Default to 0 if there's an error
+        seqno = 0;
     }
 
-    // Read the compiled contract code
-    const contractCode = fs.readFileSync('./build/SwapContract.cell', { encoding: 'base64' });
-    const contractData = new TonWeb.boc.Cell(); // Modify this to include your contract's initial data
-
-    // Prepare the deploy message
+    // Deploy the contract
     const transfer = wallet.methods.transfer({
         secretKey: secretKey,
-        toAddress: wallet.getAddress(),
-        amount: TonWeb.utils.toNano('0.01'), // Amount in nanograms (1 TON = 1,000,000,000 nanograms)
+        toAddress: contractAddress,
+        amount: TonWeb.utils.toNano('0.01'),  // Adjust the deployment amount as needed
         seqno: seqno,
-        payload: contractCode,
+        payload: stateInit.toBoc(false).toString('base64'),  // Encode stateInit as BOC
         sendMode: 3,
     });
 
-    // Send the deploy message
     await transfer.send();
 
-    console.log(`Contract deployed at address: ${wallet.getAddress().toString(true, true, true)}`);
+    console.log(`Contract deployed at address: ${contractAddress.toString(true, true, true)}`);
 }
 
 deploy().catch(console.error);
