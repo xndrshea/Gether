@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .main-page {
     display: flex;
     justify-content: center;
@@ -123,6 +127,16 @@ button,
     cursor: pointer;
     text-decoration: none;
     text-align: center;
+}
+
+#scavenge:hover {
+    background-color: #0052cc;
+    transition: background-color 0.3s ease;
+}
+
+#browseAll:hover {
+    background-color: #e5e7eb;
+    transition: background-color 0.3s ease;
 }
 
 @media only screen and (max-width: 233px) {
@@ -257,16 +271,6 @@ main {
     margin-right: 10px;
 }
 
-.create-post-button {
-    background-color: #0066ff;
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    margin-left: auto;
-}
-
 .community-info {
     margin-bottom: 20px;
 }
@@ -398,19 +402,9 @@ details[open] summary {
     color: white;
 }
 
-.TokenPage button {
-    padding: 10px 20px;
-    background-color: #0066ff;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-}
-
 .TokenPage button:hover {
     background-color: #0052cc;
+    transition: background-color 0.3s ease;
 }
 
 .TokenPage .post {
@@ -538,7 +532,7 @@ details[open] summary {
     }
 }
 
-@media only screen and (min-width: 366px) and (max-width: 650px) {
+@media only screen and (min-width: 366px) and (max-width: 675px) {
     .logo {
         left: calc(0vw - 0px);
     }
