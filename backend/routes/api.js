@@ -14,8 +14,9 @@ const postSchema = new mongoose.Schema({
     user_id: mongoose.Schema.Types.ObjectId,
     token_address: String,
     content: String,
+    image: String,
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-    created_at: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now }
 });
 
 const commentSchema = new mongoose.Schema({

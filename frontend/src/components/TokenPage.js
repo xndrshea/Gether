@@ -79,14 +79,15 @@ const TokenPage = () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const posts = await response.json();
+            console.log('Fetched posts:', posts); // Log fetched posts
             setPosts(posts);
         } catch (error) {
             console.error('Error loading posts:', error);
         }
     }, []);
 
-    const displayPosts = useCallback((posts) => (
-        posts.map((post) => (
+    const displayPosts = useCallback((posts) => {
+        return posts.map((post) => (
             <div key={post._id} className="post">
                 <div className="post-content">
                     {post.image && (
@@ -106,8 +107,8 @@ const TokenPage = () => {
                     View Details
                 </Link>
             </div>
-        ))
-    ), [fetchPosts, address]);
+        ));
+    }, [fetchPosts, address]);
 
     const initApi = async () => {
         try {

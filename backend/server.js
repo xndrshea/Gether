@@ -1,14 +1,22 @@
+// Import necessary modules
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
-
+const AWS = require('aws-sdk');
+const fs = require('fs');
+const multer = require('multer');
 
 const app = express();
 
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 1024 * 1024 * 5 }, // 5 MB
+});
+
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' })); // Increase the limit to handle large base64 strings
 
 const PORT = process.env.PORT || 5001;
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -28,6 +36,15 @@ mongoose.connect(MONGODB_URI, {
     process.exit(1);
 });
 
+// Configure AWS SDK
+AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION
+});
+
+const s3 = new AWS.S3();
+
 // Define Schemas
 const userSchema = new mongoose.Schema({
     username: String,
@@ -40,8 +57,9 @@ const postSchema = new mongoose.Schema({
     user_id: mongoose.Schema.Types.ObjectId,
     token_address: String,
     content: String,
+    image: String,
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-    created_at: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now }
 });
 
 const commentSchema = new mongoose.Schema({
@@ -85,11 +103,31 @@ app.get('/posts/:tokenAddress', async (req, res) => {
 });
 
 // Create a post
-app.post('/posts', async (req, res) => {
-    console.log('Creating a new post:', req.body);
+app.post('/posts', upload.single('image'), async (req, res) => {
     try {
+        console.log('Incoming request body:', req.body);
+        console.log('Incoming file:', req.file);
+
         const { user_id, token_address, content } = req.body;
-        const post = new Post({ user_id, token_address, content });
+        let imageUrl = null;
+
+        if (req.file) {
+            const fileContent = req.file.buffer;
+
+            const params = {
+                Bucket: process.env.S3_BUCKET_NAME,
+                Key: `images/${Date.now()}-${req.file.originalname}`,
+                Body: fileContent,
+                ContentType: req.file.mimetype,
+                ACL: 'public-read' // Ensure public-read access
+            };
+
+            const uploadResult = await s3.upload(params).promise();
+            console.log('Image uploaded successfully:', uploadResult);
+            imageUrl = uploadResult.Location;
+        }
+
+        const post = new Post({ user_id, token_address, content, image: imageUrl });
         await post.save();
         res.json(post);
     } catch (err) {
