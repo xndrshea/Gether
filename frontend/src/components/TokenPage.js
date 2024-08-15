@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import PostForm from './PostForm';
 import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
@@ -15,6 +15,7 @@ const TokenPage = () => {
     const [canCreatePost, setCanCreatePost] = useState(true);
     const [wallet, setWallet] = useState(null);
     const scrollContainerRef = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const tokenAddress = address || new URLSearchParams(window.location.search).get('address');
@@ -60,7 +61,7 @@ const TokenPage = () => {
                 },
             });
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error status: ${response.status}`);
             }
             const data = await response.json();
             setTokenInfo(data.result || data);
@@ -76,7 +77,7 @@ const TokenPage = () => {
         try {
             const response = await fetch(`http://localhost:5001/posts/${tokenAddress}`);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error status: ${response.status}`);
             }
             const posts = await response.json();
             console.log('Fetched posts:', posts); // Log fetched posts
@@ -95,17 +96,15 @@ const TokenPage = () => {
                     )}
                     <p>{post.content}</p>
                 </div>
-                <div className="comments">
-                    {post.comments && post.comments.map((comment) => (
-                        <div key={comment._id} className="comment">
-                            {comment.content}
-                        </div>
-                    ))}
-                </div>
-                <CommentForm postId={post._id} loadPosts={fetchPosts} currentTokenAddress={address} />
+                <button
+                    onClick={() => navigate(`/post/${post._id}`)}
+                    className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white ml-2"
+                >
+                    View Details
+                </button>
             </div>
         ));
-    }, [fetchPosts, address]);
+    }, [fetchPosts, address, navigate]);
 
     const initApi = async () => {
         try {
@@ -123,7 +122,6 @@ const TokenPage = () => {
     };
 
     return (
-        <TonConnectButton onWalletConnect={handleWalletConnected}>
             <div className="TokenPage" ref={scrollContainerRef}>
                 <div className="container">
                     <div className="logo">
@@ -137,7 +135,6 @@ const TokenPage = () => {
                     {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
                 </div>
             </div>
-        </TonConnectButton>
     );
 };
 

@@ -44,7 +44,7 @@ const Home = () => {
                     id="tokenAddress"
                     placeholder="Enter TON Token Address..."
                     onChange={handleInputChange}
-                    className="w-full py-1 px-5 rounded-full border-none text-base bg-white text-black"
+                    className="w-full py-3 px-5 rounded-full border-none text-base bg-white text-black"
                 />
                 {hasInput && (
                     <button
@@ -67,7 +67,7 @@ const Home = () => {
                 <span className="text-3xl text-white">/</span>
                 <button
                     id="browseAll"
-                    className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-white  text-blue-600"
+                    className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-white text-blue-600"
                     onClick={handleBrowseAll}
                 >
                     Browse All

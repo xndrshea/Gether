@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const CommentForm = ({ postId, loadPosts, currentTokenAddress }) => {
-    const [commentContent, setCommentContent] = useState('');
-    const navigate = useNavigate();
+    const [commentContent, setCommentContent] = useState('');  
 
     const createComment = async () => {
         if (commentContent) {
@@ -31,15 +29,11 @@ const CommentForm = ({ postId, loadPosts, currentTokenAddress }) => {
                 id={`commentInput-${postId}`}
                 placeholder="Write a comment..."
                 value={commentContent}
+                autocomplete="off"
                 onChange={(e) => setCommentContent(e.target.value)}
+                className="w-[97%] h-24 resize-none bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg mb-5 p-5"
             />
             <button onClick={createComment} className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white">Submit</button>
-            <button
-                onClick={() => navigate(`/post/${postId}`)}
-                className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white ml-2"
-            >
-                View Details
-            </button>
         </div>
     );
 };

@@ -26,7 +26,7 @@ const TokenDetails = ({ tokenInfo, currentTokenAddress }) => {
                 } bg-gray-800 text-white p-5 rounded-lg shadow-md z-1000 transition-width duration-300`}
         >
             <button
-                className="bg-blue-500 hover:bg-blue-700 py-2 px-4 rounded w-full cursor-pointer transition-all duration-300"
+                className="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded w-full cursor-pointer transition-all duration-300"
                 onClick={handleToggle}
             >
                 {buttonText}

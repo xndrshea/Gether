@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import CommentForm from './CommentForm';
 
 const PostDetails = () => {
     const { postId } = useParams();
@@ -28,6 +29,19 @@ const PostDetails = () => {
 
         fetchPostDetails();
     }, [postId]);
+
+    const loadPosts = async (currentTokenAddress) => {
+        try {
+            const response = await fetch(`http://localhost:5001/posts/detail/${currentTokenAddress}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error status: ${response.status}`);
+            }
+            const data = await response.json();
+            setPost(data);
+        } catch (error) {
+            console.error('Error loading posts:', error);
+        }
+    };
 
     if (loading) return <div>Loading post...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -62,6 +76,7 @@ const PostDetails = () => {
             ) : (
                 <p className="text-gray-500">No comments yet.</p>
             )}
+            <CommentForm postId={postId} loadPosts={loadPosts} currentTokenAddress={postId} />
         </div>
     );
 };
