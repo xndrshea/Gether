@@ -1,70 +1,68 @@
-const TonWeb = require('tonweb');
+const { Network, Tonfura } = require('tonfura-sdk');
+const { WalletContractV4, internal, SendMode, beginCell, storeMessage } = require('@ton/ton');
 const fs = require('fs');
-const path = require('path');
+const { Cell, contractAddress } = require('@ton/core');
+require('dotenv').config();
 
-// Load saved keys from the file
-const keys = JSON.parse(fs.readFileSync(path.join(__dirname, 'keys.json')));
-
-// Initialize TonWeb with your local node endpoint
-const tonweb = new TonWeb(new TonWeb.HttpProvider('http://localhost:8081'));
-
-// Correctly import the Cell class from TonWeb.boc
-const Cell = TonWeb.boc.Cell;
+const { TONFURA_KEY } = process.env;
 
 async function deploy() {
-    const publicKey = Buffer.from(keys.publicKey, 'hex');
-    const secretKey = Buffer.from(keys.secretKey, 'hex');
-
-    console.log('Using Public Key:', keys.publicKey);
-    console.log('Using Secret Key:', keys.secretKey);
-
-    const WalletClass = tonweb.wallet.all.v3R2;
-    const wallet = new WalletClass(tonweb.provider, {
-        publicKey: publicKey,
-        wc: 0
-    });
-
-    // Load contract code from .cell file
-    const contractCode = fs.readFileSync('./build/SwapContract.cell');  // Read the .cell file directly
-    const contractCell = Cell.fromBoc(contractCode)[0];  // Decode the contract cell
-
-    // Create an extremely simple contract data cell (minimize data)
-    const contractData = new Cell();
-    contractData.bits.writeUint(0, 32);  // Store a simple integer (e.g., 0)
-
-    // Create StateInit cell
-    const stateInit = new Cell();
-    stateInit.bits.writeUint(0, 32);  // Workchain ID
-    stateInit.refs.push(contractCell);  // Add code cell
-    stateInit.refs.push(contractData);  // Add data cell
-
-    // Generate wallet address
-    const contractAddress = wallet.getAddress();
-
-    let seqno;
     try {
-        seqno = await wallet.methods.seqno().call();
-        if (typeof seqno !== 'number') {
-            throw new Error('Invalid seqno retrieved');
-        }
+        console.log("Loading contract code...");
+        const codeCell = Cell.fromBoc(fs.readFileSync('./build/SwapContract.cell'))[0];
+        const dataCell = new Cell(); // Assuming no initial data
+
+        console.log("Loading wallet keys...");
+        const keyData = JSON.parse(fs.readFileSync('./keys.json', 'utf8'));
+        const publicKey = Buffer.from(keyData.publicKey, 'hex');
+        const secretKey = Buffer.from(keyData.secretKey, 'hex');
+
+        console.log("TONFURA_KEY:", TONFURA_KEY);
+
+        // Initialize Tonfura with the custom endpoint
+        const tonfura = new Tonfura({
+            apiKey: TONFURA_KEY,
+            endpoint: 'https://testnet-rpc.tonfura.com/v2/json-rpc',  // Custom endpoint without the key
+            network: Network.Testnet,
+        });
+
+        const wallet = WalletContractV4.create({
+            workchain: 0,
+            publicKey,
+        });
+
+        console.log(`Wallet address: ${wallet.address}`);
+
+        const seqno = (await tonfura.core.getWalletInformation(wallet.address.toString())).data.result.seqno;
+        console.log(`Wallet seqno: ${seqno}`);
+
+        const internalMessage = {
+            to: wallet.address,
+            value: "0.1", // Ensure you have enough balance
+            init: {
+                code: codeCell,
+                data: dataCell,
+            },
+            body: 'data:application/json,{"p":"ton-20","op":"deploy","tick":"YourFirstInscription","amt":"1"}',
+        };
+
+        const externalMessage = internal({
+            to: wallet.address,
+            init: null,
+            body: internalMessage,
+        });
+
+        const boc = beginCell()
+            .store(storeMessage(externalMessage))
+            .endCell()
+            .toBoc();
+
+        await tonfura.transact.sendBoc(boc.toString("base64"));
+        console.log("Deployment successful!");
     } catch (error) {
-        console.error('Error retrieving seqno, defaulting to 0:', error);
-        seqno = 0;
+        console.error("Deployment failed:", error.message);
+        console.error("Stack trace:", error.stack);
     }
-
-    // Deploy the contract
-    const transfer = wallet.methods.transfer({
-        secretKey: secretKey,
-        toAddress: contractAddress,
-        amount: TonWeb.utils.toNano('0.01'),  // Adjust the deployment amount as needed
-        seqno: seqno,
-        payload: stateInit.toBoc(false).toString('base64'),  // Encode stateInit as BOC
-        sendMode: 3,
-    });
-
-    await transfer.send();
-
-    console.log(`Contract deployed at address: ${contractAddress.toString(true, true, true)}`);
 }
 
-deploy().catch(console.error);
+deploy();

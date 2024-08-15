@@ -4,8 +4,7 @@ const path = require('path');
 
 async function compile() {
     try {
-        // Ensure the build directory exists
-        const buildDir = path.join(__dirname, 'build');
+        const buildDir = path.join(__dirname, '../build');
         if (!fs.existsSync(buildDir)) {
             fs.mkdirSync(buildDir);
         }
@@ -14,13 +13,13 @@ async function compile() {
             sources: [
                 {
                     filename: 'contracts/imports/stdlib.fc',
-                    content: fs.readFileSync(path.join(__dirname, 'contracts/imports/stdlib.fc')).toString(),
+                    content: fs.readFileSync(path.join(__dirname, '../contracts/imports/stdlib.fc')).toString(),
                 },
                 {
                     filename: 'contracts/SwapContract.fc',
-                    content: fs.readFileSync(path.join(__dirname, 'contracts/SwapContract.fc')).toString(),
-                }
-            ]
+                    content: fs.readFileSync(path.join(__dirname, '../contracts/SwapContract.fc')).toString(),
+                },
+            ],
         });
 
         if (result.status === 'error') {
@@ -28,9 +27,7 @@ async function compile() {
             return;
         }
 
-        // Write the BOC to a file
         fs.writeFileSync(path.join(buildDir, 'SwapContract.cell'), result.codeBoc, 'base64');
-
         console.log('Compilation successful, BOC saved to build/SwapContract.cell');
     } catch (error) {
         console.error('Error during compilation:', error);
