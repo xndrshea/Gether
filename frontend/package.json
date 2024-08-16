@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.629.0",
     "@craco/craco": "^7.1.0",
     "@dedust/sdk": "^0.8.7",
     "@testing-library/jest-dom": "^5.17.0",
@@ -10,10 +11,13 @@
     "@testing-library/user-event": "^13.5.0",
     "@tonconnect/sdk": "^3.0.3",
     "assert": "^2.1.0",
+    "aws-sdk": "^2.1674.0",
     "axios": "^1.7.3",
     "buffer": "^6.0.3",
+    "cloudinary": "^2.4.0",
     "crypto-browserify": "^3.12.0",
     "https-browserify": "^1.0.0",
+    "multer": "^1.4.5-lts.1",
     "os-browserify": "^0.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -23,6 +27,7 @@
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "ton-x": "^0.0.1",
+    "tonweb": "^0.0.66",
     "url": "^0.11.4",
     "web-vitals": "^2.1.4",
     "web3": "^4.11.1",
@@ -51,5 +56,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.10"
   }
 }

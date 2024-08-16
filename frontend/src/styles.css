@@ -1,8 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .main-page {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    height: 100vh;
 }
 
 body,
@@ -17,7 +21,7 @@ html {
     justify-content: center;
     align-items: center;
     height: 100%;
-    min-height: 100vh;
+    height: 100vh;
 }
 
 body {
@@ -28,7 +32,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
+    height: 100vh;
     padding: 20px;
 }
 
@@ -82,17 +86,6 @@ h1 .second-line {
     margin-bottom: 20px;
 }
 
-input[type="text"] {
-    width: 100%;
-    padding: 15px 0px 15px 0px;
-    border-radius: 30px;
-    border: none;
-    font-size: 16px;
-    background-color: white;
-    color: black;
-    text-indent: 20px;
-}
-
 #clearSearch {
     position: absolute;
     right: 0px;
@@ -123,6 +116,16 @@ button,
     cursor: pointer;
     text-decoration: none;
     text-align: center;
+}
+
+#scavenge:hover {
+    background-color: #0052cc;
+    transition: background-color 0.3s ease;
+}
+
+#browseAll:hover {
+    background-color: #e5e7eb;
+    transition: background-color 0.3s ease;
 }
 
 @media only screen and (max-width: 233px) {
@@ -205,7 +208,7 @@ button,
 .scavenge-page {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
 }
 
 .scavenge-page header {
@@ -255,16 +258,6 @@ main {
     width: 50px;
     height: 50px;
     margin-right: 10px;
-}
-
-.create-post-button {
-    background-color: #0066ff;
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    margin-left: auto;
 }
 
 .community-info {
@@ -324,7 +317,7 @@ main {
 .TokenPage {
     background-color: #1a1a1a;
     color: white;
-    min-height: 100vh;
+    height: 100vh;
     padding-top: 20px;
     display: flex;
     justify-content: center;
@@ -398,19 +391,9 @@ details[open] summary {
     color: white;
 }
 
-.TokenPage button {
-    padding: 10px 20px;
-    background-color: #0066ff;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-}
-
 .TokenPage button:hover {
     background-color: #0052cc;
+    transition: background-color 0.3s ease;
 }
 
 .TokenPage .post {
@@ -538,7 +521,7 @@ details[open] summary {
     }
 }
 
-@media only screen and (min-width: 366px) and (max-width: 650px) {
+@media only screen and (min-width: 366px) and (max-width: 675px) {
     .logo {
         left: calc(0vw - 0px);
     }
@@ -559,83 +542,6 @@ details[open] summary {
     .TokenPage .posts {
         padding: 15px;
     }
-}
-
-/* Swap Styles */
-
-.swap-component {
-    position: fixed;
-    top: 100px;
-    /* Adjust this value as needed to prevent overlap */
-    right: 20px;
-    width: 300px;
-    background-color: #0066ff;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    /* Ensure it's on top of other elements */
-}
-
-.swap-component h3 {
-    margin-top: 0;
-}
-
-.swap-component input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: none;
-    border-radius: 5px;
-}
-
-.swap-component button {
-    width: 100%;
-    padding: 10px;
-    background-color: #0052cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 5px;
-}
-
-.swap-component button:hover {
-    background-color: #0041a3;
-}
-
-.swap-component .toggle-button {
-    background-color: #0041a3;
-    margin-top: 10px;
-}
-
-/* TokenDetails.css */
-
-.token-info-component {
-    position: fixed;
-    top: 380px;
-    right: 20px;
-    width: 300px;
-    background-color: #3a3a3a;
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-}
-
-.token-info-component h3 {
-    margin-top: 0;
-}
-
-.token-info-component a {
-    color: #007bff;
-    text-decoration: none;
-}
-
-.token-info-component a:hover {
-    text-decoration: underline;
 }
 
 /* BrowseAll.css */
