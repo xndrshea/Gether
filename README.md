@@ -2,9 +2,9 @@
 
 Gether creates organic communities around tokens on the TON blockchain. Our vision is to create an open social platform that brings people together, fostering meaningful interactions and collaborations in the crypto space. 
 
-Gether is building an open social platform on top of the blockchain layer, allowing users to see if people are actively engaging with a given token.
+Gether is building an open social platform using React, designed to bridge the gap between users and the blockchain. 
 
-Each token has its own forum, prioritizing user interaction over speculation. This fosters active communities, regardless of trading activity, and provides a way to gauge organic token engagement.
+Each token has its own forum, prioritizing user interaction over speculation. This fosters active communities, regardless of trading activity, and provides a way to gauge organic token engagement, allowing users to see if people are actively discussing a given token.
 
 
 ## 🚀 About Us
