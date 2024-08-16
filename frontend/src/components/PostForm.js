@@ -39,7 +39,7 @@ const PostForm = ({ currentTokenAddress, loadPosts }) => {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP error status: ${response.status}`);
                 }
 
                 const post = await response.json();
@@ -55,10 +55,10 @@ const PostForm = ({ currentTokenAddress, loadPosts }) => {
             console.log('Missing content, token address, or file');
         }
     };
-    
+
     return (
         <div className="post-form">
-            <h3>Create a Post</h3>
+            <h3 className="font-bold">Create a Post</h3>
             <textarea
                 id="postContent"
                 rows="4"
@@ -69,8 +69,32 @@ const PostForm = ({ currentTokenAddress, loadPosts }) => {
                     console.log('Post content updated:', e.target.value);
                 }}
             />
-            <input type="file" onChange={handleImageChange} />
-            <button onClick={createPost}>Post</button>
+            <div className="flex justify-end">
+                <label
+                    htmlFor="image-upload"
+                    className="flex items-center py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white hover:bg-blue-700 transition duration-300"
+                >
+                    <input
+                        id="image-upload"
+                        type="file"
+                        onChange={handleImageChange}
+                        className="hidden"
+                    />
+                    <img
+                        src="https://getherlolbucket.s3.eu-central-1.amazonaws.com/assets/add-image-icon.png"
+                        alt="Upload Image"
+                        className="h-5 w-5 mr-2"
+                    />
+                    {file ? 'One image chosen' : 'Upload Image'}
+                </label>
+
+                <button
+                    onClick={createPost}
+                    className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white ml-2"
+                >
+                    Post
+                </button>
+            </div>
         </div>
     );
 };

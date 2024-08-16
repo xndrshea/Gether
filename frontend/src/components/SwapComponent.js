@@ -11,6 +11,8 @@ const SwapComponent = ({ currentTokenAddress }) => {
     const [amount, setAmount] = useState('');
     const [mode, setMode] = useState('buy'); // 'buy' or 'sell'
     const [pool, setPool] = useState(null);
+    const [isOpen, setIsOpen] = useState(false); // State to track whether the container is open
+    const [buttonText, setButtonText] = useState('Open Swap');
     const wallet = useWallet();
 
     useEffect(() => {
@@ -84,21 +86,50 @@ const SwapComponent = ({ currentTokenAddress }) => {
         setMode((prevMode) => (prevMode === 'buy' ? 'sell' : 'buy'));
     };
 
+    const handleToggle = () => {
+        setIsOpen(!isOpen);
+        setTimeout(() => {
+            setButtonText(isOpen ? 'Open Swap' : 'Collapse Swap');
+        }, 300); // Delay the text change by 300 milliseconds
+    };
+
     return (
-        <div className="swap-component">
-            <button className="toggle-button" onClick={toggleMode}>
-                {mode === 'buy' ? 'Switch to Sell' : 'Switch to Buy'}
+        <div
+            className={`fixed top-24 right-5 ${isOpen ? 'w-72' : 'w-40'
+                } bg-blue-600 text-white p-5 rounded-lg shadow-md z-1000 transition-width duration-300`}
+        >
+            <button
+                className="bg-blue-500 hover:bg-blue-700 py-2 px-4 rounded w-full cursor-pointer"
+                onClick={handleToggle}
+            >
+                {buttonText}
             </button>
-            <h3>
-                {mode === 'buy' ? `Swap TON for ${currentTokenAddress}` : `Sell ${currentTokenAddress} for TON`}
-            </h3>
-            <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Amount"
-            />
-            <button onClick={handleSwap}>Swap</button>
+            {isOpen && (
+                <div className="mt-4">
+                    <button
+                        className="bg-blue-500 hover:bg-blue-700 py-2 px-4 rounded mb-4 w-full cursor-pointer"
+                        onClick={toggleMode}
+                    >
+                        {mode === 'buy' ? 'Switch to Sell' : 'Switch to Buy'}
+                    </button>
+                    <h3 className="mt-0">
+                        {mode === 'buy' ? `Swap TON for ${currentTokenAddress}` : `Sell ${currentTokenAddress} for TON`}
+                    </h3>
+                    <input
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="Amount"
+                        className="w-full p-2 pl-10 text-sm text-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-200 border-none mb-4"
+                    />
+                    <button
+                        className="bg-blue-500 hover:bg-blue-700 py-2 px-4 rounded w-full cursor-pointer"
+                        onClick={handleSwap}
+                    >
+                        Swap
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
