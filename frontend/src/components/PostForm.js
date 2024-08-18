@@ -46,6 +46,7 @@ const PostForm = ({ currentTokenAddress, loadPosts }) => {
 
                 const post = await response.json();
                 console.log('Post created:', post);
+                console.log('Post created at:', new Date(post.created_at).toLocaleString());
 
                 setPostTitle('');
                 setPostContent('');

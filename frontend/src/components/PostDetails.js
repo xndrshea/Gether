@@ -90,39 +90,46 @@ const PostDetails = () => {
     if (!post) return <div>Post not found</div>;
 
     return (
-        <div className="post-details p-4 bg-gray-900 rounded-lg shadow-md text-left">
-            <p className="text-gray-500 mb-4 text-left">
-                g/{post.token_address ? (
-                    <Link to={`/tokenpage/${post.token_address}`} className="text-blue-500 underline">
-                        {tokenInfo ?
-                            `${tokenInfo.name} (${tokenInfo.symbol})` :
-                            post.token_address}
-                    </Link>
-                ) : (
-                    'Unknown Community'
-                )}
-            </p>
-            <h1 className="text-3xl font-bold mb-4 text-left">{post.title}</h1>
-            <p className="text-gray-500 mb-4 text-left">
-                Posted on: {post.created_at ? new Date(post.created_at).toLocaleString() : 'Date not available'}
-            </p>
-            {post.image && (
-                <img
-                    src={post.image}
-                    alt="Post"
-                    className="max-w-full h-auto mb-4 rounded-lg"
-                />
-            )}
-            <p className="text-base mb-4 text-left">{post.content}</p>
-            <h2 className="text-2xl font-bold mb-4 text-left">Comments</h2>
-            {post.comments && post.comments.length > 0 ? (
-                <div className="comments">
-                    {renderComments(post.comments)}
+        <div className="post-details">
+            <div className="container mx-auto px-4 max-w-4xl">
+                <div className="post text-left bg-gray-1000 text-white rounded-lg p-4 mb-4">
+                    <p className="text-gray-500 mb-4">
+                        g/{post.token_address ? (
+                            <Link to={`/tokenpage/${post.token_address}`} className="text-blue-500 underline">
+                                {tokenInfo ?
+                                    `${tokenInfo.name} (${tokenInfo.symbol})` :
+                                    post.token_address}
+                            </Link>
+                        ) : (
+                            'Unknown Community'
+                        )}
+                    </p>
+                    <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+                    <p className="text-gray-500 mb-4">
+                        Posted on: {post.created_at ? new Date(post.created_at).toLocaleString() : 'Date not available'}
+                    </p>
+                    {post.image && (
+                        <img
+                            src={post.image}
+                            alt="Post"
+                            className="max-w-full h-auto mb-4 rounded-lg"
+                        />
+                    )}
+                    <p className="text-base mb-4">{post.content}</p>
+
+                    <hr className="my-6 border-t border-gray-700" />
+
+                    <h2 className="text-2xl font-bold mb-4">Comments</h2>
+                    {post.comments && post.comments.length > 0 ? (
+                        <div className="comments">
+                            {renderComments(post.comments)}
+                        </div>
+                    ) : (
+                        <p className="text-gray-500">No comments yet.</p>
+                    )}
+                    <CommentForm postId={postId} onCommentSubmit={handleNewComment} />
                 </div>
-            ) : (
-                <p className="text-gray-500 text-left">No comments yet.</p>
-            )}
-            <CommentForm postId={postId} onCommentSubmit={handleNewComment} />
+            </div>
         </div>
     );
 };

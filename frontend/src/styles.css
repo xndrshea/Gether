@@ -63,7 +63,6 @@ body {
 
 h1 {
     font-size: 48px;
-    margin-bottom: 40px;
     line-height: 1.2;
 }
 
@@ -327,7 +326,7 @@ main {
 
 .TokenPage .container {
     max-width: 1000px;
-    min-width: 600px;
+    min-width: 667px;
     margin: 0 auto;
     text-align: left;
 }
@@ -339,6 +338,11 @@ main {
 
 .TokenPage .post-form h3 {
     font-size: 24px;
+}
+
+.TokenPage .post-form {
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .TokenPage button:hover {
@@ -440,7 +444,6 @@ main {
 
 .browse-all {
     height: 100vh;
-    padding: 20px;
     margin: 0 auto;
 }
 
@@ -455,8 +458,31 @@ main {
     text-align: left;
 }
 
-@media (max-width: 667px) {
+@media (max-width: 671px) {
     .browse-all .container {
+        width: 95vw;
+        min-width: 95vw;
+    }
+}
+
+.post-details {
+    height: 100vh;
+    margin: 0 auto;
+}
+
+.post-details .body {
+    overflow: auto;
+}
+
+.post-details .container {
+    max-width: 1000px;
+    min-width: 672px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+@media (max-width: 671px) {
+    .post-details .container {
         width: 95vw;
         min-width: 95vw;
     }

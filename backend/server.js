@@ -56,10 +56,11 @@ const userSchema = new mongoose.Schema({
 const postSchema = new mongoose.Schema({
     user_id: mongoose.Schema.Types.ObjectId,
     token_address: String,
+    title: String, 
     content: String,
     image: String,
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-    createdAt: { type: Date, default: Date.now }
+    created_at: { type: Date, default: Date.now }
 });
 
 const commentSchema = new mongoose.Schema({
@@ -119,7 +120,7 @@ app.post('/posts', upload.single('image'), async (req, res) => {
         console.log('Incoming request body:', req.body);
         console.log('Incoming file:', req.file);
 
-        const { user_id, token_address, content } = req.body;
+        const { user_id, token_address, title, content } = req.body;
         let imageUrl = null;
 
         if (req.file) {
@@ -138,7 +139,7 @@ app.post('/posts', upload.single('image'), async (req, res) => {
             imageUrl = uploadResult.Location;
         }
 
-        const post = new Post({ user_id, token_address, content, image: imageUrl });
+        const post = new Post({ user_id, token_address, title, content, image: imageUrl });
         await post.save();
         res.json(post);
     } catch (err) {
@@ -205,12 +206,14 @@ app.listen(PORT, () => {
 app.get('/posts', async (req, res) => {
     console.log('GET request received for /posts');
     try {
-        const posts = await Post.find().populate('comments').sort({ created_at: -1 });
-        console.log(`Found ${posts.length} posts`);
+        const posts = await Post.find()
+            .populate('comments')
+            .sort({ created_at: -1 }) // Sort by created_at in descending order
+            .exec();
         res.json(posts);
     } catch (err) {
-        console.error('Error in /posts endpoint:', err);
-        res.status(500).json({ error: err.message });
+        console.error('Error fetching posts:', err);
+        res.status(500).send(err);
     }
 });
 

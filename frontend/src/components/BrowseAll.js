@@ -72,42 +72,55 @@ const BrowseAll = () => {
         }
     };
 
+    const formatDate = (dateString) => {
+        if (!dateString) return 'Date not available';
+        const date = new Date(dateString);
+        return isNaN(date.getTime()) ? 'Invalid date' : date.toLocaleString();
+    };
+
     if (loading) return <div>Loading posts...</div>;
     if (error) return <div>Error: {error}</div>;
 
     return (
         <div className="browse-all" ref={scrollContainerRef}>
-            <h1>All Posts</h1>
-            {posts.map(post => (
-                <div key={post._id} className="post text-left bg-gray-1000 text-white rounded-lg p-4 mb-4 w-full max-w-2xl">
-                    <p className="mb-2">Posted on: {new Date(post.created_at).toLocaleString()}</p>
-                    {post.image && (
-                        <div className="mb-2">
-                            <img
-                                src={post.image}
-                                alt="Post preview"
-                                className="w-144 h-96 object-cover rounded-lg"
-                            />
+            <h1 className="font-bold text-left text-blue-600 ml-4">All Posts</h1>
+            {posts.map((post, index) => (
+                <React.Fragment key={post._id}>
+                    <div className="post text-left bg-gray-1000 text-white rounded-lg p-4 mb-4 w-full max-w-2xl">
+                        <p className="mb-2">Posted on: {formatDate(post.created_at)}</p>
+                        {post.image && (
+                            <div className="mb-2">
+                                <img
+                                    src={post.image}
+                                    alt="Post preview"
+                                    className="w-auto h-auto w-max[590px] object-cover rounded-lg"
+                                />
+                            </div>
+                        )}
+                        <h2 className="text-2xl font-semibold">{post.title}</h2>
+                        <p className="mb-2">{post.content}</p>
+                        <p className="mb-2">Posted in: {post.token_address ? (
+                            <Link to={`/tokenpage/${post.token_address}`} className="text-blue-500 underline">
+                                {tokenInfo[post.token_address] ?
+                                    `${tokenInfo[post.token_address].name} (${tokenInfo[post.token_address].symbol})` :
+                                    post.token_address}
+                            </Link>
+                        ) : (
+                            'Unknown Community'
+                        )}</p>
+                        <div className="mt-4 flex justify-end">
+                            <button
+                                onClick={() => navigate(`/post/${post._id}`)}
+                                className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white hover:bg-blue-700 transition duration-300"
+                            >
+                                View Post Details
+                            </button>
                         </div>
+                    </div>
+                    {index < posts.length - 1 && (
+                        <hr className="mb-6 border-t border-gray-700" />
                     )}
-                    <h2 className="text-2xl font-semibold">{post.title}</h2>
-                    <p className="mb-2">{post.content}</p>
-                    <p className="mb-2">Posted in: {post.token_address ? (
-                        <Link to={`/tokenpage/${post.token_address}`} className="text-blue-500 underline">
-                            {tokenInfo[post.token_address] ?
-                                `${tokenInfo[post.token_address].name} (${tokenInfo[post.token_address].symbol})` :
-                                post.token_address}
-                        </Link>
-                    ) : (
-                        'Unknown Community'
-                    )}</p>
-                    <button
-                        onClick={() => navigate(`/post/${post._id}`)}
-                        className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white ml-2"
-                    >
-                        View Post Details
-                    </button>
-                </div>
+                </React.Fragment>
             ))}
         </div>
     );

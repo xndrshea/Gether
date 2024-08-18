@@ -32,8 +32,7 @@ const TokenDetails = ({ tokenInfo, currentTokenAddress }) => {
                 {buttonText}
             </button>
             {isOpen && (
-                <div className="mt-4">
-                    <h3 className="mt-0">Token Information</h3>
+                <div className="mt-4 text-left p-1 space-y-2 leading-relaxed">
                     <p>
                         <strong>Name:</strong> {name || 'N/A'}
                     </p>

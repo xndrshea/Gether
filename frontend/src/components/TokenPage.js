@@ -128,16 +128,16 @@ const TokenPage = () => {
     const displayPosts = useCallback((posts) => {
         return posts.map((post, index) => (
             <React.Fragment key={post._id}>
-                <div className="post bg-[#1a1a1a] rounded-lg">
+                <div className="post bg-[#1a1a1a] rounded-lg p-4">
                     <div className="post-content">
+                        <h2 className="text-2xl font-bold mb-3">{post.title}</h2>
                         {post.image && (
                             <img
                                 src={post.image}
                                 alt="Post image"
-                                className="w-full h-auto rounded-lg mb-5"
+                                className="w-full h-auto max-w-[590px] rounded-lg mb-5"
                             />
                         )}
-                        <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
                         <p className="text-gray-300">{post.content}</p>
                     </div>
                     <div className="mt-4 flex justify-end">
@@ -184,7 +184,10 @@ const TokenPage = () => {
             {!isMobile && (
                 <div className="sidebar w-72 fixed top-0 right-0 h-screen overflow-y-auto bg-gray-900 p-5 transition-transform duration-300 transform lg:translate-x-0 translate-x-full">
                     <div className="mt-20 space-y-8">
-                        <SwapComponent currentTokenAddress={address} wallet={wallet} />
+                        <SwapComponent
+                            currentTokenAddress={address}
+                            tokenSymbol={tokenInfo?.metadata?.symbol || 'Token'}
+                        />
                         <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
                     </div>
                 </div>
@@ -199,7 +202,10 @@ const TokenPage = () => {
                             X
                         </button>
                         <div className="mt-20 space-y-8">
-                            <SwapComponent currentTokenAddress={address} wallet={wallet} />
+                            <SwapComponent
+                                currentTokenAddress={address}
+                                tokenSymbol={tokenInfo?.metadata?.symbol || 'Token'}
+                            />
                             <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
                         </div>
                     </div>
