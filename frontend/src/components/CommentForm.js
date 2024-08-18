@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-const CommentForm = ({ postId, loadPosts, currentTokenAddress }) => {
-    const [commentContent, setCommentContent] = useState('');  
+const CommentForm = ({ postId, parentCommentId, loadPosts, currentTokenAddress, onCommentSubmit }) => {
+    const [commentContent, setCommentContent] = useState('');
 
     const createComment = async () => {
         if (commentContent) {
@@ -11,11 +11,17 @@ const CommentForm = ({ postId, loadPosts, currentTokenAddress }) => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ post_id: postId, user_id: '60d9f1f1f1f1f1f1f1f1f1f1', content: commentContent }),
+                    body: JSON.stringify({
+                        post_id: postId,
+                        parent_comment_id: parentCommentId,
+                        user_id: '60d9f1f1f1f1f1f1f1f1f1f1',
+                        content: commentContent
+                    }),
                 });
                 const comment = await response.json();
                 setCommentContent('');
                 loadPosts(currentTokenAddress);
+                if (onCommentSubmit) onCommentSubmit();
             } catch (error) {
                 console.error('Error creating comment:', error);
             }
@@ -23,17 +29,31 @@ const CommentForm = ({ postId, loadPosts, currentTokenAddress }) => {
     };
 
     return (
-        <div className="comment-input-container">
-            <input
-                type="text"
-                id={`commentInput-${postId}`}
-                placeholder="Write a comment..."
-                value={commentContent}
-                autoComplete="off"
-                onChange={(e) => setCommentContent(e.target.value)}
-                className="w-[97%] h-24 resize-none bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg mb-5 p-5"
-            />
-            <button onClick={createComment} className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white">Submit</button>
+        <div className="flex flex-col items-start mt-2">
+            <div className="w-full">
+                <form action="#" className="relative">
+                    <div className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-blue-600">
+                        <textarea
+                            id="comment"
+                            name="comment"
+                            rows={4}
+                            placeholder="Add your comment..."
+                            className="block w-full resize-none border-0 bg-transparent py-2 px-3 text-white placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 caret-grey-600"
+                            value={commentContent}
+                            onChange={(e) => setCommentContent(e.target.value)}
+                        />
+                    </div>
+                    <div className="absolute bottom-2 right-2">
+                        <button
+                            type="button"
+                            onClick={createComment}
+                            className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                        >
+                            Post
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 };

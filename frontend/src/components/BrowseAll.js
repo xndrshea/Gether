@@ -80,6 +80,16 @@ const BrowseAll = () => {
             <h1>All Posts</h1>
             {posts.map(post => (
                 <div key={post._id} className="post bg-gray-800 text-white rounded-lg p-4 mb-4 w-full max-w-2xl">
+                    <p className="mb-2">Posted on: {new Date(post.created_at).toLocaleString()}</p>
+                    {post.image && (
+                        <div className="mb-2">
+                            <img
+                                src={post.image}
+                                alt="Post preview"
+                                className="w-144 h-96 object-cover rounded-lg"
+                            />
+                        </div>
+                    )}
                     <h2 className="text-2xl font-semibold">{post.title}</h2>
                     <p className="mb-2">{post.content}</p>
                     <p className="mb-2">Posted in: {post.token_address ? (
@@ -91,7 +101,6 @@ const BrowseAll = () => {
                     ) : (
                         'Unknown Community'
                     )}</p>
-                    <p className="mb-2">Posted on: {new Date(post.created_at).toLocaleString()}</p>
                     <button
                         onClick={() => navigate(`/post/${post._id}`)}
                         className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white ml-2"
