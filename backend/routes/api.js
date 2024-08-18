@@ -104,3 +104,19 @@ router.get('/posts/detail/:postId', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Delete a post
+router.delete('/posts/:postId', async (req, res) => {
+    console.log(`Deleting post with ID: ${req.params.postId}`);
+    try {
+        const post = await Post.findByIdAndDelete(req.params.postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.json({ message: 'Post deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting post:', err);
+        res.status(500).send(err);
+    }
+});
+

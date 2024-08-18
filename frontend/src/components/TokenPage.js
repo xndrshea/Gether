@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PostForm from './PostForm';
-import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
 import { displayTokenInfo } from './tokenInfo';
 import TokenDetails from './TokenDetails';
-import TonConnectButton from './TonConnectButton';
 import '../styles.css';
 
 const TokenPage = () => {
@@ -64,14 +62,42 @@ const TokenPage = () => {
                 throw new Error(`HTTP error status: ${response.status}`);
             }
             const data = await response.json();
-            setTokenInfo(data.result || data);
+            const tokenInfo = data.result || data;
+            setTokenInfo(tokenInfo);
             setCanCreatePost(true);
+
+            // Save token info to your database
+            await saveTokenInfoToDatabase(tokenAddress, tokenInfo);
         } catch (error) {
             console.error('Error loading token info:', error);
             setTokenInfo(`Error: ${error.message}`);
             setCanCreatePost(false);
         }
     }, []);
+
+    const saveTokenInfoToDatabase = async (address, tokenInfo) => {
+        try {
+            const response = await fetch('http://localhost:5001/tokens', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    address,
+                    name: tokenInfo.metadata?.name,
+                    symbol: tokenInfo.metadata?.symbol,
+                    description: tokenInfo.metadata?.description,
+                    metadata: tokenInfo.metadata,
+                }),
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            console.log('Token info saved to database');
+        } catch (error) {
+            console.error('Error saving token info to database:', error);
+        }
+    };
 
     const fetchPosts = useCallback(async (tokenAddress) => {
         try {

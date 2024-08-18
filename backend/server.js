@@ -69,10 +69,19 @@ const commentSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now }
 });
 
+const tokenSchema = new mongoose.Schema({
+    address: String,
+    name: String,
+    symbol: String,
+    description: String,
+    metadata: Object
+});
+
 // Define Models
 const User = mongoose.model('User', userSchema);
 const Post = mongoose.model('Post', postSchema);
 const Comment = mongoose.model('Comment', commentSchema);
+const Token = mongoose.model('Token', tokenSchema);
 
 // Middleware to log requests
 app.use((req, res, next) => {
@@ -136,6 +145,21 @@ app.post('/posts', upload.single('image'), async (req, res) => {
     }
 });
 
+// Delete a post
+app.delete('/posts/:postId', async (req, res) => {
+    console.log(`Deleting post with ID: ${req.params.postId}`);
+    try {
+        const post = await Post.findByIdAndDelete(req.params.postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.json({ message: 'Post deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting post:', err);
+        res.status(500).send(err);
+    }
+});
+
 // Create a comment
 app.post('/comments', async (req, res) => {
     console.log('Creating a new comment:', req.body);
@@ -194,6 +218,69 @@ app.get('/posts/detail/:postId', async (req, res) => {
         res.json(post);
     } catch (err) {
         console.error('Error fetching post details:', err);
+        res.status(500).send(err);
+    }
+});
+
+// Get token information
+app.get('/tokens/:tokenAddress', async (req, res) => {
+    console.log(`Fetching token info for address: ${req.params.tokenAddress}`);
+    try {
+        let token = await Token.findOne({ address: req.params.tokenAddress });
+        if (!token) {
+            // If token not found in database, fetch from external API
+            const { apiUrl, apiKey } = await initApi();
+            const response = await fetch(`${apiUrl}jettons/${req.params.tokenAddress}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'accept': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error status: ${response.status}`);
+            }
+            const data = await response.json();
+            const tokenInfo = data.result || data;
+
+            // Save to database
+            token = new Token({
+                address: req.params.tokenAddress,
+                name: tokenInfo.metadata?.name,
+                symbol: tokenInfo.metadata?.symbol,
+                description: tokenInfo.metadata?.description,
+                metadata: tokenInfo.metadata,
+            });
+            await token.save();
+        }
+        res.json(token);
+    } catch (err) {
+        console.error('Error fetching token info:', err);
+        res.status(500).send(err);
+    }
+});
+
+// Create or update token information
+app.post('/tokens', async (req, res) => {
+    console.log('Creating/updating token info:', req.body);
+    try {
+        const { address, name, symbol, description, metadata } = req.body;
+        let token = await Token.findOne({ address });
+        if (token) {
+            // Update existing token
+            token.name = name;
+            token.symbol = symbol;
+            token.description = description;
+            token.metadata = metadata;
+            await token.save();
+        } else {
+            // Create new token
+            token = new Token({ address, name, symbol, description, metadata });
+            await token.save();
+        }
+        res.json(token);
+    } catch (err) {
+        console.error('Error creating/updating token:', err);
         res.status(500).send(err);
     }
 });
