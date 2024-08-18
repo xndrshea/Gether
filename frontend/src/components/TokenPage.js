@@ -108,8 +108,9 @@ const TokenPage = () => {
 
     const initApi = async () => {
         try {
+            console.log(process.env);
             const apiUrl = 'https://tonapi.io/v2/';
-            const apiKey = 'AE7SQYEEE7WRMNIAAAAKKP7NQD563K2HAZFZOCO4IV4DVONWHB5A7P3ESI6XTHVH7WETHWI';
+            const apiKey = process.env.REACT_APP_API_KEY;
             return { apiUrl, apiKey };
         } catch (error) {
             console.error('Error loading configuration:', error);
@@ -122,19 +123,19 @@ const TokenPage = () => {
     };
 
     return (
-            <div className="TokenPage" ref={scrollContainerRef}>
-                <div className="container">
-                    <div className="logo">
-                        <span>gether</span>
-                    </div>
-                    <div id="tokenInfo"></div>
-                    {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
-                    <div id="posts">{displayPosts(posts)}</div>
-                    <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
-                    <SwapComponent currentTokenAddress={address} wallet={wallet} />
-                    {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
+        <div className="TokenPage" ref={scrollContainerRef}>
+            <div className="container">
+                <div className="logo">
+                    <span>gether</span>
                 </div>
+                <div id="tokenInfo"></div>
+                {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
+                <div id="posts">{displayPosts(posts)}</div>
+                <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
+                <SwapComponent currentTokenAddress={address} wallet={wallet} />
+                {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
             </div>
+        </div>
     );
 };
 

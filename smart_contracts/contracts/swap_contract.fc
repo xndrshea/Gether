@@ -1,0 +1,78 @@
+// Define constants
+const OP_TRADE = 0x1; // Operation code for trading
+const FEE_PERCENTAGE = 2; // Fee percentage (2%)
+
+// Define the main function
+() main() {
+    ;; Receive the incoming message
+    slice msg_body = get_msg_body();
+    int op_code = msg_body~load_uint(32);
+
+    ;; Handle the operation based on the op_code
+    if (op_code == OP_TRADE) {
+        handle_trade(msg_body);
+    } else {
+        ;; Unknown operation
+        throw(101);
+    }
+}
+
+// Function to handle trade
+() handle_trade(slice msg_body) {
+    ;; Parse trade details from the message
+    int token_amount = msg_body~load_uint(64);
+    int token_price = msg_body~load_uint(64);
+
+    ;; Calculate the fee
+    int fee = (token_amount * FEE_PERCENTAGE) / 100;
+
+    ;; Calculate the net amount after fee
+    int net_amount = token_amount - fee;
+
+    ;; Send the net amount to the recipient
+    send_tokens(net_amount, msg_body);
+
+    ;; Send the fee to the contract owner
+    send_fee(fee);
+}
+
+// Function to send tokens
+() send_tokens(int amount, slice msg_body) {
+    ;; Extract recipient address
+    slice recipient_address = msg_body~load_msg_addr();
+
+    ;; Send tokens to the recipient
+    send_raw_message(
+        build_int_msg(
+            recipient_address,
+            amount,
+            null(),
+            null()
+        ),
+        1
+    );
+}
+
+// Function to send fee to the contract owner
+() send_fee(int fee) {
+    ;; Define the contract owner's address
+    slice owner_address = parse_address("owner_wallet_address");
+
+    ;; Send the fee to the owner
+    send_raw_message(
+        build_int_msg(
+            owner_address,
+            fee,
+            null(),
+            null()
+        ),
+        1
+    );
+}
+
+// Helper function to parse address
+slice parse_address(string address) {
+    ;; Implement address parsing logic
+    ;; This is a placeholder function
+    return slice(address);
+}
