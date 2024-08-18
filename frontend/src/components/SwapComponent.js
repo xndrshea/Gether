@@ -95,7 +95,7 @@ const SwapComponent = ({ currentTokenAddress }) => {
 
     return (
         <div
-            className={`fixed top-24 right-5 ${isOpen ? 'w-72' : 'w-40'
+            className={`${isOpen ? 'w-60' : 'w-40'
                 } bg-blue-600 text-white p-5 rounded-lg shadow-md z-1000 transition-width duration-300`}
         >
             <button

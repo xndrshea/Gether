@@ -15,6 +15,18 @@ const TokenPage = () => {
     const scrollContainerRef = useRef(null);
     const navigate = useNavigate();
 
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     useEffect(() => {
         const tokenAddress = address || new URLSearchParams(window.location.search).get('address');
 
@@ -114,23 +126,35 @@ const TokenPage = () => {
     }, []);
 
     const displayPosts = useCallback((posts) => {
-        return posts.map((post) => (
-            <div key={post._id} className="post">
-                <div className="post-content">
-                    {post.image && (
-                        <img src={post.image} alt="Post image" />
-                    )}
-                    <p>{post.content}</p>
+        return posts.map((post, index) => (
+            <React.Fragment key={post._id}>
+                <div className="post bg-[#1a1a1a] rounded-lg">
+                    <div className="post-content">
+                        {post.image && (
+                            <img
+                                src={post.image}
+                                alt="Post image"
+                                className="w-full h-auto rounded-lg mb-5"
+                            />
+                        )}
+                        <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
+                        <p className="text-gray-300">{post.content}</p>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <button
+                            onClick={() => navigate(`/post/${post._id}`)}
+                            className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white hover:bg-blue-700 transition duration-300"
+                        >
+                            View Details
+                        </button>
+                    </div>
                 </div>
-                <button
-                    onClick={() => navigate(`/post/${post._id}`)}
-                    className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white ml-2"
-                >
-                    View Details
-                </button>
-            </div>
+                {index < posts.length - 1 && (
+                    <hr className="my-6 border-t border-gray-700" />
+                )}
+            </React.Fragment>
         ));
-    }, [fetchPosts, address, navigate]);
+    }, [navigate]);
 
     const initApi = async () => {
         try {
@@ -148,19 +172,40 @@ const TokenPage = () => {
     };
 
     return (
-            <div className="TokenPage" ref={scrollContainerRef}>
-                <div className="container">
-                    <div className="logo">
-                        <span>gether</span>
-                    </div>
+        <div className="TokenPage flex relative" ref={scrollContainerRef}>
+            <div className="main-content flex-grow lg:pr-36 xl:pr-0 transition-all duration-300">
+                <div className="container mx-auto px-4">
                     <div id="tokenInfo"></div>
                     {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
-                    <div id="posts">{displayPosts(posts)}</div>
-                    <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
-                    <SwapComponent currentTokenAddress={address} wallet={wallet} />
+                    <div id="posts" className="py-4 md:py-6 lg:py-8">{displayPosts(posts)}</div>
                     {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
                 </div>
             </div>
+            {!isMobile && (
+                <div className="sidebar w-72 fixed top-0 right-0 h-screen overflow-y-auto bg-gray-900 p-5 transition-transform duration-300 transform lg:translate-x-0 translate-x-full">
+                    <div className="mt-20 space-y-8">
+                        <SwapComponent currentTokenAddress={address} wallet={wallet} />
+                        <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
+                    </div>
+                </div>
+            )}
+            {isMobile && sidebarOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
+                    <div className="fixed right-0 top-0 w-72 h-full bg-gray-900 p-5 overflow-y-auto z-50">
+                        <button
+                            className="absolute top-2 right-2 text-white"
+                            onClick={() => setSidebarOpen(false)}
+                        >
+                            X
+                        </button>
+                        <div className="mt-20 space-y-8">
+                            <SwapComponent currentTokenAddress={address} wallet={wallet} />
+                            <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 

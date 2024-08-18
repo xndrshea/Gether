@@ -79,7 +79,7 @@ const BrowseAll = () => {
         <div className="browse-all" ref={scrollContainerRef}>
             <h1>All Posts</h1>
             {posts.map(post => (
-                <div key={post._id} className="post bg-gray-800 text-white rounded-lg p-4 mb-4 w-full max-w-2xl">
+                <div key={post._id} className="post text-left bg-gray-1000 text-white rounded-lg p-4 mb-4 w-full max-w-2xl">
                     <p className="mb-2">Posted on: {new Date(post.created_at).toLocaleString()}</p>
                     {post.image && (
                         <div className="mb-2">

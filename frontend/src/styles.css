@@ -318,7 +318,6 @@ main {
     background-color: #1a1a1a;
     color: white;
     height: 100vh;
-    padding-top: 20px;
     display: flex;
     justify-content: center;
     width: 100%;
@@ -333,62 +332,13 @@ main {
     text-align: left;
 }
 
-.TokenPage .logo {
-    position: relative;
-    margin-bottom: 50px;
-    margin-top: 20px;
-    text-align: left;
+.TokenPage .sidebar {
+    background-color: #1a1a1a;
+    padding: 1rem;
 }
 
-.TokenPage h1 {
-    font-size: 32px;
-    margin-bottom: 20px;
-}
-
-.TokenPage .token-info,
-.TokenPage .post-form,
-.TokenPage .posts {
-    background-color: #2a2a2a;
-    border: 1px solid #3a3a3a;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    padding: 20px;
-}
-
-.TokenPage .token-info h3,
 .TokenPage .post-form h3 {
     font-size: 24px;
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #0066ff;
-}
-
-details {
-    margin: 10px 0;
-    padding: 10px;
-    background-color: #2a2a2a;
-    border-radius: 5px;
-}
-
-summary {
-    cursor: pointer;
-    font-weight: bold;
-}
-
-details[open] summary {
-    margin-bottom: 10px;
-}
-
-.TokenPage textarea,
-.TokenPage input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #3a3a3a;
-    border-radius: 4px;
-    font-size: 16px;
-    background-color: #2a2a2a;
-    color: white;
 }
 
 .TokenPage button:hover {
@@ -396,81 +346,23 @@ details[open] summary {
     transition: background-color 0.3s ease;
 }
 
-.TokenPage .post {
-    background-color: #2a2a2a;
-    border: 1px solid #3a3a3a;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    padding: 15px;
-}
-
-.TokenPage .post-form textarea {
-    width: 97%;
-    height: 100px;
-    resize: none;
-}
-
-.TokenPage .post {
-    margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #3a3a3a;
-    border-radius: 5px;
-}
-
 .TokenPage .post-content {
     margin-bottom: 10px;
-    background-color: #2a2a2a;
     padding: 10px;
-    border-radius: 5px;
     width: 100%;
 }
 
-.TokenPage .comments {
-    margin-top: 10px;
+@media (max-width: 667px) {
+    .TokenPage .container {
+        width: 95vw;
+        min-width: 95vw;
+    }
 }
 
-.TokenPage .comment {
-    margin-left: 20px;
-    margin-top: 5px;
-    padding: 5px;
-    background-color: #3a3a3a;
-    border-radius: 3px;
-}
-
-.TokenPage .comment-input-container {
-    margin-top: 10px;
-}
-
-.TokenPage .comment-input-container input[type="text"] {
-    width: calc(100% - 70px);
-    margin-right: 5px;
-}
-
-.TokenPage .comment-toggle {
-    margin-top: 10px;
-}
-
-.TokenPage .comment-form {
-    display: flex;
-    flex-direction: column;
-}
-
-.TokenPage .comment-form input {
-    margin-bottom: 5px;
-}
-
-.TokenPage .comment-form button {
-    align-self: flex-start;
-}
-
-.TokenPage pre {
-    background-color: #3a3a3a;
-    border: 1px solid #4a4a4a;
-    border-radius: 4px;
-    padding: 10px;
-    overflow-x: auto;
-    font-size: 14px;
-    color: #e0e0e0;
+@media (max-width: 768px) {
+    .TokenPage .sidebar {
+        display: none;
+    }
 }
 
 @media only screen and (max-width: 230px) {
@@ -548,9 +440,7 @@ details[open] summary {
 
 .browse-all {
     height: 100vh;
-    margin-top: 60px;
     padding: 20px;
-    max-width: 800px;
     margin: 0 auto;
 }
 
@@ -558,32 +448,16 @@ details[open] summary {
     overflow: auto;
 }
 
-.browse-all h1 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.browse-all .post {
-    background-color: #2a2a2a;
-    border: 1px solid #3a3a3a;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    padding: 20px;
-    align-items: left;
+.browse-all .container {
+    max-width: 1000px;
+    min-width: 1000px;
+    margin: 0 auto;
     text-align: left;
 }
 
-.browse-all .post h2 {
-    margin-top: 0;
-}
-
-.browse-all .comments {
-    margin-top: 10px;
-}
-
-.browse-all .comment {
-    background-color: #3a3a3a;
-    border-radius: 5px;
-    padding: 10px;
-    margin-top: 10px;
+@media (max-width: 667px) {
+    .browse-all .container {
+        width: 95vw;
+        min-width: 95vw;
+    }
 }
