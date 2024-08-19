@@ -7,7 +7,7 @@ import { toNano, Address } from '@ton/core';
 const tonweb = new TonWeb(); // Initialize the TonWeb client
 const BN = TonWeb.utils.BN; // Initialize BN for Big Number calculations
 
-const SwapComponent = ({ currentTokenAddress }) => {
+const SwapComponent = ({ currentTokenAddress, tokenSymbol }) => {
     const [amount, setAmount] = useState('');
     const [mode, setMode] = useState('buy'); // 'buy' or 'sell'
     const [pool, setPool] = useState(null);
@@ -95,7 +95,7 @@ const SwapComponent = ({ currentTokenAddress }) => {
 
     return (
         <div
-            className={`fixed top-24 right-5 ${isOpen ? 'w-72' : 'w-40'
+            className={`${isOpen ? 'w-60' : 'w-40'
                 } bg-blue-600 text-white p-5 rounded-lg shadow-md z-1000 transition-width duration-300`}
         >
             <button
@@ -105,15 +105,15 @@ const SwapComponent = ({ currentTokenAddress }) => {
                 {buttonText}
             </button>
             {isOpen && (
-                <div className="mt-4">
+                <div className="mt-4 text-left">
                     <button
                         className="bg-blue-500 hover:bg-blue-700 py-2 px-4 rounded mb-4 w-full cursor-pointer"
                         onClick={toggleMode}
                     >
                         {mode === 'buy' ? 'Switch to Sell' : 'Switch to Buy'}
                     </button>
-                    <h3 className="mt-0">
-                        {mode === 'buy' ? `Swap TON for ${currentTokenAddress}` : `Sell ${currentTokenAddress} for TON`}
+                    <h3 className="mt-0 mb-2 font-bold">
+                        {mode === 'buy' ? `Swap TON for ${tokenSymbol || 'Token'}` : `Sell ${tokenSymbol || 'Token'} for TON`}
                     </h3>
                     <input
                         type="number"

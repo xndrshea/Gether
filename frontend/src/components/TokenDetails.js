@@ -22,7 +22,7 @@ const TokenDetails = ({ tokenInfo, currentTokenAddress }) => {
 
     return (
         <div
-            className={`fixed top-96 right-5 ${isOpen ? 'w-72' : 'w-40'
+            className={`${isOpen ? 'w-60' : 'w-40'
                 } bg-gray-800 text-white p-5 rounded-lg shadow-md z-1000 transition-width duration-300`}
         >
             <button
@@ -32,8 +32,7 @@ const TokenDetails = ({ tokenInfo, currentTokenAddress }) => {
                 {buttonText}
             </button>
             {isOpen && (
-                <div className="mt-4">
-                    <h3 className="mt-0">Token Information</h3>
+                <div className="mt-4 text-left p-1 space-y-2 leading-relaxed">
                     <p>
                         <strong>Name:</strong> {name || 'N/A'}
                     </p>
