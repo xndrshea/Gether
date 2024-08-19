@@ -158,9 +158,8 @@ const TokenPage = () => {
 
     const initApi = async () => {
         try {
-            console.log(process.env);
             const apiUrl = 'https://tonapi.io/v2/';
-            const apiKey = process.env.REACT_APP_API_KEY;
+            const apiKey = 'AE7SQYEEE7WRMNIAAAAKKP7NQD563K2HAZFZOCO4IV4DVONWHB5A7P3ESI6XTHVH7WETHWI';
             return { apiUrl, apiKey };
         } catch (error) {
             console.error('Error loading configuration:', error);
@@ -180,16 +179,8 @@ const TokenPage = () => {
                     {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
                     <div id="posts" className="py-4 md:py-6 lg:py-8">{displayPosts(posts)}</div>
                     {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
-
                 </div>
-                <div id="tokenInfo"></div>
-                {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
-                <div id="posts">{displayPosts(posts)}</div>
-                <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
-                <SwapComponent currentTokenAddress={address} wallet={wallet} />
-                {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
             </div>
-
             {!isMobile && (
                 <div className="sidebar w-72 fixed top-0 right-0 h-screen overflow-y-auto bg-gray-900 p-5 transition-transform duration-300 transform lg:translate-x-0 translate-x-full">
                     <div className="mt-20 space-y-8">
@@ -220,7 +211,6 @@ const TokenPage = () => {
                     </div>
                 </div>
             )}
-
         </div>
     );
 };
