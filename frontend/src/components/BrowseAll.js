@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { extractTokenDetails } from './tokenInfo';
+import { fetchAllPosts } from './fetch/FetchPost';
 
 const BrowseAll = () => {
     const [posts, setPosts] = useState([]);
@@ -11,7 +11,20 @@ const BrowseAll = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchAllPosts();
+        const fetchPosts = async () => {
+            try {
+                setLoading(true);
+                const { posts, tokenInfo } = await fetchAllPosts();
+                setPosts(posts);
+                setTokenInfo(tokenInfo);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPosts();
     }, []);
 
     useEffect(() => {
@@ -28,49 +41,6 @@ const BrowseAll = () => {
             window.removeEventListener('resize', updateBodyHeight);
         };
     }, []);
-
-    const fetchTokenInfo = async (posts) => {
-        const tokenInfoPromises = posts.map(post =>
-            post.token_address ? fetch(`http://localhost:5001/tokens/${post.token_address}`)
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error(`HTTP error! status: ${res.status}`);
-                    }
-                    return res.json();
-                })
-                .catch(error => {
-                    console.error(`Error fetching token info for ${post.token_address}:`, error);
-                    return null;
-                })
-                : null
-        );
-        const tokenInfoResults = await Promise.all(tokenInfoPromises);
-        const newTokenInfo = {};
-        tokenInfoResults.forEach((info, index) => {
-            if (info && posts[index].token_address) {
-                newTokenInfo[posts[index].token_address] = extractTokenDetails(info);
-            }
-        });
-        setTokenInfo(newTokenInfo);
-    };
-
-    const fetchAllPosts = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch('http://localhost:5001/posts');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            setPosts(data);
-            await fetchTokenInfo(data);
-        } catch (err) {
-            console.error('Error fetching posts:', err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const formatDate = (dateString) => {
         if (!dateString) return 'Date not available';

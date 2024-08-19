@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from 'react';
 import { TonConnect } from '@tonconnect/sdk';
-import './TonConnectButton.css';
+import '../styles.css';
 
 const WalletContext = createContext();
 
