@@ -34,7 +34,7 @@ const Home = () => {
             <div className="logo">
                 <span>gether</span>
             </div>
-            <h1 classname="mb-4">
+            <h1 className="mb-4">
                 <span className="first-line font-semibold">Where Tokens</span><br />
                 <span className="second-line font-semibold">become <span className="blue-text font-bold">Communities</span></span>
             </h1>

@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PostForm from './PostForm';
-import CommentForm from './CommentForm';
 import SwapComponent from './SwapComponent';
 import { displayTokenInfo } from './tokenInfo';
 import TokenDetails from './TokenDetails';
-import TonConnectButton from './TonConnectButton';
 import '../styles.css';
 
 const TokenPage = () => {
@@ -16,6 +14,18 @@ const TokenPage = () => {
     const [wallet, setWallet] = useState(null);
     const scrollContainerRef = useRef(null);
     const navigate = useNavigate();
+
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const tokenAddress = address || new URLSearchParams(window.location.search).get('address');
@@ -64,14 +74,42 @@ const TokenPage = () => {
                 throw new Error(`HTTP error status: ${response.status}`);
             }
             const data = await response.json();
-            setTokenInfo(data.result || data);
+            const tokenInfo = data.result || data;
+            setTokenInfo(tokenInfo);
             setCanCreatePost(true);
+
+            // Save token info to your database
+            await saveTokenInfoToDatabase(tokenAddress, tokenInfo);
         } catch (error) {
             console.error('Error loading token info:', error);
             setTokenInfo(`Error: ${error.message}`);
             setCanCreatePost(false);
         }
     }, []);
+
+    const saveTokenInfoToDatabase = async (address, tokenInfo) => {
+        try {
+            const response = await fetch('http://localhost:5001/tokens', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    address,
+                    name: tokenInfo.metadata?.name,
+                    symbol: tokenInfo.metadata?.symbol,
+                    description: tokenInfo.metadata?.description,
+                    metadata: tokenInfo.metadata,
+                }),
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            console.log('Token info saved to database');
+        } catch (error) {
+            console.error('Error saving token info to database:', error);
+        }
+    };
 
     const fetchPosts = useCallback(async (tokenAddress) => {
         try {
@@ -88,23 +126,35 @@ const TokenPage = () => {
     }, []);
 
     const displayPosts = useCallback((posts) => {
-        return posts.map((post) => (
-            <div key={post._id} className="post">
-                <div className="post-content">
-                    {post.image && (
-                        <img src={post.image} alt="Post image" />
-                    )}
-                    <p>{post.content}</p>
+        return posts.map((post, index) => (
+            <React.Fragment key={post._id}>
+                <div className="post bg-[#1a1a1a] rounded-lg p-4">
+                    <div className="post-content">
+                        <h2 className="text-2xl font-bold mb-3">{post.title}</h2>
+                        {post.image && (
+                            <img
+                                src={post.image}
+                                alt="Post image"
+                                className="w-full h-auto max-w-[590px] rounded-lg mb-5"
+                            />
+                        )}
+                        <p className="text-gray-300">{post.content}</p>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                        <button
+                            onClick={() => navigate(`/post/${post._id}`)}
+                            className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white hover:bg-blue-700 transition duration-300"
+                        >
+                            View Details
+                        </button>
+                    </div>
                 </div>
-                <button
-                    onClick={() => navigate(`/post/${post._id}`)}
-                    className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white ml-2"
-                >
-                    View Details
-                </button>
-            </div>
+                {index < posts.length - 1 && (
+                    <hr className="my-6 border-t border-gray-700" />
+                )}
+            </React.Fragment>
         ));
-    }, [fetchPosts, address, navigate]);
+    }, [navigate]);
 
     const initApi = async () => {
         try {
@@ -123,10 +173,14 @@ const TokenPage = () => {
     };
 
     return (
-        <div className="TokenPage" ref={scrollContainerRef}>
-            <div className="container">
-                <div className="logo">
-                    <span>gether</span>
+        <div className="TokenPage flex relative" ref={scrollContainerRef}>
+            <div className="main-content flex-grow lg:pr-36 xl:pr-0 transition-all duration-300">
+                <div className="container mx-auto px-4">
+                    <div id="tokenInfo"></div>
+                    {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
+                    <div id="posts" className="py-4 md:py-6 lg:py-8">{displayPosts(posts)}</div>
+                    {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
+
                 </div>
                 <div id="tokenInfo"></div>
                 {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
@@ -135,6 +189,38 @@ const TokenPage = () => {
                 <SwapComponent currentTokenAddress={address} wallet={wallet} />
                 {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
             </div>
+
+            {!isMobile && (
+                <div className="sidebar w-72 fixed top-0 right-0 h-screen overflow-y-auto bg-gray-900 p-5 transition-transform duration-300 transform lg:translate-x-0 translate-x-full">
+                    <div className="mt-20 space-y-8">
+                        <SwapComponent
+                            currentTokenAddress={address}
+                            tokenSymbol={tokenInfo?.metadata?.symbol || 'Token'}
+                        />
+                        <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
+                    </div>
+                </div>
+            )}
+            {isMobile && sidebarOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
+                    <div className="fixed right-0 top-0 w-72 h-full bg-gray-900 p-5 overflow-y-auto z-50">
+                        <button
+                            className="absolute top-2 right-2 text-white"
+                            onClick={() => setSidebarOpen(false)}
+                        >
+                            X
+                        </button>
+                        <div className="mt-20 space-y-8">
+                            <SwapComponent
+                                currentTokenAddress={address}
+                                tokenSymbol={tokenInfo?.metadata?.symbol || 'Token'}
+                            />
+                            <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

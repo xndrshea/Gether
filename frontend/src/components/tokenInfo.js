@@ -34,13 +34,13 @@ export const extractImageUrl = (data) => {
 };
 
 export const extractTokenDetails = (info) => {
-    if (!info) {
+    if (!info || !info.metadata) {
         return { name: null, symbol: null, description: null };
     }
 
-    const name = info.metadata && info.metadata.name;
-    const symbol = info.metadata && info.metadata.symbol;
-    const description = info.metadata && info.metadata.description;
+    const name = info.metadata.name;
+    const symbol = info.metadata.symbol;
+    const description = info.metadata.description;
 
     return { name, symbol, description };
 };

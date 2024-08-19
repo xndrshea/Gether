@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const PostForm = ({ currentTokenAddress, loadPosts }) => {
+    const [postTitle, setPostTitle] = useState('');
     const [postContent, setPostContent] = useState('');
     const [file, setFile] = useState(null);
 
@@ -12,18 +13,19 @@ const PostForm = ({ currentTokenAddress, loadPosts }) => {
 
     const createPost = async () => {
         console.log('Post button clicked');
+        console.log('postTitle:', postTitle);
         console.log('postContent:', postContent);
         console.log('currentTokenAddress:', currentTokenAddress);
         console.log('file:', file);
 
-        if (postContent && currentTokenAddress) {
+        if (postTitle && postContent && currentTokenAddress) {
             try {
                 const formData = new FormData();
                 formData.append('user_id', '60d9f1f1f1f1f1f1f1f1f1f1'); // Example user ID
                 formData.append('token_address', currentTokenAddress);
+                formData.append('title', postTitle);
                 formData.append('content', postContent);
 
-                // Only append the image if a file is selected
                 if (file) {
                     formData.append('image', file);
                 }
@@ -44,7 +46,9 @@ const PostForm = ({ currentTokenAddress, loadPosts }) => {
 
                 const post = await response.json();
                 console.log('Post created:', post);
+                console.log('Post created at:', new Date(post.created_at).toLocaleString());
 
+                setPostTitle('');
                 setPostContent('');
                 setFile(null);
                 loadPosts(currentTokenAddress);
@@ -52,13 +56,24 @@ const PostForm = ({ currentTokenAddress, loadPosts }) => {
                 console.error('Error creating post:', error);
             }
         } else {
-            console.log('Missing content, token address, or file');
+            console.log('Missing title, content, or token address');
         }
     };
 
-    return (
+     return (
         <div className="post-form">
-            <h3 className="font-bold">Create a Post</h3>
+             <h3 className="px-1 font-bold mb-3 text-[#0066ff]">Create a Post</h3>
+            <input
+                type="text"
+                id="postTitle"
+                placeholder="Enter post title"
+                value={postTitle}
+                onChange={(e) => {
+                    setPostTitle(e.target.value);
+                    console.log('Post title updated:', e.target.value);
+                }}
+                className="w-full mb-2 p-2 border rounded bg-[#1a1a1a] text-white placeholder-gray-400"
+            />
             <textarea
                 id="postContent"
                 rows="4"
@@ -68,6 +83,7 @@ const PostForm = ({ currentTokenAddress, loadPosts }) => {
                     setPostContent(e.target.value);
                     console.log('Post content updated:', e.target.value);
                 }}
+                 className="w-full mb-2 p-2 border rounded resize-none bg-[#1a1a1a] text-white placeholder-gray-400 "
             />
             <div className="flex justify-end">
                 <label

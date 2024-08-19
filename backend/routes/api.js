@@ -16,7 +16,7 @@ const postSchema = new mongoose.Schema({
     content: String,
     image: String,
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-    createdAt: { type: Date, default: Date.now }
+    created_at: { type: Date, default: Date.now }
 });
 
 const commentSchema = new mongoose.Schema({
@@ -104,3 +104,19 @@ router.get('/posts/detail/:postId', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Delete a post
+router.delete('/posts/:postId', async (req, res) => {
+    console.log(`Deleting post with ID: ${req.params.postId}`);
+    try {
+        const post = await Post.findByIdAndDelete(req.params.postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.json({ message: 'Post deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting post:', err);
+        res.status(500).send(err);
+    }
+});
+
