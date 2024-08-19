@@ -1,78 +1,53 @@
-// Define constants
-const OP_TRADE = 0x1; // Operation code for trading
-const FEE_PERCENTAGE = 2; // Fee percentage (2%)
+#include "imports/stdlib.fc"; ;; Include the standard library
 
-// Define the main function
-() main() {
-    ;; Receive the incoming message
-    slice msg_body = get_msg_body();
-    int op_code = msg_body~load_uint(32);
+;; Declare the global fee_percent variable
+global int fee_percent;
 
-    ;; Handle the operation based on the op_code
-    if (op_code == OP_TRADE) {
-        handle_trade(msg_body);
-    } else {
-        ;; Unknown operation
-        throw(101);
-    }
+() set_fee() {
+    ;; Assign a value to the global variable
+    fee_percent = 10;
 }
 
-// Function to handle trade
-() handle_trade(slice msg_body) {
-    ;; Parse trade details from the message
-    int token_amount = msg_body~load_uint(64);
-    int token_price = msg_body~load_uint(64);
-
-    ;; Calculate the fee
-    int fee = (token_amount * FEE_PERCENTAGE) / 100;
-
-    ;; Calculate the net amount after fee
-    int net_amount = token_amount - fee;
-
-    ;; Send the net amount to the recipient
-    send_tokens(net_amount, msg_body);
-
-    ;; Send the fee to the contract owner
-    send_fee(fee);
+slice get_platform_wallet_address() method_id {
+    ;; Manually create the address slice
+    return begin_parse(begin_cell()
+        .store_uint(0, 8) ;; Workchain ID
+        ;; Manually store the 256-bit address (replace with your actual address bytes)
+        .store_uint(D93F8F12E0F53F9091D1727E76BAE1D08A81FA06DE10BA1B9AC3, 256)
+        .end_cell());
 }
 
-// Function to send tokens
-() send_tokens(int amount, slice msg_body) {
-    ;; Extract recipient address
-    slice recipient_address = msg_body~load_msg_addr();
+() recv_internal(int msg_value, cell in_msg, slice in_msg_body) impure {
+    ;; Set the fee percentage (initialize the global variable)
+    set_fee();
 
-    ;; Send tokens to the recipient
-    send_raw_message(
-        build_int_msg(
-            recipient_address,
-            amount,
-            null(),
-            null()
-        ),
-        1
-    );
-}
+    ;; Decode the incoming message body to extract swap details
+    int swap_amount = in_msg_body~load_int(257); ;; Amount being swapped
 
-// Function to send fee to the contract owner
-() send_fee(int fee) {
-    ;; Define the contract owner's address
-    slice owner_address = parse_address("owner_wallet_address");
+    ;; Calculate the fee based on the percentage
+    int fee = (swap_amount * fee_percent) / 1000;
+    int amount_after_fee = swap_amount - fee;
 
-    ;; Send the fee to the owner
-    send_raw_message(
-        build_int_msg(
-            owner_address,
-            fee,
-            null(),
-            null()
-        ),
-        1
-    );
-}
+    ;; Load the platform wallet address using the function
+    slice platform_wallet_address = get_platform_wallet_address();
 
-// Helper function to parse address
-slice parse_address(string address) {
-    ;; Implement address parsing logic
-    ;; This is a placeholder function
-    return slice(address);
+    ;; Send the fee to the platform wallet
+    var fee_message = begin_cell()
+        .store_uint(0, 32) ;; Operation ID (optional)
+        .store_uint(0, 64) ;; Query ID (optional)
+        .end_cell();
+
+    send_raw_message(begin_cell().store_slice(platform_wallet_address).end_cell(), fee);
+
+    ;; Load the destination address from the message body
+    slice destination_address;
+    (destination_address, ) = in_msg_body~load_msg_addr();
+
+    ;; Forward the remaining amount to the destination address
+    var forward_message = begin_cell()
+        .store_uint(0, 32) ;; Operation ID (optional)
+        .store_uint(0, 64) ;; Query ID (optional)
+        .end_cell();
+
+    send_raw_message(begin_cell().store_slice(destination_address).end_cell(), amount_after_fee);
 }
