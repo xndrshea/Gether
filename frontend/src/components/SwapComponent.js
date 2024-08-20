@@ -5,6 +5,7 @@ import { performSwap } from './services/performSwap';
 import { parseAddress } from '../utils/parseAddress';
 import { useWallet } from './TonConnectButton';
 
+
 const SwapComponent = ({ currentTokenAddress, tokenSymbol }) => {
     const [amount, setAmount] = useState('');
     const [mode, setMode] = useState('buy'); // 'buy' or 'sell'
@@ -17,22 +18,28 @@ const SwapComponent = ({ currentTokenAddress, tokenSymbol }) => {
     useEffect(() => {
         const initializePoolAndVault = async () => {
             if (!currentTokenAddress) return;
-
             try {
                 const tokenAddress = parseAddress(currentTokenAddress);
+                console.log('Current Token Address:', currentTokenAddress);
+                console.log('Parsed Token Address:', tokenAddress.toString());
 
                 const poolData = await fetchPool(tokenAddress);
+                console.log('Fetched Pool:', poolData);
                 setPool(poolData);
 
-                const vaultData = await fetchVault(tokenAddress);
+                const vaultData = await fetchVault(tokenAddress); // Ensure tokenAddress is correct here
+                console.log('Fetched Vault:', vaultData);
                 setVault(vaultData);
             } catch (error) {
                 console.error('Error initializing pool or vault:', error);
+                setPool(null);
+                setVault(null);
             }
         };
 
         initializePoolAndVault();
     }, [currentTokenAddress]);
+
 
     const handleSwap = async () => {
         try {
