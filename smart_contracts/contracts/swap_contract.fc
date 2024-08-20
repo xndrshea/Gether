@@ -1,53 +1,76 @@
-#include "imports/stdlib.fc"; ;; Include the standard library
+#include "imports/stdlib.fc";
 
-;; Declare the global fee_percent variable
+;; Constants
+const int FEE_DENOMINATOR = 10000;
+
+;; State variables
 global int fee_percent;
+global slice platform_wallet_address;
 
-() set_fee() {
-    ;; Assign a value to the global variable
-    fee_percent = 10;
+;; Initialize contract
+() constructor(int _fee_percent, slice _platform_wallet_address) impure {
+    fee_percent = _fee_percent;
+    platform_wallet_address = _platform_wallet_address;
 }
 
+;; Function to get the platform wallet address
 slice get_platform_wallet_address() method_id {
-    ;; Manually create the address slice
-    return begin_parse(begin_cell()
-        .store_uint(0, 8) ;; Workchain ID
-        ;; Manually store the 256-bit address (replace with your actual address bytes)
-        .store_uint(D93F8F12E0F53F9091D1727E76BAE1D08A81FA06DE10BA1B9AC3, 256)
-        .end_cell());
+    return platform_wallet_address;
 }
 
-() recv_internal(int msg_value, cell in_msg, slice in_msg_body) impure {
-    ;; Set the fee percentage (initialize the global variable)
-    set_fee();
+;; Swap function
+() swap(int amount, slice destination, slice pool_address) impure {
+    ;; Calculate fee
+    int fee = muldiv(amount, fee_percent, FEE_DENOMINATOR);
+    int amount_after_fee = amount - fee;
 
-    ;; Decode the incoming message body to extract swap details
-    int swap_amount = in_msg_body~load_int(257); ;; Amount being swapped
+    ;; Send fee to platform wallet
+    send_raw_message(begin_cell()
+        .store_uint(0x10, 6)
+        .store_slice(get_platform_wallet_address())
+        .store_coins(fee)
+        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+        .end_cell(), 1);
 
-    ;; Calculate the fee based on the percentage
-    int fee = (swap_amount * fee_percent) / 1000;
-    int amount_after_fee = swap_amount - fee;
+    ;; Perform swap via DeDust pool
+    send_raw_message(begin_cell()
+        .store_uint(0x10, 6)
+        .store_slice(pool_address)
+        .store_coins(amount_after_fee)
+        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+        .store_slice(destination)
+        .end_cell(), 1);
+}
 
-    ;; Load the platform wallet address using the function
-    slice platform_wallet_address = get_platform_wallet_address();
+;; Receive internal message
+() recv_internal(int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    if (in_msg_body.slice_empty?()) { 
+        return (); ;; Ignore empty messages
+    }
 
-    ;; Send the fee to the platform wallet
-    var fee_message = begin_cell()
-        .store_uint(0, 32) ;; Operation ID (optional)
-        .store_uint(0, 64) ;; Query ID (optional)
-        .end_cell();
+    int op = in_msg_body~load_uint(32);
+    
+    if (op == 1) { ;; Swap operation
+        int amount = in_msg_body~load_coins();
+        slice destination = in_msg_body~load_msg_addr();
+        slice pool_address = in_msg_body~load_msg_addr();
+        swap(amount, destination, pool_address);
+    }
+}
 
-    send_raw_message(begin_cell().store_slice(platform_wallet_address).end_cell(), fee);
+;; Getter for fee_percent
+int get_fee_percent() method_id {
+    return fee_percent;
+}
 
-    ;; Load the destination address from the message body
-    slice destination_address;
-    (destination_address, ) = in_msg_body~load_msg_addr();
+;; Setter for fee_percent (only owner can call this)
+() set_fee_percent(int new_fee_percent) impure {
+    ;; TODO: Add owner check here
+    fee_percent = new_fee_percent;
+}
 
-    ;; Forward the remaining amount to the destination address
-    var forward_message = begin_cell()
-        .store_uint(0, 32) ;; Operation ID (optional)
-        .store_uint(0, 64) ;; Query ID (optional)
-        .end_cell();
-
-    send_raw_message(begin_cell().store_slice(destination_address).end_cell(), amount_after_fee);
+;; Setter for platform wallet address (only owner can call this)
+() set_platform_wallet_address(slice new_address) impure {
+    ;; TODO: Add owner check here
+    platform_wallet_address = new_address;
 }
