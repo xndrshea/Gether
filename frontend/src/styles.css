@@ -487,3 +487,36 @@ main {
         min-width: 95vw;
     }
 }
+
+/* src/components/ScrollButton.css */
+.scroll-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    cursor: pointer;
+    font-size: 3rem;
+    color: #0066ff;
+    z-index: 1000;
+}
+
+/* src/components/TonConnectButton.css */
+
+.TonConnectButton {
+    background-color: white;
+    color: black;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+    left: calc(-7vw - 200px);
+}
+
+.TonConnectButton:hover {
+    background-color: #f0f0f0;
+}
+
+.TonConnectButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
