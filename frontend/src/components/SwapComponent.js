@@ -1,39 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import TonWeb from 'tonweb';
+import { Asset, PoolType, VaultJetton, Factory, MAINNET_FACTORY_ADDR, VaultNative } from '@dedust/sdk';
+import { Address, toNano } from '@ton/core';
 import { useWallet } from './TonConnectButton';
-import { Asset, PoolType, JettonRoot, VaultJetton } from '@dedust/sdk';
-import { toNano, Address } from '@ton/core';
+import { ReadinessStatus } from '@dedust/sdk';
+import TonWeb from 'tonweb';
 
-const tonweb = new TonWeb(); // Initialize the TonWeb client
-const BN = TonWeb.utils.BN; // Initialize BN for Big Number calculations
+const factory = tonClient.open(Factory.createFromAddress(MAINNET_FACTORY_ADDR));
+const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC'));
 
 const SwapComponent = ({ currentTokenAddress, tokenSymbol }) => {
     const [amount, setAmount] = useState('');
     const [mode, setMode] = useState('buy'); // 'buy' or 'sell'
     const [pool, setPool] = useState(null);
+    const [vault, setVault] = useState(null);
     const [isOpen, setIsOpen] = useState(false); // State to track whether the container is open
     const [buttonText, setButtonText] = useState('Open Swap');
     const wallet = useWallet();
 
     useEffect(() => {
-        // Fetch the pool for the current token and TON when the token address changes
-        const fetchPool = async () => {
+        const fetchPoolAndVault = async () => {
             if (!currentTokenAddress) return;
 
-            const TON = Asset.native();
-            const tokenAddress = Address.parse(currentTokenAddress);
-            const SCALE = Asset.jetton(tokenAddress);
+            if (typeof currentTokenAddress !== 'string') {
+                console.error('Invalid token address. Expected a string.');
+                return;
+            }
 
-            // Assuming you need to get the pool using the DeDust SDK
+
             try {
-                const poolData = await PoolType.VOLATILE.getPool([TON, SCALE]);
+                const TON = Asset.native();
+                const tokenAddress = Address.parse(currentTokenAddress);
+                const TOKEN = Asset.jetton(tokenAddress);
+
+                // Fetch the pool using the Factory
+                const poolData = await factory.getPool(PoolType.VOLATILE, [TON, TOKEN]);
+
+                if (!poolData) {
+                    console.error('Failed to fetch pool data: poolData is undefined.');
+                    return;
+                }
+
+                // Ensure the pool is deployed and ready
+                if ((await poolData.getReadinessStatus()) !== ReadinessStatus.READY) {
+                    console.error('Pool is not deployed or ready.');
+                    return;
+                }
+
                 setPool(poolData);
+                console.log("Fetched Pool Data:", poolData);
+
+                // Fetch the vault for the token
+                const vaultData = await factory.getJettonVault(tokenAddress);
+
+                if ((await vaultData.getReadinessStatus()) !== ReadinessStatus.READY) {
+                    console.error('Vault is not deployed or ready.');
+                    return;
+                }
+
+                setVault(vaultData);
+                console.log("Fetched Vault Data:", vaultData);
+
             } catch (error) {
-                console.error('Failed to fetch the pool:', error);
+                console.error('Failed to fetch the pool or vault:', error);
             }
         };
 
-        fetchPool();
+        fetchPoolAndVault();
     }, [currentTokenAddress]);
 
     const handleSwap = async () => {
@@ -43,31 +75,28 @@ const SwapComponent = ({ currentTokenAddress, tokenSymbol }) => {
                 return;
             }
 
-            if (!pool) {
-                alert('No liquidity pool found for this token');
+            if (!pool || !vault) {
+                alert('No liquidity pool or vault found for this token');
                 return;
             }
 
-            const swapAmount = new BN(amount).mul(new BN(10).pow(new BN(9))); // Convert to nanograms
+            const swapAmount = toNano(amount);
 
             if (mode === 'buy') {
                 // Swapping TON to Token
-                const tonVault = await VaultJetton.getNativeVault();
-
-                await tonVault.sendSwap(wallet, {
+                await vault.sendSwap(wallet, {
                     poolAddress: pool.address,
                     amount: swapAmount,
                     gasAmount: toNano('0.25'),
                 });
             } else {
                 // Swapping Token to TON
-                const tokenVault = await VaultJetton.getJettonVault(currentTokenAddress);
-                const scaleRoot = tonweb.open(JettonRoot.createFromAddress(currentTokenAddress));
-                const scaleWallet = tonweb.open(await scaleRoot.getWallet(wallet.address));
+                const jettonRoot = VaultJetton.getJettonRoot(currentTokenAddress);
+                const jettonWallet = await jettonRoot.getWallet(wallet.address);
 
-                await scaleWallet.sendTransfer(wallet, toNano('0.3'), {
+                await jettonWallet.sendTransfer(wallet, toNano('0.3'), {
                     amount: swapAmount,
-                    destination: tokenVault.address,
+                    destination: vault.address,
                     responseAddress: wallet.address,
                     forwardAmount: toNano('0.25'),
                     forwardPayload: VaultJetton.createSwapPayload({
@@ -122,6 +151,14 @@ const SwapComponent = ({ currentTokenAddress, tokenSymbol }) => {
                         placeholder="Amount"
                         className="w-full p-2 pl-10 text-sm text-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-gray-200 border-none mb-4"
                     />
+
+                    {/* Display the fetched pool address */}
+                    {pool && (
+                        <div className="mt-2">
+                            <p><strong>Pool Address:</strong> {pool.address.toString()}</p>
+                        </div>
+                    )}
+
                     <button
                         className="bg-blue-500 hover:bg-blue-700 py-2 px-4 rounded w-full cursor-pointer"
                         onClick={handleSwap}
