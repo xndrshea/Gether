@@ -13,6 +13,7 @@
     "@ton/core": "^0.57.0",
     "@ton/sandbox": "^0.20.0",
     "@ton/test-utils": "^0.4.2",
+    "@ton/ton": "^15.0.0",
     "@tonconnect/sdk": "^3.0.3",
     "assert": "^2.1.0",
     "aws-sdk": "^2.1674.0",
