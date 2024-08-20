@@ -1,35 +1,33 @@
-import { toNano } from '@ton/core';
-import VaultJetton from '@dedust/sdk';
+import { toNano, Address, beginCell } from '@ton/core';
+import { sendTransaction } from './tonClient'; // Replace with your actual transaction sending logic
 
-export const performSwap = async (wallet, pool, vault, amount, mode, tokenAddress, isNative = false) => {
+export const performSwap = async (wallet, poolAddress, amount, mode, tokenAddress) => {
     const swapAmount = toNano(amount);
-
-    try {
-        if (isNative) {
-            // Swapping TON to Token
-            await vault.sendSwap(wallet, {
-                poolAddress: pool.address,
-                amount: swapAmount,
-                gasAmount: toNano('0.25'),
+    /* 
+        try {
+            // Build the message that will be sent to your FunC smart contract
+            const message = buildSwapMessage(swapAmount, tokenAddress, poolAddress, mode);
+    
+            // Send the transaction to your FunC contract
+            await sendTransaction(wallet, {
+                to: Address.parse('YourContractAddressHere'), // Replace with your contract address
+                value: swapAmount,
+                body: message,
             });
-        } else {
-            // Swapping Token to TON
-            const jettonRoot = VaultJetton.getJettonRoot(tokenAddress);
-            const jettonWallet = await jettonRoot.getWallet(wallet.address);
-
-            await jettonWallet.sendTransfer(wallet, toNano('0.3'), {
-                amount: swapAmount,
-                destination: vault.address,
-                responseAddress: wallet.address,
-                forwardAmount: toNano('0.25'),
-                forwardPayload: VaultJetton.createSwapPayload({
-                    poolAddress: pool.address,
-                }),
-            });
+    
+            console.log('Swap request sent to contract!');
+        } catch (error) {
+            console.error('Error performing swap:', error.message);
+            throw error;
         }
-        console.log('Swap successful!');
-    } catch (error) {
-        console.error('Error performing swap:', error.message);
-        throw error;
-    }
+    };
+    
+    const buildSwapMessage = (amount, tokenAddress, poolAddress, mode) => {
+        return beginCell()
+            .storeUint(0x12345678, 32) // Replace with your actual method ID for swap
+            .storeCoins(amount)
+            .storeAddress(Address.parse(tokenAddress))
+            .storeAddress(Address.parse(poolAddress))
+            .storeUint(mode === 'buy' ? 1 : 2, 8) // Example: 1 for buy, 2 for sell
+            .endCell();*/
 };

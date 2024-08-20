@@ -1,4 +1,4 @@
-import factory from './factory';
+/***import factory from './factory';
 import { Address } from '@ton/core';
 
 export const fetchVault = async (tokenAddress, isNative = false) => {
@@ -40,4 +40,4 @@ export const fetchVault = async (tokenAddress, isNative = false) => {
         console.error('Error stack:', error.stack);
         throw error;
     }
-};
+};***/
