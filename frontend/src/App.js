@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import TonConnectButton from './components/TonConnectButton';
-import TokenPage from './components/TokenPage';
+import TokenPage from './TokenPage';
 import Home from './components/Home';
 import { ScrollToTop, ScrollButton } from './components/ScrollUtils';
 import BrowseAll from './components/BrowseAll';

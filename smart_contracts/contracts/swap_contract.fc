@@ -1,0 +1,76 @@
+#include "imports/stdlib.fc";
+
+;; Constants
+const int FEE_DENOMINATOR = 10000;
+
+;; State variables
+global int fee_percent;
+global slice platform_wallet_address;
+
+;; Initialize contract
+() constructor(int _fee_percent, slice _platform_wallet_address) impure {
+    fee_percent = _fee_percent;
+    platform_wallet_address = _platform_wallet_address;
+}
+
+;; Function to get the platform wallet address
+slice get_platform_wallet_address() method_id {
+    return platform_wallet_address;
+}
+
+;; Swap function
+() swap(int amount, slice destination, slice pool_address) impure {
+    ;; Calculate fee
+    int fee = muldiv(amount, fee_percent, FEE_DENOMINATOR);
+    int amount_after_fee = amount - fee;
+
+    ;; Send fee to platform wallet
+    send_raw_message(begin_cell()
+        .store_uint(0x10, 6)
+        .store_slice(get_platform_wallet_address())
+        .store_coins(fee)
+        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+        .end_cell(), 1);
+
+    ;; Perform swap via DeDust pool
+    send_raw_message(begin_cell()
+        .store_uint(0x10, 6)
+        .store_slice(pool_address)
+        .store_coins(amount_after_fee)
+        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+        .store_slice(destination)
+        .end_cell(), 1);
+}
+
+;; Receive internal message
+() recv_internal(int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    if (in_msg_body.slice_empty?()) { 
+        return (); ;; Ignore empty messages
+    }
+
+    int op = in_msg_body~load_uint(32);
+    
+    if (op == 1) { ;; Swap operation
+        int amount = in_msg_body~load_coins();
+        slice destination = in_msg_body~load_msg_addr();
+        slice pool_address = in_msg_body~load_msg_addr();
+        swap(amount, destination, pool_address);
+    }
+}
+
+;; Getter for fee_percent
+int get_fee_percent() method_id {
+    return fee_percent;
+}
+
+;; Setter for fee_percent (only owner can call this)
+() set_fee_percent(int new_fee_percent) impure {
+    ;; TODO: Add owner check here
+    fee_percent = new_fee_percent;
+}
+
+;; Setter for platform wallet address (only owner can call this)
+() set_platform_wallet_address(slice new_address) impure {
+    ;; TODO: Add owner check here
+    platform_wallet_address = new_address;
+}

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import PostForm from './form/PostForm';
-import SwapComponent from './SwapComponent';
-import { displayTokenInfo } from './tokenInfo';
-import TokenDetails from './TokenDetails';
-import { fetchTokenData, saveTokenInfoToDatabase, fetchPosts } from './fetch/FetchTokenData';
-import '../styles.css';
+import PostForm from './components/form/PostForm';
+import SwapComponent from './components/SwapComponent';
+import { displayTokenInfo } from './components/tokenInfo';
+import TokenDetails from './components/TokenDetails';
+import { fetchTokenData, saveTokenInfoToDatabase, fetchPosts } from './components/fetch/FetchTokenData';
+import './styles.css';
 
 const TokenPage = () => {
     const { address } = useParams();
@@ -71,7 +71,7 @@ const TokenPage = () => {
                 <div className="post bg-[#1a1a1a] rounded-lg p-4">
                     <div className="post-content">
                         <h2 className="text-2xl font-bold mb-3">{post.title}</h2>
-                        {post.image && (<img src={post.image} alt="Post image" className="w-full h-auto max-w-[590px] rounded-lg mb-5"/>)}
+                        {post.image && (<img src={post.image} alt="Post image" className="w-full h-auto max-w-[590px] rounded-lg mb-5" />)}
                         <p className="text-gray-300">{post.content}</p>
                     </div>
                     <div className="mt-4 flex justify-end">
@@ -97,7 +97,7 @@ const TokenPage = () => {
             <div className="main-content flex-grow lg:pr-36 xl:pr-0 transition-all duration-300">
                 <div className="container mx-auto px-4">
                     <div id="tokenInfo"></div>
-                    {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={fetchPosts} />}
+                    {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={loadPosts} />}
                     <div id="posts" className="py-4 md:py-6 lg:py-8">{displayPosts(posts)}</div>
                     {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
                 </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from 'react';
 import { TonConnect } from '@tonconnect/sdk';
-import '../styles.css';
+//import './TonConnectButton.css';
 
 const WalletContext = createContext();
 
@@ -12,7 +12,7 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
 
     useEffect(() => {
         const connect = new TonConnect({
-            manifestUrl: 'https://1083-84-115-238-161.ngrok-free.app/tonconnect-manifest.json' // Ensure this URL is correct
+            manifestUrl: 'https://your-manifest-url/tonconnect-manifest.json' // Ensure this URL is correct
         });
 
         setTonConnect(connect);
@@ -20,7 +20,6 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
         connect.onStatusChange((walletInfo) => {
             setWallet(walletInfo);
             onWalletConnect(walletInfo);
-            console.log('Wallet status changed:', walletInfo);
         });
 
     }, [onWalletConnect]);
@@ -28,11 +27,10 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
     const handleConnect = async () => {
         if (tonConnect) {
             try {
-                console.log('Attempting to connect wallet...');
                 await tonConnect.connect({
                     universalLink: 'https://app.tonkeeper.com/ton-connect',
                     bridgeUrl: 'https://bridge.tonapi.io/bridge',
-                    jsBridgeKey: 'tonkeeper' // Ensure that Tonkeeper is the target
+                    jsBridgeKey: 'tonkeeper'
                 });
             } catch (error) {
                 console.error('Failed to connect wallet:', error);
@@ -43,11 +41,9 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
     const handleDisconnect = async () => {
         if (tonConnect) {
             try {
-                console.log('Attempting to disconnect wallet...');
                 await tonConnect.disconnect();
                 setWallet(null);
                 onWalletConnect(null);
-                console.log('Wallet disconnected');
             } catch (error) {
                 console.error('Failed to disconnect wallet:', error);
             }
@@ -69,7 +65,6 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
                 {children}
             </div>
         </WalletContext.Provider>
-
     );
 };
 
