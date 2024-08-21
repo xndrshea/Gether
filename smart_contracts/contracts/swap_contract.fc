@@ -1,76 +1,78 @@
-#include "imports/stdlib.fc";
+;; FunC Contract for DeDust Pool Interaction with Dynamic Parameters
 
-;; Constants
-const int FEE_DENOMINATOR = 10000;
+global int feePercentage; ;; Fee percentage (0.5% represented as 5/1000)
+global slice feeCollectorAddress 0QBD93fUwFPpkHSx1297eWq40hCyr8vod1iHvsaQLXORlGDX; ;; Replace with your fee collector address
 
-;; State variables
-global int fee_percent;
-global slice platform_wallet_address;
+const int ton_vault::swap = 0xea06185d;
+const int MIN_BALANCE = 100000000; ;; 0.1 TON
+const int MIN_TRADE_AMOUNT = 1000000000; ;; 1 TON
+const int TRADE_FEE = 200000000; ;; 0.2 TON
 
-;; Initialize contract
-() constructor(int _fee_percent, slice _platform_wallet_address) impure {
-    fee_percent = _fee_percent;
-    platform_wallet_address = _platform_wallet_address;
+() recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    slice cs = in_msg_full.begin_parse();
+    int flags = cs~load_uint(4);
+    if (flags & 1) {
+        ;; Ignore bounced messages
+        return ();
+    }
+
+    int trade_value = my_balance - MIN_BALANCE;
+    if (trade_value < MIN_TRADE_AMOUNT + TRADE_FEE) {
+        ;; Ignore messages if balance is too low
+        return ();
+    }
+
+    ;; Parse dynamic parameters from the message
+    var slice poolAddress = in_msg_body~load_msg_addr(); ;; Dynamic pool address
+    var slice recipientAddress = in_msg_body~load_msg_addr(); ;; Dynamic recipient address
+    var int fee = (trade_value * feePercentage) / 1000;
+    var int amountAfterFee = trade_value - fee;
+
+    ;; Send the platform fee to the fee collector address
+    send_raw_message(build_fee_message(fee), 1);
+
+    ;; Build and send the swap message to DeDust’s TON vault
+    performSwap(amountAfterFee, poolAddress, recipientAddress);
 }
 
-;; Function to get the platform wallet address
-slice get_platform_wallet_address() method_id {
-    return platform_wallet_address;
+() performSwap(int trade_value, slice poolAddress, slice recipientAddress) impure {
+    cell body = begin_cell()
+        .store_uint(ton_vault::swap, 32)
+        .store_uint(0, 64) ;; query_id:uint64
+        .store_coins(trade_value - TRADE_FEE) ;; Subtract the gas fee
+        ;; SwapStep
+        .store_slice(poolAddress) ;; pool_addr:MsgAddressInt (dynamic)
+        .store_uint(0, 1) ;; kind:SwapKind
+        .store_coins(0) ;; limit:Coins
+        .store_maybe_ref(null()) ;; next:(Maybe ^SwapStep)
+        ;; swap_params:^SwapParams
+        .store_ref(
+            begin_cell()
+                .store_uint(now() + 60 * 5, 32) ;; deadline:Timestamp (5 minutes from now)
+                .store_slice(recipientAddress) ;; recipient_addr:MsgAddressInt (dynamic)
+                .store_slice(addr_none()) ;; referral_addr:MsgAddress
+                .store_maybe_ref(null()) ;; fulfill_payload:(Maybe ^Cell)
+                .store_maybe_ref(null()) ;; reject_payload:(Maybe ^Cell)
+                .end_cell()
+        )
+        .end_cell();
+
+    send_raw_message(
+        begin_cell()
+            .store_uint(0x18, 6) ;; msg_flag::bounceable
+            .store_slice(TON_VAULT_ADDR) ;; TON Vault Address (constant)
+            .store_coins(trade_value) ;; Send the trade value to the vault
+            .store_zeros(1 + 4 + 4 + 64 + 32 + 1)
+            .store_maybe_ref(body)
+            .end_cell(),
+        0
+    );
 }
 
-;; Swap function
-() swap(int amount, slice destination, slice pool_address) impure {
-    ;; Calculate fee
-    int fee = muldiv(amount, fee_percent, FEE_DENOMINATOR);
-    int amount_after_fee = amount - fee;
-
-    ;; Send fee to platform wallet
-    send_raw_message(begin_cell()
-        .store_uint(0x10, 6)
-        .store_slice(get_platform_wallet_address())
+() build_fee_message(int fee) => cell {
+    return begin_cell()
+        .store_uint(0, 32) ;; Method ID for sending fees
         .store_coins(fee)
-        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
-        .end_cell(), 1);
-
-    ;; Perform swap via DeDust pool
-    send_raw_message(begin_cell()
-        .store_uint(0x10, 6)
-        .store_slice(pool_address)
-        .store_coins(amount_after_fee)
-        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
-        .store_slice(destination)
-        .end_cell(), 1);
-}
-
-;; Receive internal message
-() recv_internal(int msg_value, cell in_msg_full, slice in_msg_body) impure {
-    if (in_msg_body.slice_empty?()) { 
-        return (); ;; Ignore empty messages
-    }
-
-    int op = in_msg_body~load_uint(32);
-    
-    if (op == 1) { ;; Swap operation
-        int amount = in_msg_body~load_coins();
-        slice destination = in_msg_body~load_msg_addr();
-        slice pool_address = in_msg_body~load_msg_addr();
-        swap(amount, destination, pool_address);
-    }
-}
-
-;; Getter for fee_percent
-int get_fee_percent() method_id {
-    return fee_percent;
-}
-
-;; Setter for fee_percent (only owner can call this)
-() set_fee_percent(int new_fee_percent) impure {
-    ;; TODO: Add owner check here
-    fee_percent = new_fee_percent;
-}
-
-;; Setter for platform wallet address (only owner can call this)
-() set_platform_wallet_address(slice new_address) impure {
-    ;; TODO: Add owner check here
-    platform_wallet_address = new_address;
+        .store_slice(feeCollectorAddress)
+        .end_cell();
 }
