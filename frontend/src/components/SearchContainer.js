@@ -35,7 +35,7 @@ const SearchContainer = () => {
                 value={tokenAddress}
                 onChange={handleInputChange}
                 placeholder="Enter TON Token Address..."
-                className="py-2 px-4 border rounded-full focus:outline-none border-none text-sm bg-gray-900 bg-opacity-80 text-white pr-8 w-80 sm:w-96 md:w-[32rem] xl:w-[40rem]"
+                className="py-2 px-4 border rounded-full focus:outline-none border-none text-sm bg-gray-900 bg-opacity-80 text-white pr-8 w-[16rem] sm:w-[22rem] md:w-[26rem] lg:w-[32rem] xl:w-[40rem]"
             />
             {hasInput && (
                 <button

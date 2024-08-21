@@ -8,7 +8,7 @@ const LogoHeader = () => {
             <img
                 src="https://getherlolbucket.s3.eu-central-1.amazonaws.com/assets/gethericon.png"
                 alt="Gether Icon"
-                className="h-8 w-8 mr-2"
+                className="h-8 w-8 min-h-[2rem] min-w-[2rem] flex-shrink-0 mr-2"
             />
             <img
                 src="https://getherlolbucket.s3.eu-central-1.amazonaws.com/assets/gethername.png"

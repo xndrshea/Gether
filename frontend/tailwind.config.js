@@ -8,6 +8,7 @@ module.exports = {
     extend: {
       screens: {
         'xl': '1400px',
+        'custom': '900px',
       },
       caretColor: theme => theme('colors'),
       colors: {

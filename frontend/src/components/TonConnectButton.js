@@ -59,18 +59,20 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
                         <pre>{JSON.stringify(wallet, null, 2)}</pre>
                         <button
                             onClick={handleDisconnect}
-                            className="bg-white text-black py-1.5 px-5 rounded-md cursor-pointer m-2.5 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-20"
+                            className="bg-white text-black h-9 px-4 rounded-md cursor-pointer m-2.5 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-20 flex items-center justify-center"
                         >
-                            Disconnect
+                            <span className="hidden custom:inline">Disconnect Wallet</span>
+                            <span className="custom:hidden">Disconnect</span>
                         </button>
                     </div>
                 ) : (
-                    <button
-                        onClick={handleConnect}
-                        className="bg-white text-black py-1.5 px-5 rounded-md cursor-pointer m-2.5 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-20"
-                    >
-                        Connect Wallet
-                    </button>
+                        <button
+                            onClick={handleConnect}
+                            className="bg-white text-black h-9 px-4 rounded-md cursor-pointer m-2.5 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-20 flex items-center justify-center"
+                        >
+                            <span className="hidden custom:inline">Connect Wallet</span>
+                            <span className="custom:hidden">Connect</span>
+                        </button>
                 )}
                 {children}
             </div>
