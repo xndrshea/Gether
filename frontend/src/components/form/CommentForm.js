@@ -4,7 +4,7 @@ const CommentForm = ({ postId, parentCommentId, onCommentSubmit }) => {
     const [commentContent, setCommentContent] = useState('');
 
     const createComment = async (e) => {
-        e.preventDefault(); // Prevent form submission
+        e.preventDefault();
         if (commentContent) {
             try {
                 const response = await fetch('http://localhost:5001/comments', {
