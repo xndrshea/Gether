@@ -1,6 +1,5 @@
-export const displayTokenInfo = (info) => {
+export const displayTokenInfo = (info, address) => {
     const tokenInfoElement = document.getElementById('tokenInfo');
-    console.log('Displaying token info:', info);
 
     if (!info) {
         tokenInfoElement.innerHTML = 'No token information available';
@@ -10,20 +9,28 @@ export const displayTokenInfo = (info) => {
     const imageUrl = extractImageUrl(info);
     const { name, symbol, description } = extractTokenDetails(info);
 
-    console.log('Name:', name);
-    console.log('Symbol:', symbol);
-    console.log('Description:', description);
-
     const paddingBottom = description ? '0' : '20px';
 
     const htmlContent = `
         <div style="display: flex; align-items: center; padding-bottom: ${paddingBottom};">
             ${imageUrl ? `<img src="${imageUrl}" alt="Token Image" style="width: 100px; height: 100px; border-radius: 50%; margin-right: 20px; margin-bottom: 20px;">` : ''}
-            <h2 class="text-3xl font-bold">${symbol || 'N/A'} - ${name || 'Unknown Token'}</h2>
+            <div>
+                <h2 class="text-3xl font-bold">${symbol || 'N/A'} - ${name || 'Unknown Token'}</h2>
+                <p class="text-sm text-gray-500 mt-1 cursor-pointer hover:text-gray-700" onclick="copyToClipboard('${address}')" title="Click to copy">
+                    ${address}
+                </p>
+            </div>
         </div>
-
     `;
     tokenInfoElement.innerHTML = htmlContent;
+
+    window.copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Address copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    };
 };
 
 export const extractImageUrl = (data) => {

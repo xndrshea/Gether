@@ -11,6 +11,9 @@ const SearchContainer = () => {
         e.preventDefault();
         if (tokenAddress.trim()) {
             navigate(`/tokenpage/${tokenAddress.trim()}`);
+            // Clear the input after navigation
+            setTokenAddress('');
+            setHasInput(false);
         }
     };
 

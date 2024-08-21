@@ -41,7 +41,11 @@ const TokenPage = () => {
         return () => window.removeEventListener('resize', updateBodyHeight);
     }, [address]);
 
-    useEffect(() => { if (tokenInfo) displayTokenInfo(tokenInfo); }, [tokenInfo]);
+    useEffect(() => {
+        if (tokenInfo) {
+            displayTokenInfo(tokenInfo, address);
+        }
+    }, [tokenInfo, address]);
 
     const fetchTokenInfo = useCallback(async (tokenAddress) => {
         try {
