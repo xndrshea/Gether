@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const LogoHeader = () => {
     return (
-        <Link to="/browse" className="flex items-center">
+        <Link to="/" className="flex items-center">
             <img
                 src="https://getherlolbucket.s3.eu-central-1.amazonaws.com/assets/gethericon.png"
                 alt="Gether Icon"
