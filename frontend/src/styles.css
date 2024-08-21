@@ -6,7 +6,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
 }
 
 body,
@@ -29,51 +28,17 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100vh;
 }
 
 .container {
     text-align: center;
-    width: 100%;
-    margin: 0 auto;
-    max-width: 600px;
-    margin-top: 20vh;
-}
-
-.logo {
-    width: 80px;
-    height: 80px;
-    background-color: #0066ff;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto 40px;
-    font-size: 24px;
-    font-weight: bold;
-    position: relative;
-    left: calc(-7vw - 200px);
-    top: 20px;
-    transition: left 0.3s ease-in-out;
-}
-
-h1 {
-    font-size: 48px;
-    line-height: 1.2;
-}
-
-h1 .first-line {
-    display: inline-block;
-    margin-left: -5.5em;
-}
-
-h1 .second-line {
-    display: inline-block;
-    margin-left: 2em;
-}
-
-.blue-text {
-    color: #0066ff;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 70vh;
 }
 
 .search-container {
@@ -241,27 +206,6 @@ button,
 
 main {
     padding: 20px;
-}
-
-.community-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.community-logo {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-}
-
-.community-info {
-    margin-bottom: 20px;
-}
-
-.community-stats {
-    font-size: 14px;
-    color: #888888;
 }
 
 .posts .post {

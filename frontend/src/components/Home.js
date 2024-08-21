@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaXTwitter, FaGithub } from 'react-icons/fa6';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -30,15 +31,15 @@ const Home = () => {
     };
 
     return (
-        <div className="container">
-            <div className="logo">
+        <div className="container relative"> 
+            <div className="w-20 h-20 bg-[#0066ff] rounded-full flex justify-center items-center mx-auto mb-10 text-2xl font-bold relative -left-[calc(7vw+200px)] top-5 transition-left duration-300 ease-in-out">
                 <span>gether</span>
             </div>
-            <h1 className="mb-4">
-                <span className="first-line font-semibold">Where Tokens</span><br />
-                <span className="second-line font-semibold">become <span className="blue-text font-bold">Communities</span></span>
+            <h1 className="mb-4 text-5xl leading-tight">
+                <span className="first-line font-semibold inline-block -ml-[5.5em]">Where Tokens</span><br />
+                <span className="second-line font-semibold inline-block ml-[2em]">become <span className="text-blue-600 font-bold">Communities</span></span>
             </h1>
-            <div className="search-container relative mb-6 mt-2">
+            <div className="search-container relative mt-2">
                 <input
                     type="text"
                     id="tokenAddress"
@@ -56,7 +57,7 @@ const Home = () => {
                     </button>
                 )}
             </div>
-            <div className="flex justify-center items-center gap-5 mt-8">
+            <div className="flex justify-center items-center gap-5 mt-2">
                 <button
                     id="scavenge"
                     className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white"
@@ -74,6 +75,14 @@ const Home = () => {
                 </button>
             </div>
             <div id="searchResult"></div>
+            <div className="fixed bottom-0 left-0 right-0 h-[60px] bg-[rgba(15,15,15,0.9)] border-t border-[rgba(255,255,255,0.2)] flex justify-center items-center">
+                <a href="https://x.com/getherlol" target="_blank" rel="noopener noreferrer" className="mx-4 transition-transform duration-300 hover:scale-110">
+                    <FaXTwitter size={24} color="white" />
+                </a>
+                <a href="https://github.com/xndrshea/Gether" target="_blank" rel="noopener noreferrer" className="mx-4 transition-transform duration-300 hover:scale-110">
+                    <FaGithub size={24} color="white" />
+                </a>
+            </div>
         </div>
     );
 };
