@@ -186,18 +186,6 @@ app.post('/comments', async (req, res) => {
     }
 });
 
-// Get comments for a post
-app.get('/comments/:postId', async (req, res) => {
-    console.log(`Fetching comments for post ID: ${req.params.postId}`);
-    try {
-        const comments = await Comment.find({ post_id: req.params.postId });
-        res.json(comments);
-    } catch (err) {
-        console.error('Error fetching comments:', err);
-        res.status(500).send(err);
-    }
-});
-
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
@@ -221,17 +209,35 @@ app.get('/posts', async (req, res) => {
 app.get('/posts/detail/:postId', async (req, res) => {
     console.log(`Fetching details for post ID: ${req.params.postId}`);
     try {
-        const post = await Post.findById(req.params.postId).populate({
-            path: 'comments',
-            populate: {
-                path: 'replies',
-                model: 'Comment',
-                options: { recursive: true }
-            }
-        });
+        const post = await Post.findById(req.params.postId);
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
+
+        // Populate comments recursively
+        await post.populate({
+            path: 'comments',
+            populate: {
+                path: 'replies',
+                model: 'Comment'
+            }
+        });
+
+        // Function to recursively populate nested replies
+        const populateReplies = async (comments) => {
+            for (let comment of comments) {
+                await comment.populate({
+                    path: 'replies',
+                    model: 'Comment'
+                });
+                if (comment.replies.length > 0) {
+                    await populateReplies(comment.replies);
+                }
+            }
+        };
+
+        await populateReplies(post.comments);
+
         res.json(post);
     } catch (err) {
         console.error('Error fetching post details:', err);
