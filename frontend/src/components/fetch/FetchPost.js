@@ -44,19 +44,24 @@ export const fetchAllPosts = async () => {
 
 export const fetchPostDetails = async (postId) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/posts/detail/${postId}`);
+        const response = await fetch(`http://localhost:5001/posts/detail/${postId}`);
         if (!response.ok) {
-            throw new Error(`HTTP error status: ${response.status}`);
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
         const post = await response.json();
+
+        // Fetch token info if token_address is available
         let tokenInfo = null;
         if (post.token_address) {
-            tokenInfo = await fetchTokenInfo(post.token_address);
+            const tokenResponse = await fetch(`http://localhost:5001/tokens/${post.token_address}`);
+            if (tokenResponse.ok) {
+                tokenInfo = await tokenResponse.json();
+            }
         }
+
         return { post, tokenInfo };
     } catch (error) {
         console.error('Error fetching post details:', error);
         throw error;
     }
 };
-

@@ -53,11 +53,12 @@ const BrowseAll = () => {
 
     return (
         <div className="browse-all" ref={scrollContainerRef}>
-            <h1 className="font-bold text-left text-blue-600 ml-4">All Posts</h1>
+            <h1 className="font-bold text-left text-blue-600 ml-4 text-5xl">All Posts</h1>
             {posts.map((post, index) => (
                 <React.Fragment key={post._id}>
                     <div className="post text-left bg-gray-1000 text-white rounded-lg p-4 mb-4 w-full max-w-2xl">
                         <p className="mb-2">Posted on: {formatDate(post.created_at)}</p>
+                        <h2 className="text-2xl font-semibold">{post.title}</h2>
                         {post.image && (
                             <div className="mb-2">
                                 <img
@@ -67,7 +68,6 @@ const BrowseAll = () => {
                                 />
                             </div>
                         )}
-                        <h2 className="text-2xl font-semibold">{post.title}</h2>
                         <p className="mb-2">{post.content}</p>
                         <p className="mb-2">Posted in: {post.token_address ? (
                             <Link to={`/tokenpage/${post.token_address}`} className="text-blue-500 underline">

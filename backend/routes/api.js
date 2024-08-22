@@ -21,9 +21,11 @@ const postSchema = new mongoose.Schema({
 
 const commentSchema = new mongoose.Schema({
     post_id: mongoose.Schema.Types.ObjectId,
+    parent_comment_id: mongoose.Schema.Types.ObjectId,
     user_id: mongoose.Schema.Types.ObjectId,
     content: String,
-    created_at: { type: Date, default: Date.now }
+    created_at: { type: Date, default: Date.now },
+    replies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
 });
 
 // Define Models
@@ -58,16 +60,21 @@ router.post('/posts', async (req, res) => {
     }
 });
 
-/// Create a comment
+// Create a comment
 router.post('/comments', async (req, res) => {
     console.log('Creating a new comment:', req.body);
     try {
-        const { post_id, user_id, content } = req.body;
-        const comment = new Comment({ post_id, user_id, content });
+        const { post_id, parent_comment_id, user_id, content } = req.body;
+        const comment = new Comment({ post_id, parent_comment_id, user_id, content });
         await comment.save();
 
-        // Add the comment to the corresponding post
-        await Post.findByIdAndUpdate(post_id, { $push: { comments: comment._id } });
+        if (parent_comment_id) {
+            // If it's a reply, add it to the parent comment's replies
+            await Comment.findByIdAndUpdate(parent_comment_id, { $push: { replies: comment._id } });
+        } else {
+            // If it's a top-level comment, add it to the post
+            await Post.findByIdAndUpdate(post_id, { $push: { comments: comment._id } });
+        }
 
         res.json(comment);
     } catch (err) {
@@ -76,15 +83,24 @@ router.post('/comments', async (req, res) => {
     }
 });
 
-// Get comments for a post
-router.get('/comments/:postId', async (req, res) => {
-    console.log(`Fetching comments for post ID: ${req.params.postId}`);
+// Get a specific post with its comments
+router.get('/posts/detail/:postId', async (req, res) => {
+    console.log(`Fetching details for post ID: ${req.params.postId}`);
     try {
-        const comments = await Comment.find({ post_id: req.params.postId });
-        res.json(comments);
+        const post = await Post.findById(req.params.postId).populate({
+            path: 'comments',
+            populate: {
+                path: 'replies',
+                model: 'Comment'
+            }
+        });
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.json(post);
     } catch (err) {
-        console.error(err);
-        res.status(500).send(err);
+        console.error('Error fetching post details:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
