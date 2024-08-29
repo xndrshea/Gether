@@ -67,27 +67,38 @@ router.post('/posts', async (req, res) => {
 
 // Create a comment
 router.post('/comments', async (req, res) => {
-    console.log('Creating a new comment:', req.body);
     try {
         const { post_id, parent_comment_id, user_id, content } = req.body;
-        // Ensure user_id is provided and not hardcoded
+        
+        // Validate user_id
         if (!user_id) {
             return res.status(400).json({ error: 'User ID is required' });
         }
-        const comment = new Comment({ post_id, parent_comment_id, user_id, content });
+
+        const comment = new Comment({
+            post_id,
+            parent_comment_id,
+            user_id,
+            content
+        });
+
         await comment.save();
 
+        // If this is a reply, update the parent comment
         if (parent_comment_id) {
-            // If it's a reply, add it to the parent comment's replies
-            await Comment.findByIdAndUpdate(parent_comment_id, { $push: { replies: comment._id } });
+            await Comment.findByIdAndUpdate(parent_comment_id, {
+                $push: { replies: comment._id }
+            });
         } else {
-            // If it's a top-level comment, add it to the post
-            await Post.findByIdAndUpdate(post_id, { $push: { comments: comment._id } });
+            // If it's a top-level comment, update the post
+            await Post.findByIdAndUpdate(post_id, {
+                $push: { comments: comment._id }
+            });
         }
 
-        res.json(comment);
-    } catch (err) {
-        console.error('Error creating comment:', err);
+        res.status(201).json(comment);
+    } catch (error) {
+        console.error('Error creating comment:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

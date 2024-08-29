@@ -5,7 +5,7 @@ import TonConnectButton from './components/TonConnectButton';
 import LogoHeader from './components/LogoHeader';
 import TokenPage from './TokenPage';
 import Home from './components/Home';
-import { ScrollToTop, ScrollButton } from './components/ScrollUtils';
+import { ScrollToTop, ScrollButton } from './utils/ScrollUtils';
 import BrowseAll from './components/BrowseAll';
 import PostDetails from './components/PostDetails';
 import SearchContainer from './components/SearchContainer';
@@ -51,8 +51,16 @@ function App() {
     setUserId(newUserId);
     if (newWallet) {
       localStorage.setItem('wallet', JSON.stringify(newWallet));
+      // Update the userIds in localStorage
+      const storedUserIds = JSON.parse(localStorage.getItem('userIds')) || {};
+      storedUserIds[newWallet.account.address] = newUserId;
+      localStorage.setItem('userIds', JSON.stringify(storedUserIds));
     } else {
       localStorage.removeItem('wallet');
+      // Optionally, you might want to remove the userId from storage when disconnecting
+      // const storedUserIds = JSON.parse(localStorage.getItem('userIds')) || {};
+      // delete storedUserIds[wallet.account.address];
+      // localStorage.setItem('userIds', JSON.stringify(storedUserIds));
     }
   };
 

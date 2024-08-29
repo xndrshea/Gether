@@ -5,9 +5,11 @@ import SwapComponent from './components/SwapComponent';
 import { displayTokenInfo } from './components/tokenInfo';
 import TokenDetails from './components/TokenDetails';
 import { fetchTokenData, saveTokenInfoToDatabase, fetchPosts } from './components/fetch/FetchTokenData';
+import { getUserIdPrefix } from './utils/userUtils';
 import './styles.css';
 
 const TokenPage = ({ userId }) => {
+    console.log("TokenPage userId:", userId);
     const { address } = useParams();
     const [tokenInfo, setTokenInfo] = useState(null);
     const [posts, setPosts] = useState([]);
@@ -74,7 +76,7 @@ const TokenPage = ({ userId }) => {
             <React.Fragment key={post._id}>
                 <div className="post bg-[#1a1a1a] rounded-lg p-4">
                     <div className="post-content">
-                        <h2 className="text-2xl font-bold mb-3">{post.title}</h2>
+                        <p className="text-sm text-gray-400 mb-2">User: {getUserIdPrefix(post.user_id)}</p>
                         {post.image && (<img src={post.image} alt="Post image" className="w-full h-auto max-w-[590px] rounded-lg mb-5" />)}
                         <p className="text-gray-300">{post.content}</p>
                     </div>

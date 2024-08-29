@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import CommentForm from './form/CommentForm';
 import { fetchPostDetails } from './fetch/FetchPost';
+import { getUserIdPrefix } from '../utils/userUtils';
+import { handleNewComment, renderComments } from '../utils/commentUtils';
 
 const PostDetails = ({ userId }) => {
     const { postId } = useParams();
@@ -28,62 +30,7 @@ const PostDetails = ({ userId }) => {
 
     const handleReply = (commentId) => setReplyingTo(commentId === replyingTo ? null : commentId);
 
-    const handleNewComment = (newComment) => {
-        setPost(prevPost => {
-            const updateComments = (comments) => {
-                return comments.map(comment => {
-                    if (comment._id === newComment.parent_comment_id) {
-                        return {
-                            ...comment,
-                            replies: [...(comment.replies || []), newComment]
-                        };
-                    } else if (comment.replies && comment.replies.length > 0) {
-                        return {
-                            ...comment,
-                            replies: updateComments(comment.replies)
-                        };
-                    }
-                    return comment;
-                });
-            };
-
-            if (newComment.parent_comment_id) {
-                return {
-                    ...prevPost,
-                    comments: updateComments(prevPost.comments || [])
-                };
-            } else {
-                return {
-                    ...prevPost,
-                    comments: [...(prevPost.comments || []), newComment]
-                };
-            }
-        });
-        setReplyingTo(null);
-    };
-
-    const renderComments = (comments, depth = 0) => {
-        return comments.map((comment, index) => (
-            <div key={`${comment._id}-${depth}-${index}`} className={`comment bg-gray-1000 p-4 mb-4 rounded-lg text-left ml-${depth * 4}`}>
-                <p className="text-base mb-2">{comment.content}</p>
-                <p className="text-gray-500">Commented on: {new Date(comment.created_at).toLocaleString()}</p>
-                <button onClick={() => handleReply(comment._id)} className="text-blue-500 text-sm mt-2 hover:underline">Reply</button>
-                {replyingTo === comment._id && (
-                    <CommentForm
-                        postId={postId}
-                        parentCommentId={comment._id}
-                        onCommentSubmit={handleNewComment}
-                        userId={userId}  // Add this line
-                    />
-                )}
-                {comment.replies && comment.replies.length > 0 && (
-                    <div className="ml-4 mt-4">
-                        {renderComments(comment.replies, depth + 1)}
-                    </div>
-                )}
-            </div>
-        ));
-    };
+    const onCommentSubmit = handleNewComment(setPost);
 
     if (loading) return <div>Loading post...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -100,6 +47,7 @@ const PostDetails = ({ userId }) => {
                             </Link>
                         ) : 'Unknown Community'}
                     </p>
+                    <p className="text-sm text-gray-400 mb-2">User: {getUserIdPrefix(post.user_id)}</p>
                     <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
                     <p className="text-gray-500 mb-4">Posted on: {post.created_at ? new Date(post.created_at).toLocaleString() : 'Date not available'}</p>
                     {post.image && <img src={post.image} alt="Post" className="max-w-full h-auto mb-4 rounded-lg" />}
@@ -107,11 +55,13 @@ const PostDetails = ({ userId }) => {
                     <hr className="my-6 border-t border-gray-700" />
                     <h2 className="text-2xl font-bold mb-4">Comments</h2>
                     {post.comments && post.comments.length > 0 ? (
-                        <div className="comments">{renderComments(post.comments)}</div>
+                        <div className="comments">
+                            {renderComments(post.comments, 0, handleReply, replyingTo, CommentForm, postId, onCommentSubmit, userId)}
+                        </div>
                     ) : (
                         <p className="text-gray-500">No comments yet.</p>
                     )}
-                    <CommentForm postId={postId} onCommentSubmit={handleNewComment} userId={userId} />
+                    <CommentForm postId={postId} onCommentSubmit={onCommentSubmit} userId={userId} />
                 </div>
             </div>
         </div>

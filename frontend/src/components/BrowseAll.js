@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { fetchAllPosts } from './fetch/FetchPost';
+import { getUserIdPrefix } from '../utils/userUtils';
 
 const BrowseAll = () => {
     const [posts, setPosts] = useState([]);
@@ -52,11 +53,11 @@ const BrowseAll = () => {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div className="browse-all" ref={scrollContainerRef}>
-            <h1 className="font-bold text-left text-blue-600 ml-4 text-5xl">All Posts</h1>
+        <div className="browse-all-container">
             {posts.map((post, index) => (
                 <React.Fragment key={post._id}>
                     <div className="post text-left bg-gray-1000 text-white rounded-lg p-4 mb-4 w-full max-w-2xl">
+                        <p className="text-sm text-gray-400 mb-2">User: {getUserIdPrefix(post.user_id)}</p>
                         <p className="mb-2">Posted on: {formatDate(post.created_at)}</p>
                         <h2 className="text-2xl font-semibold">{post.title}</h2>
                         {post.image && (

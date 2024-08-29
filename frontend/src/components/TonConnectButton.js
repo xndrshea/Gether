@@ -29,7 +29,7 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
                     localStorage.setItem('userIds', JSON.stringify(storedUserIds));
                 }
                 setUserId(newUserId);
-                onWalletConnect(walletInfo, newUserId);
+                onWalletConnect(walletInfo, newUserId); // Make sure to call this with both wallet and userId
             } else {
                 setUserId(null);
                 onWalletConnect(null, null);
@@ -101,7 +101,7 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
     }, [tonConnect, onWalletConnect, isConnected, isDisconnecting]);
 
     return (
-        <WalletContext.Provider value={wallet}>
+        <WalletContext.Provider value={{ wallet, userId }}>
             <div>
                 {isConnected ? (
                     <div>
