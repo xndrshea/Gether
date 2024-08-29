@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import CommentForm from './form/CommentForm';
 import { fetchPostDetails } from './fetch/FetchPost';
 
-const PostDetails = () => {
+const PostDetails = ({ userId }) => {
     const { postId } = useParams();
     const [post, setPost] = useState(null);
     const [tokenInfo, setTokenInfo] = useState(null);
@@ -110,7 +110,7 @@ const PostDetails = () => {
                     ) : (
                         <p className="text-gray-500">No comments yet.</p>
                     )}
-                    <CommentForm postId={postId} onCommentSubmit={handleNewComment} />
+                    <CommentForm postId={postId} onCommentSubmit={handleNewComment} userId={userId} />
                 </div>
             </div>
         </div>

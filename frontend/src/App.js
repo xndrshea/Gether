@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import TonConnectButton from './components/TonConnectButton';
@@ -11,7 +11,7 @@ import BrowseAll from './components/BrowseAll';
 import PostDetails from './components/PostDetails';
 import SearchContainer from './components/SearchContainer';
 
-function Header() {
+function Header({ userId, onWalletConnect }) {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
@@ -26,24 +26,30 @@ function Header() {
         </div>
       )}
       <div className="wallet-connect-container">
-        <TonConnectButton />
+        <TonConnectButton onWalletConnect={onWalletConnect} />
       </div>
     </header>
   );
 }
 
 function App() {
+  const [userId, setUserId] = useState(localStorage.getItem('userId'));
+
+  const handleWalletConnect = (wallet, newUserId) => {
+    setUserId(newUserId);
+  };
+
   return (
     <Router>
       <ScrollToTop />
-      <Header />
+      <Header userId={userId} onWalletConnect={handleWalletConnect} />
       <div className="App">
         <div className="App-content">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/tokenpage/:address" element={<TokenPage />} />
-            <Route path="/browse" element={<BrowseAll />} />
-            <Route path="/post/:postId" element={<PostDetails />} />
+            <Route path="/" element={<Home userId={userId} />} />
+            <Route path="/tokenpage/:address" element={<TokenPage userId={userId} />} />
+            <Route path="/browse" element={<BrowseAll userId={userId} />} />
+            <Route path="/post/:postId" element={<PostDetails userId={userId} />} />
           </Routes>
         </div>
         <ScrollButton />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const PostForm = ({ currentTokenAddress, loadPosts }) => {
+const PostForm = ({ currentTokenAddress, loadPosts, userId }) => {
     const [postTitle, setPostTitle] = useState('');
     const [postContent, setPostContent] = useState('');
     const [file, setFile] = useState(null);
@@ -17,11 +17,12 @@ const PostForm = ({ currentTokenAddress, loadPosts }) => {
         console.log('postContent:', postContent);
         console.log('currentTokenAddress:', currentTokenAddress);
         console.log('file:', file);
+        console.log('userId:', userId);
 
-        if (postTitle && postContent && currentTokenAddress) {
+        if (postTitle && postContent && currentTokenAddress && userId) {
             try {
                 const formData = new FormData();
-                formData.append('user_id', '60d9f1f1f1f1f1f1f1f1f1f1'); // Example user ID
+                formData.append('user_id', userId);
                 formData.append('token_address', currentTokenAddress);
                 formData.append('title', postTitle);
                 formData.append('content', postContent);
@@ -56,11 +57,11 @@ const PostForm = ({ currentTokenAddress, loadPosts }) => {
                 console.error('Error creating post:', error);
             }
         } else {
-            console.log('Missing title, content, or token address');
+            console.log('Missing title, content, token address, or user ID');
         }
     };
 
-     return (
+    return (
         <div className="post-form">
              <h3 className="px-1 font-bold mb-3 text-[#0066ff]">Create a Post</h3>
             <input

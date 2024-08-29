@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from 'react';
 import { TonConnect } from '@tonconnect/sdk';
-//import './TonConnectButton.css';
+import { v4 as uuidv4 } from 'uuid';
 
 const WalletContext = createContext();
 
@@ -9,17 +9,27 @@ export const useWallet = () => useContext(WalletContext);
 const TonConnectButton = ({ onWalletConnect, children }) => {
     const [wallet, setWallet] = useState(null);
     const [tonConnect, setTonConnect] = useState(null);
+    const [userId, setUserId] = useState(null);
 
     useEffect(() => {
         const connect = new TonConnect({
-            manifestUrl: 'https://your-manifest-url/tonconnect-manifest.json' // Ensure this URL is correct
+            manifestUrl: 'https://your-manifest-url/tonconnect-manifest.json'
         });
 
         setTonConnect(connect);
 
         connect.onStatusChange((walletInfo) => {
             setWallet(walletInfo);
-            onWalletConnect(walletInfo);
+            if (walletInfo) {
+                const newUserId = uuidv4();
+                setUserId(newUserId);
+                localStorage.setItem('userId', newUserId);
+                onWalletConnect(walletInfo, newUserId);
+            } else {
+                setUserId(null);
+                localStorage.removeItem('userId');
+                onWalletConnect(null, null);
+            }
         });
 
     }, [onWalletConnect]);
@@ -43,7 +53,9 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
             try {
                 await tonConnect.disconnect();
                 setWallet(null);
-                onWalletConnect(null);
+                setUserId(null);
+                localStorage.removeItem('userId');
+                onWalletConnect(null, null);
             } catch (error) {
                 console.error('Failed to disconnect wallet:', error);
             }
@@ -55,8 +67,6 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
             <div>
                 {wallet ? (
                     <div>
-                        <p>Connected to wallet:</p>
-                        <pre>{JSON.stringify(wallet, null, 2)}</pre>
                         <button
                             onClick={handleDisconnect}
                             className="bg-white text-black h-9 px-4 rounded-md cursor-pointer m-2.5 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-20 flex items-center justify-center"

@@ -7,7 +7,7 @@ import TokenDetails from './components/TokenDetails';
 import { fetchTokenData, saveTokenInfoToDatabase, fetchPosts } from './components/fetch/FetchTokenData';
 import './styles.css';
 
-const TokenPage = () => {
+const TokenPage = ({ userId }) => {
     const { address } = useParams();
     const [tokenInfo, setTokenInfo] = useState(null);
     const [posts, setPosts] = useState([]);
@@ -101,7 +101,7 @@ const TokenPage = () => {
             <div className="main-content flex-grow lg:pr-36 xl:pr-0 transition-all duration-300">
                 <div className="container mx-auto px-4">
                     <div id="tokenInfo"></div>
-                    {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={loadPosts} />}
+                    {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={loadPosts} userId={userId} />}
                     <div id="posts" className="py-4 md:py-6 lg:py-8">{displayPosts(posts)}</div>
                     {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
                 </div>
