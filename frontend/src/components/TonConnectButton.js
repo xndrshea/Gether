@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext, useContext } from 'react';
+import React, { useEffect, useState, createContext, useContext, useCallback, useRef } from 'react';
 import { TonConnect } from '@tonconnect/sdk';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -10,16 +10,15 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
     const [wallet, setWallet] = useState(null);
     const [tonConnect, setTonConnect] = useState(null);
     const [userId, setUserId] = useState(null);
+    const [isConnected, setIsConnected] = useState(false);
+    const lastWalletRef = useRef(null);
+    const [isDisconnecting, setIsDisconnecting] = useState(false);
 
-    useEffect(() => {
-        const connect = new TonConnect({
-            manifestUrl: 'https://your-manifest-url/tonconnect-manifest.json'
-        });
-
-        setTonConnect(connect);
-
-        connect.onStatusChange((walletInfo) => {
+    const handleStatusChange = useCallback((walletInfo) => {
+        console.log("Wallet status changed:", walletInfo);
+        if (JSON.stringify(walletInfo) !== JSON.stringify(lastWalletRef.current)) {
             setWallet(walletInfo);
+            setIsConnected(!!walletInfo);
             if (walletInfo) {
                 const newUserId = uuidv4();
                 setUserId(newUserId);
@@ -30,42 +29,78 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
                 localStorage.removeItem('userId');
                 onWalletConnect(null, null);
             }
-        });
-
+            lastWalletRef.current = walletInfo;
+        }
     }, [onWalletConnect]);
 
-    const handleConnect = async () => {
+    useEffect(() => {
+        const connect = new TonConnect({
+            manifestUrl: 'http://localhost:5001/tonconnect-manifest.json'
+        });
+
+        setTonConnect(connect);
+
+        const unsubscribe = connect.onStatusChange(handleStatusChange);
+
+        // Check initial connection status
+        connect.restoreConnection();
+
+        return () => {
+            unsubscribe();
+        };
+    }, [handleStatusChange]);
+
+    const handleConnect = useCallback(async () => {
         if (tonConnect) {
             try {
-                await tonConnect.connect({
-                    universalLink: 'https://app.tonkeeper.com/ton-connect',
+                console.log("Attempting to connect wallet...");
+                const result = await tonConnect.connect({
+                    universalLink: 'https://ton-connect.github.io/bridge/',
                     bridgeUrl: 'https://bridge.tonapi.io/bridge',
                     jsBridgeKey: 'tonkeeper'
                 });
+                console.log("Connection result:", result);
             } catch (error) {
                 console.error('Failed to connect wallet:', error);
             }
+        } else {
+            console.error('TonConnect not initialized');
         }
-    };
+    }, [tonConnect]);
 
-    const handleDisconnect = async () => {
-        if (tonConnect) {
+    const handleDisconnect = useCallback(async () => {
+        if (isDisconnecting) return;
+        setIsDisconnecting(true);
+        console.log("Attempting to disconnect wallet...");
+        console.log("Current tonConnect state:", tonConnect);
+        if (tonConnect && isConnected) {
             try {
                 await tonConnect.disconnect();
+                console.log("Disconnect successful");
+            } catch (error) {
+                if (error.message === 'Missing connection' && error.code === 1) {
+                    console.log('Connection already closed');
+                } else {
+                    console.error('Failed to disconnect wallet:', error);
+                }
+            } finally {
+                // Always update local state, regardless of whether the disconnect was successful
                 setWallet(null);
                 setUserId(null);
+                setIsConnected(false);
                 localStorage.removeItem('userId');
                 onWalletConnect(null, null);
-            } catch (error) {
-                console.error('Failed to disconnect wallet:', error);
             }
+        } else {
+            console.log('No active connection to disconnect');
         }
-    };
+        setIsDisconnecting(false);
+    }, [tonConnect, onWalletConnect, isConnected, isDisconnecting]);
 
     return (
         <WalletContext.Provider value={wallet}>
             <div>
-                {wallet ? (
+                {isConnected ? (
                     <div>
                         <button
                             onClick={handleDisconnect}
@@ -76,18 +111,18 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
                         </button>
                     </div>
                 ) : (
-                        <button
-                            onClick={handleConnect}
-                            className="bg-white text-black h-9 px-4 rounded-md cursor-pointer m-2.5 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-20 flex items-center justify-center"
-                        >
-                            <span className="hidden custom:inline">Connect Wallet</span>
-                            <span className="custom:hidden">Connect</span>
-                        </button>
+                    <button
+                        onClick={handleConnect}
+                        className="bg-white text-black h-9 px-4 rounded-md cursor-pointer m-2.5 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-20 flex items-center justify-center"
+                    >
+                        <span className="hidden custom:inline">Connect Wallet</span>
+                        <span className="custom:hidden">Connect</span>
+                    </button>
                 )}
                 {children}
             </div>
         </WalletContext.Provider>
-    )
+    );
 };
 
 export default TonConnectButton;

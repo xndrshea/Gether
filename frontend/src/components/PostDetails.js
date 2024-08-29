@@ -73,6 +73,7 @@ const PostDetails = ({ userId }) => {
                         postId={postId}
                         parentCommentId={comment._id}
                         onCommentSubmit={handleNewComment}
+                        userId={userId}  // Add this line
                     />
                 )}
                 {comment.replies && comment.replies.length > 0 && (
