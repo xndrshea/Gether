@@ -1,5 +1,4 @@
-// src/App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import TonConnectButton from './components/TonConnectButton';
@@ -33,10 +32,28 @@ function Header({ userId, onWalletConnect }) {
 }
 
 function App() {
-  const [userId, setUserId] = useState(localStorage.getItem('userId'));
+  const [userId, setUserId] = useState(null);
+  const [wallet, setWallet] = useState(null);
 
-  const handleWalletConnect = (wallet, newUserId) => {
+  useEffect(() => {
+    // Check if there's a stored wallet and userId
+    const storedWallet = localStorage.getItem('wallet');
+    if (storedWallet) {
+      const parsedWallet = JSON.parse(storedWallet);
+      setWallet(parsedWallet);
+      const storedUserIds = JSON.parse(localStorage.getItem('userIds')) || {};
+      setUserId(storedUserIds[parsedWallet.account.address] || null);
+    }
+  }, []);
+
+  const handleWalletConnect = (newWallet, newUserId) => {
+    setWallet(newWallet);
     setUserId(newUserId);
+    if (newWallet) {
+      localStorage.setItem('wallet', JSON.stringify(newWallet));
+    } else {
+      localStorage.removeItem('wallet');
+    }
   };
 
   return (

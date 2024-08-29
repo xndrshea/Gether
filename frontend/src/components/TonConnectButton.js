@@ -20,13 +20,18 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
             setWallet(walletInfo);
             setIsConnected(!!walletInfo);
             if (walletInfo) {
-                const newUserId = uuidv4();
+                const walletAddress = walletInfo.account.address;
+                let storedUserIds = JSON.parse(localStorage.getItem('userIds')) || {};
+                let newUserId = storedUserIds[walletAddress];
+                if (!newUserId) {
+                    newUserId = uuidv4();
+                    storedUserIds[walletAddress] = newUserId;
+                    localStorage.setItem('userIds', JSON.stringify(storedUserIds));
+                }
                 setUserId(newUserId);
-                localStorage.setItem('userId', newUserId);
                 onWalletConnect(walletInfo, newUserId);
             } else {
                 setUserId(null);
-                localStorage.removeItem('userId');
                 onWalletConnect(null, null);
             }
             lastWalletRef.current = walletInfo;
@@ -84,11 +89,9 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
                     console.error('Failed to disconnect wallet:', error);
                 }
             } finally {
-                // Always update local state, regardless of whether the disconnect was successful
                 setWallet(null);
                 setUserId(null);
                 setIsConnected(false);
-                localStorage.removeItem('userId');
                 onWalletConnect(null, null);
             }
         } else {
