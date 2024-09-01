@@ -39,7 +39,7 @@ const BrowseAll = () => {
                     {posts.map((post) => (
                         <div
                             key={post._id}
-                            className="post bg-gray-1000 p-4 rounded-lg mb-4 cursor-pointer hover:bg-gray-900 transition duration-300 min-w-[600px] w-full md:w-1/2 lg:w-2/3 xl:w-3/4"
+                            className="post bg-gray-1000 p-4 rounded-lg mb-4 cursor-pointer hover:bg-gray-900 transition duration-300 w-full max-w-[800px] lg:w-2/3 xl:w-3/4"
                             onClick={() => handlePostClick(post._id)}
                         >
                             <div className="text-left">
@@ -65,7 +65,7 @@ const BrowseAll = () => {
                                     <img
                                         src={post.image}
                                         alt="Post image"
-                                        className="w-full h-auto max-w-[590px] rounded-lg mb-5"
+                                        className="w-full h-auto max-w-[600px] rounded-lg mb-5"
                                     />
                                 ) : (
                                     <p className="text-base mb-2">{post.content}</p>

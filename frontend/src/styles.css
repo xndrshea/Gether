@@ -13,7 +13,6 @@ body,
 html {
     margin: 0;
     padding: 0;
-    height: 100%;
     font-family: 'Roboto', Arial, sans-serif, sans-serif;
     background-color: #1a1a1a;
     color: white;
@@ -33,13 +32,6 @@ body {
     flex-direction: column;
     align-items: center;
     height: 100vh;
-}
-
-.container {
-    text-align: center;
-    width: 100%;
-    margin: 0 auto;
-    max-width: 600px;
 }
 
 #clearSearch {
@@ -289,47 +281,9 @@ button,
 
 /* BrowseAll.css */
 
-.browse-all {
-    height: 100vh;
-    margin: 0 auto;
-}
-
-.browse-all .body {
-    overflow: auto;
-}
-
-.browse-all .container {
-    max-width: 1000px;
-    min-width: 1000px;
-    margin: 0 auto;
-    text-align: left;
-}
 
 @media (max-width: 671px) {
     .browse-all .container {
-        width: 95vw;
-        min-width: 95vw;
-    }
-}
-
-.post-details {
-    height: 100vh;
-    margin: 0 auto;
-}
-
-.post-details .body {
-    overflow: auto;
-}
-
-.post-details .container {
-    max-width: 1000px;
-    min-width: 672px;
-    margin: 0 auto;
-    text-align: left;
-}
-
-@media (max-width: 671px) {
-    .post-details .container {
         width: 95vw;
         min-width: 95vw;
     }
@@ -344,4 +298,17 @@ button,
     font-size: 3rem;
     color: #0066ff;
     z-index: 1000;
+}
+
+.absolute.inset-0 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.relative.z-10 {
+    position: relative;
+    z-index: 10;
 }
