@@ -20,12 +20,24 @@ module.exports = {
           200: '#e5e7eb',
           800: '#3a3a3a',
           900: '#2a2a2a',
-          1000: '#1a1a1a'
+          1000: '#1a1a1a',
         },
         'custom-bg': '#1a1a1a',
         'custom-text': '#ffffff',
+        cursor: 'rgb(220, 90, 90)',
+      },
+      width: {
+        'cursor': '10px',
+        'cursor-outline': '12px',
+      },
+      height: {
+        'cursor': '10px',
+        'cursor-outline': '12px',
       },
     },
+  },
+  variants: {
+    extend: {},
   },
   plugins: [
     require('@tailwindcss/forms'),

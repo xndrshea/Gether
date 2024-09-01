@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import PostForm from './components/form/PostForm';
 import SwapComponent from './components/SwapComponent';
 import { displayTokenInfo } from './components/tokenInfo';
 import TokenDetails from './components/TokenDetails';
 import { fetchTokenData, saveTokenInfoToDatabase, fetchPosts } from './components/fetch/FetchTokenData';
+import { getUserIdPrefix } from './utils/userUtils';
 import './styles.css';
 
-const TokenPage = () => {
+const TokenPage = ({ userId }) => {
+    console.log("TokenPage userId:", userId);
     const { address } = useParams();
     const [tokenInfo, setTokenInfo] = useState(null);
     const [posts, setPosts] = useState([]);
@@ -70,27 +72,30 @@ const TokenPage = () => {
     }, []);
 
     const displayPosts = useCallback((posts) => {
-        return posts.map((post, index) => (
-            <React.Fragment key={post._id}>
-                <div className="post bg-[#1a1a1a] rounded-lg p-4">
-                    <div className="post-content">
-                        <h2 className="text-2xl font-bold mb-3">{post.title}</h2>
-                        {post.image && (<img src={post.image} alt="Post image" className="w-full h-auto max-w-[590px] rounded-lg mb-5" />)}
-                        <p className="text-gray-300">{post.content}</p>
+        return posts.map((post) => (
+            <div
+                key={post._id}
+                className="post bg-gray-1000 p-4 rounded-lg mb-4 cursor-pointer hover:bg-gray-900 transition duration-300 w-full"
+                onClick={() => navigate(`/post/${post._id}`)}
+            >
+                <div className="post-content text-left break-words">
+                    <p className="text-sm text-gray-400 mb-2">User: {getUserIdPrefix(post.user_id)}</p>
+                    <div className="flex flex-wrap items-center mb-2">
+                        <p className="text-sm text-gray-500">Posted on: {new Date(post.created_at).toLocaleString()}</p>
                     </div>
-                    <div className="mt-4 flex justify-end">
-                        <button
-                            onClick={() => navigate(`/post/${post._id}`)}
-                            className="py-2 px-5 rounded-full text-base font-semibold cursor-pointer bg-blue-600 text-white hover:bg-blue-700 transition duration-300">
-                            View Details
-                        </button>
-                    </div>
+                    <h2 className="text-xl font-bold mb-2 break-words">{post.title}</h2>
+                    {post.image && (
+                        <img
+                            src={post.image}
+                            alt="Post image"
+                            className="w-full h-auto max-w-[590px] rounded-lg mb-5 object-contain"
+                        />
+                    )}
+                    <p className="text-gray-300 break-words">{post.content}</p>
                 </div>
-                {index < posts.length - 1 && (
-                    <hr className="my-6 border-t border-gray-700" />)}
-            </React.Fragment>
+            </div>
         ));
-    }, [navigate]);
+    }, [navigate, address, tokenInfo]);
 
     const handleWalletConnected = (wallet) => {
         setWallet(wallet);
@@ -98,10 +103,10 @@ const TokenPage = () => {
 
     return (
         <div className="TokenPage flex relative" ref={scrollContainerRef}>
-            <div className="main-content flex-grow lg:pr-36 xl:pr-0 transition-all duration-300">
+            <div className="main-content flex-grow lg:pr-36 xl:pr-0 max-w-[800px] transition-all duration-300">
                 <div className="container mx-auto px-4">
                     <div id="tokenInfo"></div>
-                    {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={loadPosts} />}
+                    {canCreatePost && <PostForm currentTokenAddress={address} loadPosts={loadPosts} userId={userId} />}
                     <div id="posts" className="py-4 md:py-6 lg:py-8">{displayPosts(posts)}</div>
                     {!canCreatePost && <div id="noCommunityMessage">Cannot post in this community.</div>}
                 </div>

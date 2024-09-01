@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
-const CommentForm = ({ postId, parentCommentId, onCommentSubmit }) => {
+const CommentForm = ({ postId, parentCommentId, onCommentSubmit, userId }) => {
     const [commentContent, setCommentContent] = useState('');
 
     const createComment = async (e) => {
         e.preventDefault();
-        if (commentContent) {
+        if (commentContent && userId) {
             try {
                 const response = await fetch('http://localhost:5001/comments', {
                     method: 'POST',
@@ -15,7 +15,7 @@ const CommentForm = ({ postId, parentCommentId, onCommentSubmit }) => {
                     body: JSON.stringify({
                         post_id: postId,
                         parent_comment_id: parentCommentId,
-                        user_id: '60d9f1f1f1f1f1f1f1f1f1f1',
+                        user_id: userId,
                         content: commentContent
                     }),
                 });
@@ -32,7 +32,7 @@ const CommentForm = ({ postId, parentCommentId, onCommentSubmit }) => {
         <div className="flex flex-col items-start mt-2">
             <div className="w-full">
                 <form onSubmit={createComment} className="relative">
-                    <div className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-blue-600">
+                    <div className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-700 focus-within:ring-2 focus-within:ring-blue-600">
                         <textarea
                             id="comment"
                             name="comment"

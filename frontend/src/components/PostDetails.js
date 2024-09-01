@@ -2,8 +2,10 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import CommentForm from './form/CommentForm';
 import { fetchPostDetails } from './fetch/FetchPost';
+import { getUserIdPrefix } from '../utils/userUtils';
+import { handleNewComment, renderComments } from '../utils/commentUtils';
 
-const PostDetails = () => {
+export default function PostDetails({ userId }) {
     const { postId } = useParams();
     const [post, setPost] = useState(null);
     const [tokenInfo, setTokenInfo] = useState(null);
@@ -28,93 +30,60 @@ const PostDetails = () => {
 
     const handleReply = (commentId) => setReplyingTo(commentId === replyingTo ? null : commentId);
 
-    const handleNewComment = (newComment) => {
-        setPost(prevPost => {
-            const updateComments = (comments) => {
-                return comments.map(comment => {
-                    if (comment._id === newComment.parent_comment_id) {
-                        return {
-                            ...comment,
-                            replies: [...(comment.replies || []), newComment]
-                        };
-                    } else if (comment.replies && comment.replies.length > 0) {
-                        return {
-                            ...comment,
-                            replies: updateComments(comment.replies)
-                        };
-                    }
-                    return comment;
-                });
-            };
+    const onCommentSubmit = useCallback(handleNewComment(setPost, setReplyingTo), [setPost, setReplyingTo]);
 
-            if (newComment.parent_comment_id) {
-                return {
-                    ...prevPost,
-                    comments: updateComments(prevPost.comments || [])
-                };
-            } else {
-                return {
-                    ...prevPost,
-                    comments: [...(prevPost.comments || []), newComment]
-                };
-            }
-        });
-        setReplyingTo(null);
-    };
-
-    const renderComments = (comments, depth = 0) => {
-        return comments.map((comment, index) => (
-            <div key={`${comment._id}-${depth}-${index}`} className={`comment bg-gray-1000 p-4 mb-4 rounded-lg text-left ml-${depth * 4}`}>
-                <p className="text-base mb-2">{comment.content}</p>
-                <p className="text-gray-500">Commented on: {new Date(comment.created_at).toLocaleString()}</p>
-                <button onClick={() => handleReply(comment._id)} className="text-blue-500 text-sm mt-2 hover:underline">Reply</button>
-                {replyingTo === comment._id && (
-                    <CommentForm
-                        postId={postId}
-                        parentCommentId={comment._id}
-                        onCommentSubmit={handleNewComment}
-                    />
-                )}
-                {comment.replies && comment.replies.length > 0 && (
-                    <div className="ml-4 mt-4">
-                        {renderComments(comment.replies, depth + 1)}
-                    </div>
-                )}
-            </div>
-        ));
-    };
-
-    if (loading) return <div>Loading post...</div>;
-    if (error) return <div>Error: {error}</div>;
-    if (!post) return <div>Post not found</div>;
+    if (loading) return <div className="text-white">Loading post...</div>;
+    if (error) return <div className="text-white">Error: {error}</div>;
+    if (!post) return <div className="text-white">Post not found</div>;
 
     return (
-        <div className="post-details">
-            <div className="container mx-auto px-4 max-w-4xl">
-                <div className="post text-left bg-gray-1000 text-white rounded-lg p-4 mb-4">
-                    <p className="text-gray-500 mb-4">
-                        g/{post.token_address ? (
-                            <Link to={`/tokenpage/${post.token_address}`} className="text-blue-500 underline">
-                                {tokenInfo ? `${tokenInfo.name} (${tokenInfo.symbol})` : post.token_address}
-                            </Link>
-                        ) : 'Unknown Community'}
-                    </p>
-                    <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-                    <p className="text-gray-500 mb-4">Posted on: {post.created_at ? new Date(post.created_at).toLocaleString() : 'Date not available'}</p>
-                    {post.image && <img src={post.image} alt="Post" className="max-w-full h-auto mb-4 rounded-lg" />}
-                    <p className="text-base mb-4">{post.content}</p>
-                    <hr className="my-6 border-t border-gray-700" />
-                    <h2 className="text-2xl font-bold mb-4">Comments</h2>
-                    {post.comments && post.comments.length > 0 ? (
-                        <div className="comments">{renderComments(post.comments)}</div>
-                    ) : (
-                        <p className="text-gray-500">No comments yet.</p>
-                    )}
-                    <CommentForm postId={postId} onCommentSubmit={handleNewComment} />
+        <div className="post-details w-full px-4 xl:flex xl:justify-center">
+            <div className="flex flex-wrap justify-start xl:max-w-[1200px] w-full">
+                <div className="post bg-gray-1000 p-4 rounded-lg mb-4 w-full min-w-[300px] max-w-full sm:max-w-[600px] md:max-w-[1000px] lg:w-2/3 xl:w-3/4">
+                    <div className="text-left">
+                        <p className="text-sm text-gray-400 mb-2">User: {getUserIdPrefix(post.user_id)}</p>
+                        <div className="flex flex-wrap items-center mb-2">
+                            {post.token_address && tokenInfo ? (
+                                <p className="text-sm font-semibold text-gray-400 mr-4 mb-2 sm:mb-0">
+                                    g/<Link
+                                        to={`/tokenpage/${post.token_address}`}
+                                        className="text-gray-400 hover:text-blue-400"
+                                    >
+                                        {tokenInfo.name} ({tokenInfo.symbol})
+                                    </Link>
+                                </p>
+                            ) : (
+                                <p className="text-sm text-gray-400 mr-4 mb-2 sm:mb-0">Unknown Community</p>
+                            )}
+                            <p className="text-sm text-gray-500">Posted on: {new Date(post.created_at).toLocaleString()}</p>
+                        </div>
+                        <h2 className="text-xl font-bold mb-2 break-words">{post.title}</h2>
+                        <div className="post-content overflow-hidden">
+                            {post.image ? (
+                                <img
+                                    src={post.image}
+                                    alt="Post image"
+                                    className="w-full h-auto max-w-full sm:max-w-[600px] rounded-lg mb-5 object-contain"
+                                />
+                            ) : (
+                                <p className="text-base mb-2 whitespace-pre-wrap break-words overflow-wrap-anywhere">{post.content}</p>
+                            )}
+                        </div>
+
+                        <hr className="my-6 border-t border-gray-700" />
+
+                        <h3 className="text-lg font-bold mb-4">Comments</h3>
+                        {post.comments && post.comments.length > 0 ? (
+                            <div className="comments">
+                                {renderComments(post.comments, 0, handleReply, replyingTo, CommentForm, postId, onCommentSubmit, userId)}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500">No comments yet.</p>
+                        )}
+                        <CommentForm postId={postId} onCommentSubmit={onCommentSubmit} userId={userId} />
+                    </div>
                 </div>
             </div>
         </div>
     );
-};
-
-export default PostDetails;
+}

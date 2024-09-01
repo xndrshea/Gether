@@ -34,6 +34,7 @@ export const displayTokenInfo = (info, address) => {
 };
 
 export const extractImageUrl = (data) => {
+    console.log('Token data:', data); // Add this line
     if (data.metadata && data.metadata.image) {
         return data.metadata.image;
     }

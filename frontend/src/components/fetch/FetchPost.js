@@ -44,7 +44,7 @@ export const fetchAllPosts = async () => {
 
 export const fetchPostDetails = async (postId) => {
     try {
-        const response = await fetch(`http://localhost:5001/posts/detail/${postId}`);
+        const response = await fetch(`${API_BASE_URL}/posts/detail/${postId}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -53,7 +53,7 @@ export const fetchPostDetails = async (postId) => {
         // Fetch token info if token_address is available
         let tokenInfo = null;
         if (post.token_address) {
-            const tokenResponse = await fetch(`http://localhost:5001/tokens/${post.token_address}`);
+            const tokenResponse = await fetch(`${API_BASE_URL}/tokens/${post.token_address}`);
             if (tokenResponse.ok) {
                 tokenInfo = await tokenResponse.json();
             }
