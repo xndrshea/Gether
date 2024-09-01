@@ -32,7 +32,7 @@ const CommentForm = ({ postId, parentCommentId, onCommentSubmit, userId }) => {
         <div className="flex flex-col items-start mt-2">
             <div className="w-full">
                 <form onSubmit={createComment} className="relative">
-                    <div className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-blue-600">
+                    <div className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-700 focus-within:ring-2 focus-within:ring-blue-600">
                         <textarea
                             id="comment"
                             name="comment"

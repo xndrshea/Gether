@@ -20,7 +20,7 @@ module.exports = {
           200: '#e5e7eb',
           800: '#3a3a3a',
           900: '#2a2a2a',
-          1000: '#1a1a1a'
+          1000: '#1a1a1a',
         },
         'custom-bg': '#1a1a1a',
         'custom-text': '#ffffff',

@@ -74,7 +74,7 @@ const TokenPage = ({ userId }) => {
     const displayPosts = useCallback((posts) => {
         return posts.map((post, index) => (
             <React.Fragment key={post._id}>
-                <div className="post bg-[#1a1a1a] rounded-lg p-4">
+                <div className="post bg-gray-1000 rounded-lg p-4">
                     <div className="post-content">
                         <p className="text-sm text-gray-400 mb-2">User: {getUserIdPrefix(post.user_id)}</p>
                         {post.image && (<img src={post.image} alt="Post image" className="w-full h-auto max-w-[590px] rounded-lg mb-5" />)}
