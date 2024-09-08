@@ -25,6 +25,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "framer-motion": "^11.5.4",
     "fs": "^0.0.1-security",
     "mongoose": "^8.5.2",
     "multer": "^1.4.5-lts.1",
@@ -32,5 +33,11 @@
     "ton-client-node-js": "^0.28.0",
     "web3": "^4.11.1",
     "xtend": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.4",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.4"
   }
 }

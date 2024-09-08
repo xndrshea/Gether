@@ -37,7 +37,7 @@ export default function PostDetails({ userId }) {
     if (!post) return <div className="text-white">Post not found</div>;
 
     return (
-        <div className="post-details w-full px-4 xl:flex xl:justify-center">
+        <div className="post-details w-full px-4 pt-4 xl:flex xl:justify-center">
             <div className="flex flex-wrap justify-start xl:max-w-[1200px] w-full">
                 <div className="post bg-gray-1000 p-4 rounded-lg mb-4 w-full min-w-[300px] max-w-full sm:max-w-[600px] md:max-w-[1000px] lg:w-2/3 xl:w-3/4">
                     <div className="text-left">

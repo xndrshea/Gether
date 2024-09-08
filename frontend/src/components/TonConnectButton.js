@@ -1,6 +1,7 @@
 import React, { useEffect, useState, createContext, useContext, useCallback, useRef } from 'react';
 import { TonConnect } from '@tonconnect/sdk';
 import { v4 as uuidv4 } from 'uuid';
+import Modal from 'react-modal'; // Import Modal
 
 const WalletContext = createContext();
 
@@ -13,6 +14,7 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
     const [isConnected, setIsConnected] = useState(false);
     const lastWalletRef = useRef(null);
     const [isDisconnecting, setIsDisconnecting] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false); // State for modal
 
     const handleStatusChange = useCallback((walletInfo) => {
         console.log("Wallet status changed:", walletInfo);
@@ -67,6 +69,9 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
                 console.log("Connection result:", result);
             } catch (error) {
                 console.error('Failed to connect wallet:', error);
+                if (error.message.includes('WalletNotInjectedError')) {
+                    setIsModalOpen(true); // Open modal if wallet is not injected
+                }
             }
         } else {
             console.error('TonConnect not initialized');
@@ -100,6 +105,11 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
         setIsDisconnecting(false);
     }, [tonConnect, onWalletConnect, isConnected, isDisconnecting]);
 
+    // Function to close the modal
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
     return (
         <WalletContext.Provider value={{ wallet, userId }}>
             <div>
@@ -124,6 +134,36 @@ const TonConnectButton = ({ onWalletConnect, children }) => {
                 )}
                 {children}
             </div>
+            <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                contentLabel="Wallet Not Found"
+                style={{
+                    content: {
+                        top: '50%',
+                        left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
+                        marginRight: '-50%',
+                        transform: 'translate(-50%, -50%)',
+                        backgroundColor: '#1a1a1a',
+                        borderRadius: '8px',
+                        padding: '20px',
+                        maxWidth: '400px',
+                        zIndex: 9999, // Add this line
+                    },
+                    overlay: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                        zIndex: 9998, // Add this line
+                    },
+                }}
+            >
+                <h2>TON Wallet Extension Not Found</h2>
+                <p>Please install a TON wallet extension to connect your wallet.</p>
+                <div className="flex justify-end">
+                    <button onClick={closeModal} className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">Close</button>
+                </div>
+            </Modal>
         </WalletContext.Provider>
     );
 };

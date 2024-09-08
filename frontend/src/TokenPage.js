@@ -102,7 +102,7 @@ const TokenPage = ({ userId }) => {
     };
 
     return (
-        <div className="TokenPage flex relative" ref={scrollContainerRef}>
+        <div className="TokenPage flex relative pt-4" ref={scrollContainerRef}>
             <div className="main-content flex-grow lg:pr-36 xl:pr-0 max-w-[800px] transition-all duration-300">
                 <div className="container mx-auto px-4">
                     <div id="tokenInfo"></div>

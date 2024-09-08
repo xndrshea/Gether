@@ -33,7 +33,7 @@ const BrowseAll = () => {
     };
 
     return (
-        <div className="browse-all max-w-6xl px-4">
+        <div className="browse-all max-w-6xl px-4 pt-4">
             {Array.isArray(posts) && posts.length > 0 ? (
                 <div className="flex flex-wrap justify-start">
                     {posts.map((post) => (

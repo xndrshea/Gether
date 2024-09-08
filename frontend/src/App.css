@@ -48,7 +48,6 @@
 }
 
 .App-content {
-  padding-top: 20px;
   margin-top: 60px; /* Add margin to avoid content being hidden behind the header */
   flex-grow: 1;
   display: flex;

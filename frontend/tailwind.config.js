@@ -34,6 +34,15 @@ module.exports = {
         'cursor': '10px',
         'cursor-outline': '12px',
       },
+      animation: {
+        grid: "grid 15s linear infinite",
+      },
+      keyframes: {
+        grid: {
+          "0%": { transform: "translateY(-50%)" },
+          "100%": { transform: "translateY(0)" },
+        },
+      },
     },
   },
   variants: {

@@ -1,13 +1,14 @@
-import React, { useState, useRef, useEffect, Suspense } from 'react';
+import React, { useState, Suspense, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaXTwitter, FaGithub } from 'react-icons/fa6';
-import Scene from '../utils/ParticleScene';
 import ErrorBoundary from './ErrorBoundary';
+import RetroGrid from '../utils/RetroGrid';
+import SmoothDraggableLogo from './SmoothDraggableLogo';
 
 const Home = () => {
     const navigate = useNavigate();
     const [hasInput, setHasInput] = useState(false);
-    const mouse = useRef([0, 0]);
+    const constraintsRef = useRef(null);
 
     const handleScavenge = () => {
         const tokenAddress = document.getElementById('tokenAddress').value.trim();
@@ -19,33 +20,16 @@ const Home = () => {
         setHasInput(false);
     };
 
-    useEffect(() => {
-        const handleMouseMove = (event) => {
-            mouse.current = [
-                event.clientX - window.innerWidth / 2,
-                event.clientY - window.innerHeight / 2,
-            ];
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-        };
-    }, []);
-
     return (
-        <div className="relative w-screen h-full overflow-hidden">
-            <ErrorBoundary fallback={<div>Error loading 3D scene</div>}>
+        <div className="relative w-screen h-full overflow-hidden" ref={constraintsRef}>
+            <ErrorBoundary fallback={<div>Error loading background</div>}>
                 <Suspense fallback={<div>Loading...</div>}>
-                    <div className="absolute inset-0 z-0">
-                        <Scene mouse={mouse} />
-                    </div>
+                    <RetroGrid />
                 </Suspense>
             </ErrorBoundary>
-            <div className="relative z-10 w-full pb-32 h-full flex flex-col justify-center items-center">
-                <div className="text-center w-full max-w-screen-xl mx-auto px-4">
-                    <div className="w-20 h-20 bg-[#0066ff] rounded-full flex justify-center items-center mx-auto mb-10 text-2xl font-bold relative transition-all duration-300 ease-in-out sm:-left-[calc(6vw+200px)] sm:top-5 left-0 top-5">
-                        <span>gether</span>
-                    </div>
+            <SmoothDraggableLogo constraintsRef={constraintsRef} />
+            <div className="relative z-20 w-full h-full flex flex-col justify-center items-center pointer-events-none">
+                <div className="text-center w-full max-w-screen-xl mx-auto px-4 pointer-events-auto">
                     <h1 className="mb-4 text-5xl leading-tight text-white">
                         <span className="first-line font-semibold inline-block -ml-[5.5em]">Where Tokens</span><br />
                         <span className="second-line font-semibold inline-block ml-[2em]">become <span className="text-blue-600 font-bold">Communities</span></span>
@@ -62,7 +46,7 @@ const Home = () => {
                     <div id="searchResult"></div>
                 </div>
             </div>
-            <div className="fixed bottom-0 left-0 right-0 h-[60px] bg-[rgba(15,15,15,0.9)] border-t border-[rgba(255,255,255,0.2)] flex justify-center items-center z-20">
+            <div className="fixed bottom-0 left-0 right-0 h-[60px] bg-[rgba(15,15,15,0.9)] border-t border-[rgba(255,255,255,0.2)] flex justify-center items-center z-30 pointer-events-auto">
                 <a href="https://x.com/getherlol" target="_blank" rel="noopener noreferrer" className="mx-4 transition-transform duration-200 hover:scale-110"><FaXTwitter size={24} color="white" /></a>
                 <a href="https://github.com/xndrshea/Gether" target="_blank" rel="noopener noreferrer" className="mx-4 transition-transform duration-200 hover:scale-110"><FaGithub size={24} color="white" /></a>
             </div>
