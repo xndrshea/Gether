@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import TonConnectButton from './components/TonConnectButton';
-import LogoHeader from './components/LogoHeader';
+import LogoHeader from './components/navigation/LogoHeader.js';
 import TokenPage from './TokenPage';
 import Home from './components/Home';
 import { ScrollToTop, ScrollButton } from './utils/ScrollUtils';
 import BrowseAll from './components/BrowseAll';
 import PostDetails from './components/PostDetails';
 import SearchContainer from './components/SearchContainer';
+import Footer from './components/navigation/footer.js';
 
 function Header({ userId, onWalletConnect }) {
   const location = useLocation();
@@ -34,6 +35,7 @@ function Header({ userId, onWalletConnect }) {
 function App() {
   const [userId, setUserId] = useState(null);
   const [wallet, setWallet] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     // Check if there's a stored wallet and userId
@@ -65,7 +67,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <>
       <ScrollToTop />
       <Header userId={userId} onWalletConnect={handleWalletConnect} />
       <div className="App">
@@ -79,8 +81,17 @@ function App() {
         </div>
         <ScrollButton />
       </div>
+      {location.pathname === '/' && <Footer />}
+    </>
+  );
+}
+
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
     </Router>
   );
 }
 
-export default App;
+export default AppWrapper;

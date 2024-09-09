@@ -208,64 +208,6 @@ button,
     }
 }
 
-@media only screen and (max-width: 230px) {
-    .logo {
-        left: calc(0vw - 0px);
-    }
-
-    h1 .first-line,
-    h1 .second-line {
-        font-size: 24px;
-        margin-left: 0;
-    }
-}
-
-@media only screen and (min-width: 231px) and (max-width: 270px) {
-    .logo {
-        left: calc(0vw - 0px);
-    }
-
-    h1 .first-line,
-    h1 .second-line {
-        font-size: 28px;
-        margin-left: 0;
-    }
-}
-
-@media only screen and (min-width: 271px) and (max-width: 310px) {
-    .logo {
-        left: calc(0vw - 0px);
-    }
-
-    h1 .first-line,
-    h1 .second-line {
-        font-size: 34px;
-        margin-left: 0;
-    }
-}
-
-@media only screen and (min-width: 311px) and (max-width: 365px) {
-    .logo {
-        left: calc(0vw - 0px);
-    }
-
-    h1 .first-line,
-    h1 .second-line {
-        font-size: 40px;
-        margin-left: 0;
-    }
-}
-
-@media only screen and (min-width: 366px) and (max-width: 675px) {
-    .logo {
-        left: calc(0vw - 0px);
-    }
-
-    h1 .first-line,
-    h1 .second-line {
-        margin-left: 0;
-    }
-}
 
 @media (max-width: 768px) {
     .TokenPage .container {
