@@ -1,36 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
-import TonConnectButton from './components/TonConnectButton';
-import LogoHeader from './components/navigation/LogoHeader.js';
+import Header from './components/navigation/header.js';
 import TokenPage from './TokenPage';
 import Home from './components/Home';
 import { ScrollToTop, ScrollButton } from './utils/ScrollUtils';
 import BrowseAll from './components/BrowseAll';
 import PostDetails from './components/PostDetails';
-import SearchContainer from './components/SearchContainer';
 import Footer from './components/navigation/footer.js';
-
-function Header({ userId, onWalletConnect }) {
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
-
-  return (
-    <header className="App-header flex items-center justify-between px-4">
-      <div className="logo-container">
-        <LogoHeader />
-      </div>
-      {!isHomePage && (
-        <div className="search-container flex-grow mx-4">
-          <SearchContainer />
-        </div>
-      )}
-      <div className="wallet-connect-container">
-        <TonConnectButton onWalletConnect={onWalletConnect} />
-      </div>
-    </header>
-  );
-}
 
 function App() {
   const [userId, setUserId] = useState(null);
