@@ -1,11 +1,13 @@
 // src/components/SearchContainer.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useIsPhone } from '../../utils/useMediaQuery';
 
 const SearchContainer = () => {
     const [tokenAddress, setTokenAddress] = useState('');
     const [hasInput, setHasInput] = useState(false);
     const navigate = useNavigate();
+    const isPhone = useIsPhone();
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -35,13 +37,15 @@ const SearchContainer = () => {
                 value={tokenAddress}
                 onChange={handleInputChange}
                 placeholder="Enter TON Token Address..."
-                className="py-2 px-4 border rounded-full focus:outline-none border-none text-sm bg-gray-900 bg-opacity-80 text-white pr-8 w-[16rem] sm:w-[22rem] md:w-[26rem] lg:w-[32rem] xl:w-[40rem]"
+                className={`py-2 px-4 border rounded-full focus:outline-none border-none text-sm bg-gray-900 bg-opacity-80 text-white pr-8 ${
+                    isPhone ? 'w-full max-w-[20rem]' : 'w-[40rem]'
+                }`}
             />
             {hasInput && (
                 <button
                     type="button"
                     onClick={handleClearSearch}
-                    className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-xl text-gray-500 cursor-pointer"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-xl text-gray-500 cursor-pointer"
                 >
                     &times;
                 </button>

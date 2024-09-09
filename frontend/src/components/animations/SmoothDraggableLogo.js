@@ -2,7 +2,7 @@
 
 import { motion, useAnimation, useDragControls } from "framer-motion"
 import { useEffect, useState, useRef } from "react"
-import { useIsPhone } from "../utils/useMediaQuery"
+import { useIsPhone } from "../../utils/useMediaQuery"
 
 export default function SmoothDraggableLogo({ 
   constraintsRef, 

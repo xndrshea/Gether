@@ -13,7 +13,7 @@ const LogoHeader = () => {
             <img
                 src="https://getherlolbucket.s3.eu-central-1.amazonaws.com/assets/gethername.png"
                 alt="Gether Name"
-                className="h-8 hidden md:block"
+                className="h-8"
             />
         </Link>
     );

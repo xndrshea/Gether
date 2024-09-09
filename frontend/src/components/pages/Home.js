@@ -1,9 +1,9 @@
 import React, { useState, Suspense, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ErrorBoundary from './ErrorBoundary';
-import RetroGrid from '../utils/RetroGrid';
-import SmoothDraggableLogo from './SmoothDraggableLogo';
-import { useIsPhone } from '../utils/useMediaQuery';
+import ErrorBoundary from '../../utils/ErrorBoundary';
+import RetroGrid from '../animations/RetroGrid';
+import SmoothDraggableLogo from '../animations/SmoothDraggableLogo';
+import { useIsPhone } from '../../utils/useMediaQuery';
 
 const Home = () => {
     const navigate = useNavigate();

@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import CommentForm from './form/CommentForm';
-import { fetchPostDetails } from './fetch/FetchPost';
-import { getUserIdPrefix } from '../utils/userUtils';
-import { handleNewComment, renderComments } from '../utils/commentUtils';
+import CommentForm from '../form/CommentForm';
+import { fetchPostDetails } from '../fetch/FetchPost';
+import { getUserIdPrefix } from '../../utils/userUtils';
+import { handleNewComment, renderComments } from '../../utils/commentUtils';
 
 export default function PostDetails({ userId }) {
     const { postId } = useParams();

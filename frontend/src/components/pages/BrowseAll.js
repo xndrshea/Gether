@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { fetchAllPosts } from './fetch/FetchPost';
-import { getUserIdPrefix } from '../utils/userUtils';
+import { fetchAllPosts } from '../fetch/FetchPost';
+import { getUserIdPrefix } from '../../utils/userUtils';
 
 const BrowseAll = () => {
     const [posts, setPosts] = useState([]);

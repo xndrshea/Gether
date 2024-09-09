@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import Header from './components/navigation/header.js';
-import TokenPage from './TokenPage';
-import Home from './components/Home';
+import TokenPage from './components/pages/TokenPage.js';
+import Home from './components/pages/Home.js';
 import { ScrollToTop, ScrollButton } from './utils/ScrollUtils';
-import BrowseAll from './components/BrowseAll';
-import PostDetails from './components/PostDetails';
+import BrowseAll from './components/pages/BrowseAll.js';
+import PostDetails from './components/pages/PostDetails.js';
 import Footer from './components/navigation/footer.js';
 
 function App() {

@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import TonConnectButton from '../TonConnectButton';
 import LogoHeader from './LogoHeader';
-import SearchContainer from '../SearchContainer';
+import SearchContainer from './SearchContainer';
 
 function Header({ userId, onWalletConnect }) {
   const location = useLocation();

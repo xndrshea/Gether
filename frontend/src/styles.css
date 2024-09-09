@@ -76,66 +76,6 @@ button,
     transition: background-color 0.3s ease;
 }
 
-@media only screen and (max-width: 233px) {
-
-    button,
-    .button {
-        padding: 7px 14px;
-        font-size: 9px;
-        border-radius: 15px;
-    }
-
-    input[type="text"] {
-        padding: 9px 0px 9px 0px;
-        font-size: 10px;
-    }
-}
-
-@media only screen and (min-width: 234px) and (max-width: 244px) {
-
-    button,
-    .button {
-        padding: 7px 14px;
-        font-size: 11px;
-        border-radius: 15px;
-    }
-
-    input[type="text"] {
-        padding: 9px 0px 9px 0px;
-        font-size: 11px;
-    }
-}
-
-@media only screen and (min-width: 245px) and (max-width: 270px) {
-
-    button,
-    .button {
-        padding: 7px 14px;
-        font-size: 12px;
-        border-radius: 15px;
-    }
-
-    input[type="text"] {
-        padding: 10px 0px 10px 0px;
-        font-size: 12px;
-    }
-}
-
-@media only screen and (min-width: 271px) and (max-width: 310px) {
-
-    button,
-    .button {
-        padding: 8px 16px;
-        font-size: 14px;
-        border-radius: 15px;
-    }
-
-    input[type="text"] {
-        padding: 12px 0px 12px 0px;
-        font-size: 14px;
-    }
-}
-
 #scavenge {
     background-color: #0066ff;
     color: white;

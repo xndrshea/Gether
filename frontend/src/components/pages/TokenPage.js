@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import PostForm from './components/form/PostForm';
-import SwapComponent from './components/SwapComponent';
-import { displayTokenInfo } from './components/tokenInfo';
-import TokenDetails from './components/TokenDetails';
-import { fetchTokenData, saveTokenInfoToDatabase, fetchPosts } from './components/fetch/FetchTokenData';
-import { getUserIdPrefix } from './utils/userUtils';
-import './styles.css';
+import PostForm from '../form/PostForm';
+import SwapComponent from '../SwapComponent';
+import { displayTokenInfo } from '../tokenInfo';
+import TokenDetails from '../TokenDetails';
+import { fetchTokenData, saveTokenInfoToDatabase, fetchPosts } from '../fetch/FetchTokenData';
+import { getUserIdPrefix } from '../../utils/userUtils';
+import '../../styles.css';
 
 const TokenPage = ({ userId }) => {
     console.log("TokenPage userId:", userId);
