@@ -37,9 +37,9 @@ export default function PostDetails({ userId }) {
     if (!post) return <div className="text-white">Post not found</div>;
 
     return (
-        <div className="post-details w-full px-4 pt-4 xl:flex xl:justify-center">
-            <div className="flex flex-wrap justify-start xl:max-w-[1200px] w-full">
-                <div className="post bg-gray-1000 p-4 rounded-lg mb-4 w-full min-w-[300px] max-w-full sm:max-w-[600px] md:max-w-[1000px] lg:w-2/3 xl:w-3/4">
+        <div className="post-details w-full px-4 pt-4 flex justify-center">
+            <div className="w-full max-w-[40rem]">
+                <div className="post bg-gray-1000 p-4 rounded-lg mb-4">
                     <div className="text-left">
                         <p className="text-sm text-gray-400 mb-2">User: {getUserIdPrefix(post.user_id)}</p>
                         <div className="flex flex-wrap items-center mb-2">
@@ -63,7 +63,7 @@ export default function PostDetails({ userId }) {
                                 <img
                                     src={post.image}
                                     alt="Post image"
-                                    className="w-full h-auto max-w-full sm:max-w-[600px] rounded-lg mb-5 object-contain"
+                                    className="w-full h-auto rounded-lg mb-5 object-contain"
                                 />
                             ) : (
                                 <p className="text-base mb-2 whitespace-pre-wrap break-words overflow-wrap-anywhere">{post.content}</p>
