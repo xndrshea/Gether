@@ -1,9 +1,10 @@
 import React, { useState, Suspense, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorBoundary from '../../utils/ErrorBoundary';
-import RetroGrid from '../animations/RetroGrid';
 import SmoothDraggableLogo from '../animations/SmoothDraggableLogo';
 import { useIsPhone } from '../../utils/useMediaQuery';
+import AnimatedGridPattern from '../animations/AnimatedGridPattern'; // Import the new component
+import { cn } from "../../utils/cn";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -25,7 +26,17 @@ const Home = () => {
         <div className="relative w-screen h-full overflow-hidden" ref={constraintsRef}>
             <ErrorBoundary fallback={<div>Error loading background</div>}>
                 <Suspense fallback={<div>Loading...</div>}>
-                    <RetroGrid />
+                    <AnimatedGridPattern
+                        numSquares={30}
+                        maxOpacity={0.1}
+                        duration={3}
+                        repeatDelay={1}
+                        className={cn(
+                            "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
+                            "absolute inset-0 h-full w-full",
+                            "dark:opacity-40"
+                        )}
+                    />
                 </Suspense>
             </ErrorBoundary>
             <SmoothDraggableLogo constraintsRef={constraintsRef} />
