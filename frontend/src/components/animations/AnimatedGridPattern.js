@@ -7,8 +7,8 @@ function cn(...classes) {
 }
 
 export function GridPattern({
-    width = 40,
-    height = 40,
+    width = 50,
+    height = 50,
     x = -1,
     y = -1,
     strokeDasharray = 0,
@@ -122,7 +122,7 @@ export function GridPattern({
                         height={height - 1}
                         x={x * width + 1}
                         y={y * height + 1}
-                        fill="currentColor"
+                        fill="#0052cc"
                         strokeWidth="0"
                     />
                 ))}

@@ -28,13 +28,14 @@ const Home = () => {
                 <Suspense fallback={<div>Loading...</div>}>
                     <AnimatedGridPattern
                         numSquares={30}
-                        maxOpacity={0.1}
+                        maxOpacity={0.6}
                         duration={3}
                         repeatDelay={1}
                         className={cn(
-                            "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
+                            "[mask-image:radial-gradient(1200px_600px_ellipse_at_center,white,transparent)]",
                             "absolute inset-0 h-full w-full",
-                            "dark:opacity-40"
+                            "dark:opacity-50",
+                            "translate-y-[-50px]"
                         )}
                     />
                 </Suspense>
@@ -42,7 +43,7 @@ const Home = () => {
             <SmoothDraggableLogo constraintsRef={constraintsRef} />
             <div className={`relative z-20 w-full h-full flex flex-col ${isPhone ? 'justify-between' : 'justify-center'} items-center pointer-events-none tracking-wide`}>
                 <div className="text-center w-full max-w-screen-xl mx-auto px-4 pointer-events-auto">
-                    <h1 className={`mb-4 ${isPhone ? 'text-5xl mt-8' : 'text-5xl'} leading-tight text-white`}>
+                    <h1 className={`mb-4 ${isPhone ? 'text-5xl mt-32' : 'text-5xl'} leading-tight text-white`}>
                         {isPhone ? (
                             <div className="flex flex-col items-start">
                                 <span className="font-semibold mb-1">Where</span>
@@ -90,7 +91,7 @@ const Home = () => {
                     )}
                 </div>
                 {isPhone && (
-                    <div className="w-full pointer-events-auto px-4 mb-16">
+                    <div className="w-full pointer-events-auto px-4 mb-64">
                         <div className="search-container relative max-w-full mx-auto mb-6">
                             <input 
                                 type="text" 
