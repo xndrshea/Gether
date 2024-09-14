@@ -25,21 +25,21 @@ function Header({ userId, onWalletConnect }) {
     updateWidth();
     window.addEventListener('resize', updateWidth);
     return () => window.removeEventListener('resize', updateWidth);
-  }, [userId]); // Re-run when userId changes (connect/disconnect state)
+  }, [userId]);
 
   return (
-    <header className="App-header flex items-center justify-between px-4 py-2">
-      <div ref={logoContainerRef} className="flex-shrink-0 pl-2">
+    <header className="App-header flex items-stretch justify-between px-4 py-2 h-16">
+      <div ref={logoContainerRef} className="flex-shrink-0 pl-2 flex items-center">
         <LogoHeader />
       </div>
       {!isHomePage && !isPhone && (
-        <div className="flex-grow flex justify-center mx-4" style={{maxWidth: `calc(100% - ${2 * logoWidth}px)`}}>
+        <div className="flex-grow flex justify-center items-center mx-4" style={{ maxWidth: `calc(100% - ${2 * logoWidth}px)` }}>
           <div className="w-full max-w-[40rem]">
             <SearchContainer />
           </div>
         </div>
       )}
-      <div ref={tonConnectRef} className="flex-shrink-0">
+      <div ref={tonConnectRef} className="flex-shrink-0 flex items-center">
         <TonConnectButton onWalletConnect={onWalletConnect} />
       </div>
     </header>

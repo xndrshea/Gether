@@ -46,31 +46,28 @@ const CommentThread = ({ comment, depth = 0, handleReply, replyingTo, CommentFor
     ];
 
     const currentColor = linkColors[depth % linkColors.length];
-
-    // Calculate if this comment is truly the last child, including its replies
     const isActuallyLastChild = isLastChild && (!comment.replies || comment.replies.length === 0);
 
     return (
-        <div className={`relative pl-6 ${depth > 0 ? 'mt-3' : ''}`}>
+        <div className={`relative pl-4 ${depth > 0 ? 'mt-3' : ''}`}>
             {depth > 0 && (
                 <div 
                     className={`absolute left-0 top-0 w-px ${currentColor}`}
                     style={{ 
-                        content: '""',
                         height: isActuallyLastChild ? '50%' : '100%'
                     }}
                 />
             )}
-            <div className={`relative bg-gray-900 p-3 rounded-lg`}>
+            <div className={`relative bg-gray-900 p-3 rounded-lg break-words`}>
                 {depth > 0 && (
                     <div 
-                        className={`absolute left-0 top-1/2 w-5 h-px ${currentColor}`}
-                        style={{ content: '""', transform: 'translateX(-100%)' }}
+                        className={`absolute left-0 top-1/2 w-3 h-px ${currentColor}`}
+                        style={{ transform: 'translateX(-100%)' }}
                     />
                 )}
-                <div className="flex flex-col space-y-2 break-words">
+                <div className="flex flex-col space-y-2">
                     <p className="text-sm text-gray-400">User: {getUserIdPrefix(comment.user_id)}</p>
-                    <p className="text-base">{comment.content}</p>
+                    <p className="text-base whitespace-pre-wrap">{comment.content}</p>
                     <p className="text-gray-500 text-xs">Commented on: {new Date(comment.created_at).toLocaleString()}</p>
                     <button
                         onClick={() => handleReply(comment._id)}

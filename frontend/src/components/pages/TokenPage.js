@@ -112,7 +112,7 @@ const TokenPage = ({ userId }) => {
                 </div>
             </div>
             {!isMobile ? (
-                <div className="sidebar w-72 fixed top-0 right-0 h-screen overflow-y-auto bg-gray-900 p-5 transition-transform duration-300 transform lg:translate-x-0 translate-x-full">
+                <div className="sidebar fixed top-0 right-0 h-screen overflow-y-auto p-2 transition-transform duration-300 transform lg:translate-x-0 translate-x-full">
                     <div className="mt-20 space-y-8">
                         <SwapComponent currentTokenAddress={address} tokenSymbol={tokenInfo?.metadata?.symbol || 'Token'} />
                         <TokenDetails tokenInfo={tokenInfo} currentTokenAddress={address} />
@@ -120,7 +120,7 @@ const TokenPage = ({ userId }) => {
                 </div>
             ) : sidebarOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 z-40">
-                    <div className="fixed right-0 top-0 w-72 h-full bg-gray-900 p-5 overflow-y-auto z-50">
+                    <div className="fixed right-0 top-0 h-full p-2 overflow-y-auto z-50">
                         <button className="absolute top-2 right-2 text-white" onClick={() => setSidebarOpen(false)}>X</button>
                         <div className="mt-20 space-y-8">
                             <SwapComponent currentTokenAddress={address} tokenSymbol={tokenInfo?.metadata?.symbol || 'Token'} />

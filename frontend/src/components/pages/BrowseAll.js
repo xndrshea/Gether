@@ -34,7 +34,7 @@ const BrowseAll = () => {
 
     return (
         <div className="browse-all px-4 pt-4 flex justify-center">
-            <div className="w-full max-w-[40rem]">
+            <div className="max-w-[40rem] w-full ">
                 {Array.isArray(posts) && posts.length > 0 ? (
                     <div className="flex flex-col space-y-4">
                         {posts.map((post) => (

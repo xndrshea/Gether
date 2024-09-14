@@ -38,10 +38,10 @@ export default function PostDetails({ userId }) {
 
     return (
         <div className="post-details w-full px-4 pt-4 flex justify-center">
-            <div className="w-full max-w-[40rem]">
+            <div className="w-[40rem] max-w-full">
                 <div className="post bg-gray-1000 p-4 rounded-lg mb-4">
                     <div className="text-left">
-                        <p className="text-sm text-gray-400 mb-2">User: {getUserIdPrefix(post.user_id)}</p>
+                        <p className="text-sm text-gray-400 mb-2 break-words">User: {getUserIdPrefix(post.user_id)}</p>
                         <div className="flex flex-wrap items-center mb-2">
                             {post.token_address && tokenInfo ? (
                                 <p className="text-sm font-semibold text-gray-400 mr-4 mb-2 sm:mb-0">
@@ -58,7 +58,7 @@ export default function PostDetails({ userId }) {
                             <p className="text-sm text-gray-500">Posted on: {new Date(post.created_at).toLocaleString()}</p>
                         </div>
                         <h2 className="text-xl font-bold mb-2 break-words">{post.title}</h2>
-                        <div className="post-content overflow-hidden">
+                        <div className="post-content">
                             {post.image ? (
                                 <img
                                     src={post.image}
@@ -66,7 +66,7 @@ export default function PostDetails({ userId }) {
                                     className="w-full h-auto rounded-lg mb-5 object-contain"
                                 />
                             ) : (
-                                <p className="text-base mb-2 whitespace-pre-wrap break-words overflow-wrap-anywhere">{post.content}</p>
+                                <p className="text-base mb-2 whitespace-pre-wrap break-words">{post.content}</p>
                             )}
                         </div>
 
@@ -74,7 +74,7 @@ export default function PostDetails({ userId }) {
 
                         <h3 className="text-lg font-bold mb-4">Comments</h3>
                         {post.comments && post.comments.length > 0 ? (
-                            <div className="comments">
+                            <div className="comments space-y-4 overflow-x-auto">
                                 {renderComments(post.comments, 0, handleReply, replyingTo, CommentForm, postId, onCommentSubmit, userId)}
                             </div>
                         ) : (
