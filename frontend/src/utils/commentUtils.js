@@ -1,5 +1,5 @@
 import { getUserIdPrefix } from './userUtils';
-import React from 'react';
+import React, { useState } from 'react';
 
 export const handleNewComment = (setPost, setReplyingTo) => (newComment) => {
     setPost(prevPost => {
@@ -37,6 +37,7 @@ export const handleNewComment = (setPost, setReplyingTo) => (newComment) => {
 };
 
 const CommentThread = ({ comment, depth = 0, handleReply, replyingTo, CommentForm, postId, onCommentSubmit, userId, isLastChild }) => {
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const linkColors = [
         'bg-blue-500',
         'bg-green-500',
@@ -47,16 +48,22 @@ const CommentThread = ({ comment, depth = 0, handleReply, replyingTo, CommentFor
 
     const currentColor = linkColors[depth % linkColors.length];
 
+    const toggleCollapse = () => {
+        setIsCollapsed(!isCollapsed);
+    };
+
     return (
         <div className={`relative ${depth > 0 ? 'ml-6 pt-2' : ''}`}>
             {depth > 0 && (
                 <>
                     <div
-                        className={`absolute left-0 top-0 bottom-0 w-px ${currentColor}`}
+                        className={`absolute left-0 top-0 bottom-0 w-1 ${currentColor} cursor-pointer hover:w-2 transition-all`}
                         style={{ transform: 'translateX(-1.5rem)' }}
+                        onClick={toggleCollapse}
+                        title={isCollapsed ? "Expand comment" : "Collapse comment"}
                     />
                     <div
-                        className={`absolute left-0 top-8 w-6 h-px ${currentColor}`}
+                        className={`absolute left-0 top-8 w-6 h-1 ${currentColor}`}
                         style={{ transform: 'translateX(-1.5rem)' }}
                     />
                 </>
@@ -64,16 +71,20 @@ const CommentThread = ({ comment, depth = 0, handleReply, replyingTo, CommentFor
             <div className="relative bg-gray-900 p-3 rounded-lg break-words">
                 <div className="flex flex-col space-y-2">
                     <p className="text-sm text-gray-400">User: {getUserIdPrefix(comment.user_id)}</p>
-                    <p className="text-base whitespace-pre-wrap">{comment.content}</p>
-                    <p className="text-gray-500 text-xs">Commented on: {new Date(comment.created_at).toLocaleString()}</p>
-                    <button
-                        onClick={() => handleReply(comment._id)}
-                        className="text-blue-500 text-sm hover:underline self-start"
-                    >
-                        Reply
-                    </button>
+                    {!isCollapsed && (
+                        <>
+                            <p className="text-base whitespace-pre-wrap">{comment.content}</p>
+                            <p className="text-gray-500 text-xs">Commented on: {new Date(comment.created_at).toLocaleString()}</p>
+                            <button
+                                onClick={() => handleReply(comment._id)}
+                                className="text-blue-500 text-sm hover:underline self-start"
+                            >
+                                Reply
+                            </button>
+                        </>
+                    )}
                 </div>
-                {replyingTo === comment._id && (
+                {!isCollapsed && replyingTo === comment._id && (
                     <div className="mt-3">
                         <CommentForm
                             postId={postId}
@@ -84,7 +95,7 @@ const CommentThread = ({ comment, depth = 0, handleReply, replyingTo, CommentFor
                     </div>
                 )}
             </div>
-            {comment.replies && comment.replies.length > 0 && (
+            {!isCollapsed && comment.replies && comment.replies.length > 0 && (
                 <div className="relative">
                     {comment.replies.map((reply, index) => (
                         <CommentThread
