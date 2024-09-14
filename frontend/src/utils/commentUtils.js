@@ -70,11 +70,13 @@ const CommentThread = ({ comment, depth = 0, handleReply, replyingTo, CommentFor
             )}
             <div className="relative bg-gray-900 p-3 rounded-lg break-words">
                 <div className="flex flex-col space-y-2">
-                    <p className="text-sm text-gray-400">User: {getUserIdPrefix(comment.user_id)}</p>
+                    <div className="flex justify-between items-center">
+                        <p className="text-sm text-gray-400">User: {getUserIdPrefix(comment.user_id)}</p>
+                        <p className="text-gray-500 text-xs">Commented on: {new Date(comment.created_at).toLocaleString()}</p>
+                    </div>
                     {!isCollapsed && (
                         <>
-                            <p className="text-base whitespace-pre-wrap">{comment.content}</p>
-                            <p className="text-gray-500 text-xs">Commented on: {new Date(comment.created_at).toLocaleString()}</p>
+                            <p className="text-base whitespace-pre-wrap break-words overflow-wrap-anywhere">{comment.content}</p>
                             <button
                                 onClick={() => handleReply(comment._id)}
                                 className="text-blue-500 text-sm hover:underline self-start"
