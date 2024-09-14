@@ -46,25 +46,22 @@ const CommentThread = ({ comment, depth = 0, handleReply, replyingTo, CommentFor
     ];
 
     const currentColor = linkColors[depth % linkColors.length];
-    const isActuallyLastChild = isLastChild && (!comment.replies || comment.replies.length === 0);
 
     return (
-        <div className={`relative pl-4 ${depth > 0 ? 'mt-3' : ''}`}>
+        <div className={`relative ${depth > 0 ? 'ml-6 pt-2' : ''}`}>
             {depth > 0 && (
-                <div 
-                    className={`absolute left-0 top-0 w-px ${currentColor}`}
-                    style={{ 
-                        height: isActuallyLastChild ? '50%' : '100%'
-                    }}
-                />
-            )}
-            <div className={`relative bg-gray-900 p-3 rounded-lg break-words`}>
-                {depth > 0 && (
-                    <div 
-                        className={`absolute left-0 top-1/2 w-3 h-px ${currentColor}`}
-                        style={{ transform: 'translateX(-100%)' }}
+                <>
+                    <div
+                        className={`absolute left-0 top-0 bottom-0 w-px ${currentColor}`}
+                        style={{ transform: 'translateX(-1.5rem)' }}
                     />
-                )}
+                    <div
+                        className={`absolute left-0 top-8 w-6 h-px ${currentColor}`}
+                        style={{ transform: 'translateX(-1.5rem)' }}
+                    />
+                </>
+            )}
+            <div className="relative bg-gray-900 p-3 rounded-lg break-words">
                 <div className="flex flex-col space-y-2">
                     <p className="text-sm text-gray-400">User: {getUserIdPrefix(comment.user_id)}</p>
                     <p className="text-base whitespace-pre-wrap">{comment.content}</p>
@@ -88,7 +85,7 @@ const CommentThread = ({ comment, depth = 0, handleReply, replyingTo, CommentFor
                 )}
             </div>
             {comment.replies && comment.replies.length > 0 && (
-                <div className="mt-3">
+                <div className="relative">
                     {comment.replies.map((reply, index) => (
                         <CommentThread
                             key={`${reply._id}-${depth + 1}-${index}`}
@@ -104,6 +101,12 @@ const CommentThread = ({ comment, depth = 0, handleReply, replyingTo, CommentFor
                         />
                     ))}
                 </div>
+            )}
+            {!isLastChild && (
+                <div
+                    className={`absolute left-0 top-0 bottom-0 w-px ${currentColor}`}
+                    style={{ transform: 'translateX(-1.5rem)' }}
+                />
             )}
         </div>
     );
@@ -125,3 +128,5 @@ export const renderComments = (comments, depth = 0, handleReply, replyingTo, Com
         />
     ));
 };
+
+export default CommentThread;
