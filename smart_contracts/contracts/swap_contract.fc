@@ -1,9 +1,9 @@
 ;; FunC Contract for DeDust Pool Interaction with Dynamic Parameters
 
-global int feePercentage; ;; Fee percentage (0.5% represented as 5/1000)
-global slice feeCollectorAddress 0QBD93fUwFPpkHSx1297eWq40hCyr8vod1iHvsaQLXORlGDX; ;; Replace with your fee collector address
+global int const FEE_PERCENTAGE = 5; ;; Fee percentage (0.5% represented as 5/1000)
+global slice const FEE_COLLECTOR_ADDRESS = "0QBD93fUwFPpkHSx1297eWq40hCyr8vod1iHvsaQLXORlGDX"H; ;; Fee collector address
 
-const int ton_vault::swap = 0xea06185d;
+const int TON_VAULT_SWAP = 0xea06185d;
 const int MIN_BALANCE = 100000000; ;; 0.1 TON
 const int MIN_TRADE_AMOUNT = 1000000000; ;; 1 TON
 const int TRADE_FEE = 200000000; ;; 0.2 TON
@@ -11,68 +11,59 @@ const int TRADE_FEE = 200000000; ;; 0.2 TON
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     slice cs = in_msg_full.begin_parse();
     int flags = cs~load_uint(4);
+    
     if (flags & 1) {
-        ;; Ignore bounced messages
-        return ();
+        return (); ;; Ignore all bounced messages
     }
 
     int trade_value = my_balance - MIN_BALANCE;
     if (trade_value < MIN_TRADE_AMOUNT + TRADE_FEE) {
-        ;; Ignore messages if balance is too low
-        return ();
+        return (); ;; Ignore if balance is too low
     }
 
-    ;; Parse dynamic parameters from the message
-    var slice poolAddress = in_msg_body~load_msg_addr(); ;; Dynamic pool address
-    var slice recipientAddress = in_msg_body~load_msg_addr(); ;; Dynamic recipient address
-    var int fee = (trade_value * feePercentage) / 1000;
-    var int amountAfterFee = trade_value - fee;
+    slice poolAddress = in_msg_body~load_msg_addr();
+    slice recipientAddress = in_msg_body~load_msg_addr();
+    int fee = (trade_value * FEE_PERCENTAGE) / 1000;
+    int amountAfterFee = trade_value - fee;
 
-    ;; Send the platform fee to the fee collector address
-    send_raw_message(build_fee_message(fee), 1);
+    ;; Send the platform fee
+    var msg = begin_cell()
+        .store_uint(0x18, 6)
+        .store_slice(FEE_COLLECTOR_ADDRESS)
+        .store_coins(fee)
+        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+        .end_cell();
+    send_raw_message(msg, 1);
 
-    ;; Build and send the swap message to DeDust’s TON vault
+    ;; Perform the swap
     performSwap(amountAfterFee, poolAddress, recipientAddress);
 }
 
 () performSwap(int trade_value, slice poolAddress, slice recipientAddress) impure {
     cell body = begin_cell()
-        .store_uint(ton_vault::swap, 32)
-        .store_uint(0, 64) ;; query_id:uint64
-        .store_coins(trade_value - TRADE_FEE) ;; Subtract the gas fee
-        ;; SwapStep
-        .store_slice(poolAddress) ;; pool_addr:MsgAddressInt (dynamic)
-        .store_uint(0, 1) ;; kind:SwapKind
-        .store_coins(0) ;; limit:Coins
-        .store_maybe_ref(null()) ;; next:(Maybe ^SwapStep)
-        ;; swap_params:^SwapParams
+        .store_uint(TON_VAULT_SWAP, 32)
+        .store_uint(0, 64)
+        .store_coins(trade_value - TRADE_FEE)
+        .store_slice(poolAddress)
+        .store_uint(0, 1)
+        .store_coins(0)
+        .store_uint(0, 1)
         .store_ref(
             begin_cell()
-                .store_uint(now() + 60 * 5, 32) ;; deadline:Timestamp (5 minutes from now)
-                .store_slice(recipientAddress) ;; recipient_addr:MsgAddressInt (dynamic)
-                .store_slice(addr_none()) ;; referral_addr:MsgAddress
-                .store_maybe_ref(null()) ;; fulfill_payload:(Maybe ^Cell)
-                .store_maybe_ref(null()) ;; reject_payload:(Maybe ^Cell)
+                .store_uint(now() + 300, 32)
+                .store_slice(recipientAddress)
+                .store_uint(0, 2)
                 .end_cell()
         )
         .end_cell();
 
-    send_raw_message(
-        begin_cell()
-            .store_uint(0x18, 6) ;; msg_flag::bounceable
-            .store_slice(TON_VAULT_ADDR) ;; TON Vault Address (constant)
-            .store_coins(trade_value) ;; Send the trade value to the vault
-            .store_zeros(1 + 4 + 4 + 64 + 32 + 1)
-            .store_maybe_ref(body)
-            .end_cell(),
-        0
-    );
-}
-
-() build_fee_message(int fee) => cell {
-    return begin_cell()
-        .store_uint(0, 32) ;; Method ID for sending fees
-        .store_coins(fee)
-        .store_slice(feeCollectorAddress)
+    var msg = begin_cell()
+        .store_uint(0x18, 6)
+        .store_slice("EQCkR1cGmnsE45N4K0otPl5EnxnRakmGqeJUNua5fkWhales"H)
+        .store_coins(trade_value)
+        .store_uint(1, 1 + 4 + 4 + 64 + 32 + 1 + 1)
+        .store_ref(body)
         .end_cell();
+    
+    send_raw_message(msg, 0);
 }
