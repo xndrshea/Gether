@@ -21,6 +21,7 @@ module.exports = {
           800: '#3a3a3a',
           900: '#2a2a2a',
           1000: '#1a1a1a',
+          1100: '#0f0f0f',
         },
         'custom-bg': '#1a1a1a',
         'custom-text': '#ffffff',
@@ -33,6 +34,15 @@ module.exports = {
       height: {
         'cursor': '10px',
         'cursor-outline': '12px',
+      },
+      animation: {
+        grid: "grid 15s linear infinite",
+      },
+      keyframes: {
+        grid: {
+          "0%": { transform: "translateY(-50%)" },
+          "100%": { transform: "translateY(0)" },
+        },
       },
     },
   },

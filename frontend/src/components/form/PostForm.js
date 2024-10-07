@@ -61,6 +61,12 @@ const PostForm = ({ currentTokenAddress, loadPosts, userId }) => {
         }
     };
 
+    const handleTitleChange = (e) => {
+        const title = e.target.value.slice(0, 40);
+        setPostTitle(title);
+        console.log('Post title updated:', title);
+    };
+
     return (
         <div className="post-form">
              <h3 className="px-1 font-bold mb-3 text-[#0066ff]">Create a Post</h3>
@@ -69,10 +75,8 @@ const PostForm = ({ currentTokenAddress, loadPosts, userId }) => {
                 id="postTitle"
                 placeholder="Enter post title"
                 value={postTitle}
-                onChange={(e) => {
-                    setPostTitle(e.target.value);
-                    console.log('Post title updated:', e.target.value);
-                }}
+                onChange={handleTitleChange}
+                maxLength={40}
                 className="w-full mb-2 p-2 border rounded bg-[#1a1a1a] text-white placeholder-gray-400"
             />
             <textarea

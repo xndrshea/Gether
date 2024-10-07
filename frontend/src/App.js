@@ -1,39 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
-import TonConnectButton from './components/TonConnectButton';
-import LogoHeader from './components/LogoHeader';
-import TokenPage from './TokenPage';
-import Home from './components/Home';
+import Header from './components/navigation/header.js';
+import TokenPage from './components/pages/TokenPage.js';
+import Home from './components/pages/Home.js';
 import { ScrollToTop, ScrollButton } from './utils/ScrollUtils';
-import BrowseAll from './components/BrowseAll';
-import PostDetails from './components/PostDetails';
-import SearchContainer from './components/SearchContainer';
-
-function Header({ userId, onWalletConnect }) {
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
-
-  return (
-    <header className="App-header flex items-center justify-between px-4">
-      <div className="logo-container">
-        <LogoHeader />
-      </div>
-      {!isHomePage && (
-        <div className="search-container flex-grow mx-4">
-          <SearchContainer />
-        </div>
-      )}
-      <div className="wallet-connect-container">
-        <TonConnectButton onWalletConnect={onWalletConnect} />
-      </div>
-    </header>
-  );
-}
+import BrowseAll from './components/pages/BrowseAll.js';
+import PostDetails from './components/pages/PostDetails.js';
+import Footer from './components/navigation/footer.js';
 
 function App() {
   const [userId, setUserId] = useState(null);
   const [wallet, setWallet] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     // Check if there's a stored wallet and userId
@@ -65,7 +44,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <>
       <ScrollToTop />
       <Header userId={userId} onWalletConnect={handleWalletConnect} />
       <div className="App">
@@ -79,8 +58,17 @@ function App() {
         </div>
         <ScrollButton />
       </div>
+      {location.pathname === '/' && <Footer />}
+    </>
+  );
+}
+
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
     </Router>
   );
 }
 
-export default App;
+export default AppWrapper;
